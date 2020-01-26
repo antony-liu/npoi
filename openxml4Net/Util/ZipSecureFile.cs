@@ -1,20 +1,40 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿/* ====================================================================
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+==================================================================== */
+
+using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using NPOI.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace NPOI.OpenXml4Net.Util
 {
     public class ZipSecureFile : ZipFile
     {
+        private static POILogger _logger =
+                POILogFactory.GetLogger(typeof(ZipSecureFile));
         private static double MIN_INFLATE_RATIO = 0.01d;
         private static long MAX_ENTRY_SIZE = 0xFFFFFFFFL;
+        // don't alert for expanded sizes smaller than 100k
+        private static long GRACE_ENTRY_SIZE = 100 * 1024;
 
+        // The default maximum size of extracted text 
+        private static long MAX_TEXT_SIZE = 10 * 1024 * 1024;
         /**
          * Sets the ratio between de- and inflated bytes to detect zipbomb.
          * It defaults to 1% (= 0.01d), i.e. when the compression is better than
@@ -23,21 +43,16 @@ namespace NPOI.OpenXml4Net.Util
          *
          * @param ratio the ratio between de- and inflated bytes to detect zipbomb
          */
-        public static void SetMinInflateRatio(double ratio)
+        public static double MinInflateRatio
         {
-            MIN_INFLATE_RATIO = ratio;
-        }
-
-        /**
-         * Returns the current minimum compression rate that is used.
-         * 
-         * See setMinInflateRatio() for details.
-         *
-         * @return The min accepted compression-ratio.  
-         */
-        public static double GetMinInflateRatio()
-        {
-            return MIN_INFLATE_RATIO;
+            get
+            {
+                return MIN_INFLATE_RATIO;
+            }
+            set
+            {
+                MIN_INFLATE_RATIO = value;
+            }
         }
 
         /**
@@ -49,25 +64,46 @@ namespace NPOI.OpenXml4Net.Util
          *
          * @param maxEntrySize the max. file size of a single zip entry
          */
-        public static void SetMaxEntrySize(long maxEntrySize)
+        public static long MaxEntrySize
         {
-            if (maxEntrySize < 0 || maxEntrySize > 0xFFFFFFFFl)
+            get
             {
-                throw new ArgumentException("Max entry size is bounded [0-4GB].");
+                return MAX_ENTRY_SIZE;
             }
-            MAX_ENTRY_SIZE = maxEntrySize;
+            set
+            {
+                if (value < 0 || value > 0xFFFFFFFFl)
+                {
+                    throw new ArgumentException("Max entry size is bounded [0-4GB].");
+                }
+                MAX_ENTRY_SIZE = value;
+            }
         }
 
         /**
-         * Returns the current maximum allowed uncompressed file size.
+         * get or set the maximum number of characters of text that are
+         * extracted before an exception is thrown during extracting
+         * text from documents.
          * 
-         * See setMaxEntrySize() for details.
+         * This can be used to limit memory consumption and protect against 
+         * security vulnerabilities when documents are provided by users.
          *
-         * @return The max accepted uncompressed file size. 
+         * @param maxTextSize the max. file size of a single zip entry
          */
-        public static long GetMaxEntrySize()
+        public static long MaxTextSize
         {
-            return MAX_ENTRY_SIZE;
+            get
+            {
+                return MAX_TEXT_SIZE;
+            }
+            set
+            {
+                if (value < 0 || value > 0xFFFFFFFFL)
+                {     // don't use MAX_ENTRY_SIZE here!
+                    throw new ArgumentException("Max text size is bounded [0-4GB], but had " + value);
+                }
+                MAX_TEXT_SIZE = value;
+            }
         }
 
         public ZipSecureFile(FileStream file, int mode)
@@ -117,13 +153,14 @@ namespace NPOI.OpenXml4Net.Util
                 //replace inner stream of zipIS by using a ThresholdInputStream instance??
                 try
                 {
-                    FieldInfo f = typeof(FilterInputStream).GetField("in");
+                    FieldInfo f = typeof(InflaterInputStream).GetField("baseInputStream ", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance);
                     //f.SetAccessible(true);
-                    //InputStream oldInner = (InputStream)f.Get(zipIS);
-                    //newInner = new ThresholdInputStream(oldInner, null);
+                    Stream oldInner = (Stream)f.GetValue(zipIS);
+                    newInner = new ThresholdInputStream(oldInner, null);
+                    f.SetValue(zipIS, newInner);
                     //f.Set(zipIS, newInner);
                 } catch (Exception ex) {
-                    //logger.Log(POILogger.WARN, "SecurityManager doesn't allow manipulation via reflection for zipbomb detection - continue with original input stream", ex);
+                    _logger.Log(POILogger.WARN, "SecurityManager doesn't allow manipulation via reflection for zipbomb detection - continue with original input stream", ex);
                     newInner = null;
                 }
             } else {
@@ -140,18 +177,17 @@ namespace NPOI.OpenXml4Net.Util
             ThresholdInputStream cis;
             Stream input;
 
-            public override bool CanRead => throw new NotImplementedException();
+            public override bool CanRead => true;
 
-            public override bool CanSeek => throw new NotImplementedException();
+            public override bool CanSeek => false;
 
-            public override bool CanWrite => throw new NotImplementedException();
+            public override bool CanWrite => false;
 
-            public override long Length => throw new NotImplementedException();
+            public override long Length => input.Length;
 
-            public override long Position { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            public override long Position { get => input.Position; set => input.Position = value; }
 
             public ThresholdInputStream(Stream is1, ThresholdInputStream cis)
-                        
             {
                 this.input = is1;
                 this.cis = cis;
@@ -159,7 +195,6 @@ namespace NPOI.OpenXml4Net.Util
 
             public int Read()
             {
-
                 int b = this.input.ReadByte();
                 if (b > -1) Advance(1);
                 return b;
@@ -167,11 +202,9 @@ namespace NPOI.OpenXml4Net.Util
 
             public override int Read(byte[] b, int off, int len)
             {
-
                 int cnt = input.Read(b, off, len);
                 if (cnt > -1) Advance(cnt);
                 return cnt;
-
             }
 
             public long Skip(long n)
@@ -189,19 +222,42 @@ namespace NPOI.OpenXml4Net.Util
 
             public void Advance(int advance)
             {
-
                 counter += advance;
+
                 // check the file size first, in case we are working on uncompressed streams
-                if (counter < ZipSecureFile.MAX_ENTRY_SIZE)
+                if (counter > MAX_ENTRY_SIZE)
                 {
-                    if (cis == null) return;
-                    double ratio = (double)cis.counter / (double)counter;
-                    if (ratio >= ZipSecureFile.MIN_INFLATE_RATIO) return;
+                    throw new IOException("Zip bomb detected! The file would exceed the max size of the expanded data in the zip-file. "
+                            + "This may indicates that the file is used to inflate memory usage and thus could pose a security risk. "
+                            + "You can adjust this limit via ZipSecureFile.setMaxEntrySize() if you need to work with files which are very large. "
+                            + "Counter: " + counter + ", cis.counter: " + (cis == null ? 0 : cis.counter)
+                            + "Limits: MAX_ENTRY_SIZE: " + MAX_ENTRY_SIZE);
                 }
-                throw new IOException("Zip bomb detected! The file would exceed certain limits which usually indicate that the file is used to inflate memory usage and thus could pose a security risk. "
-                        + "You can adjust these limits via setMinInflateRatio() and setMaxEntrySize() if you need to work with files which exceed these limits. "
-                        + "Counter: " + counter + ", cis.counter: " + (cis == null ? 0 : cis.counter) + ", ratio: " + (cis == null ? 0 : ((double)cis.counter) / counter)
-                        + "Limits: MIN_INFLATE_RATIO: " + ZipSecureFile.MIN_INFLATE_RATIO + ", MAX_ENTRY_SIZE: " + ZipSecureFile.MAX_ENTRY_SIZE);
+
+                // no expanded size?
+                if (cis == null)
+                {
+                    return;
+                }
+
+                // don't alert for small expanded size
+                if (counter <= GRACE_ENTRY_SIZE)
+                {
+                    return;
+                }
+
+                double ratio = (double)cis.counter / (double)counter;
+                if (ratio >= MIN_INFLATE_RATIO)
+                {
+                    return;
+                }
+
+                // one of the limits was reached, report it
+                throw new IOException("Zip bomb detected! The file would exceed the max. ratio of compressed file size to the size of the expanded data. "
+                        + "This may indicate that the file is used to inflate memory usage and thus could pose a security risk. "
+                        + "You can adjust this limit via ZipSecureFile.setMinInflateRatio() if you need to work with files which exceed this limit. "
+                        + "Counter: " + counter + ", cis.counter: " + cis.counter + ", ratio: " + (((double)cis.counter) / counter)
+                        + "Limits: MIN_INFLATE_RATIO: " + MIN_INFLATE_RATIO);
             }
 
             public ZipEntry GetNextEntry()

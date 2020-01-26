@@ -151,6 +151,7 @@
     <Compile Include="Util\ZipEntrySource.cs" />
     <Compile Include="Util\ZipFileZipEntrySource.cs" />
     <Compile Include="Util\ZipInputStreamZipEntrySource.cs" />
+    <Compile Include="Util\ZipSecureFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
