@@ -8,6 +8,8 @@ using NPOI.POIFS.Common;
 using NPOI.Util;
 using NPOI.POIFS.Storage;
 using NPOI.Openxml4Net.Exceptions;
+using static NPOI.OpenXml4Net.Util.ZipSecureFile;
+using NPOI.OpenXml4Net.Util;
 
 namespace NPOI.OpenXml4Net.OPC.Internal
 {
@@ -183,10 +185,10 @@ namespace NPOI.OpenXml4Net.OPC.Internal
             {
                 stream.Reset();
             }
-            else if (stream is FileStream)
-            {
-                // File open check, about to be closed, nothing to do
-            }
+            //else if (stream is FileStream)
+            //{
+            //    // File open check, about to be closed, nothing to do
+            //}
             else
             {
                 // Oh dear... I hope you know what you're doing!
@@ -206,7 +208,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal
             }
             return new PushbackInputStream(stream, 8);
         }
-        // TODO: ZipSecureFile
+        
         /**
          * Opens the specified stream as a secure zip
          *
@@ -214,25 +216,21 @@ namespace NPOI.OpenXml4Net.OPC.Internal
          *            The stream to open.
          * @return The zip stream freshly open.
          */
-        //public static ThresholdInputStream OpenZipStream(Stream stream)
-        //{
-        //    // Peek at the first few bytes to sanity check
-        //    InputStream checkedStream = prepareToCheckHeader(stream);
-        //    verifyZipHeader(checkedStream);
-
-        //    // Open as a proper zip stream
-        //    InputStream zis = new ZipInputStream(checkedStream);
-        //    return ZipSecureFile.addThreshold(zis);
-        //}
-
-        public static ZipInputStream OpenZipStream(Stream stream)
+        public static ThresholdInputStream OpenZipStream(InputStream stream)
         {
-            // TODO: ZipSecureFile
-            //InputStream zis = new ZipInputStream(stream);
-            //ThresholdInputStream tis = ZipSecureFile.AddThreshold(zis);
-            //return tis;
-            return new ZipInputStream(stream);
+            // Peek at the first few bytes to sanity check
+            InputStream checkedStream = PrepareToCheckHeader(stream);
+            VerifyZipHeader(checkedStream);
+
+            // Open as a proper zip stream
+            Stream zis = new ZipInputStream(checkedStream);
+            return ZipSecureFile.AddThreshold(zis);
         }
+
+        //public static ZipInputStream OpenZipStream(Stream stream)
+        //{
+        //    return new ZipInputStream(stream);
+        //}
         /**
         * Opens the specified file as a zip, or returns null if no such file exists
         *
@@ -246,10 +244,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal
             {
                 throw new FileNotFoundException("File does not exist");
             }
-            //if (file.isDirectory())
-            //{
-            //    throw new IOException("File is a directory");
-            //}
+
 
             // Peek at the first few bytes to sanity check
             FileInputStream input = new FileInputStream(file.OpenRead());
@@ -261,10 +256,10 @@ namespace NPOI.OpenXml4Net.OPC.Internal
             {
                 input.Close();
             }
-            // TODO: ZipSecureFile
-            //// Open as a proper zip file
-            //return new ZipSecureFile(file);
-            return new ZipFile(File.OpenRead(file.FullName));
+
+            // Open as a proper zip file
+            return new ZipSecureFile(file.Open(FileMode.Open, FileAccess.ReadWrite));
+            //return new ZipFile(File.OpenRead(file.FullName));
         }
         /**
          * Retrieve and open a zip file with the specified path.

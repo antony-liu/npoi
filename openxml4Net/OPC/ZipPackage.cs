@@ -8,6 +8,7 @@ using NPOI.Util;
 using System;
 using System.Collections;
 using System.IO;
+using static NPOI.OpenXml4Net.Util.ZipSecureFile;
 
 namespace NPOI.OpenXml4Net.OPC
 {
@@ -57,11 +58,29 @@ namespace NPOI.OpenXml4Net.OPC
         public ZipPackage(Stream in1, PackageAccess access)
             : base(access)
         {
-            isStream = true;
-            ZipInputStream zis = ZipHelper.OpenZipStream(in1);
-            // TODO: ZipSecureFile
-            //ThresholdInputStream zis = ZipHelper.OpenZipStream(in1);
-            this.zipArchive = new ZipInputStreamZipEntrySource(zis);
+            //isStream = true;
+            //ZipInputStream zis = ZipHelper.OpenZipStream(in1);
+            //// TODO: ZipSecureFile
+            ////ThresholdInputStream zis = ZipHelper.OpenZipStream(in1);
+            //this.zipArchive = new ZipInputStreamZipEntrySource(zis);
+            FileInputStream fis = new FileInputStream(in1);
+            ThresholdInputStream zis = ZipHelper.OpenZipStream(fis);
+            try
+            {
+                this.zipArchive = new ZipInputStreamZipEntrySource(zis);
+            }
+            catch (IOException e)
+            {
+                try
+                {
+                    zis.Close();
+                }
+                catch (IOException e2)
+                {
+                    throw new IOException("Failed to close zip input stream while cleaning up. " + e.Message, e2);
+                }
+                throw new IOException("Failed to read zip entry source", e);
+            }
         }
 
         /**
@@ -102,52 +121,97 @@ namespace NPOI.OpenXml4Net.OPC
                     throw new InvalidOperationException("Can't open the specified file: '" + file + "'", e);
                 }
                 logger.Log(POILogger.ERROR, "Error in zip file " + file + " - falling back to stream processing (i.e. ignoring zip central directory)");
-                // some zips can't be opened via ZipFile in JDK6, as the central directory
-                // contains either non-latin entries or the compression type can't be handled
-                // the workaround is to iterate over the stream and not the directory
-                FileStream fis = null;
-                //ThresholdInputStream zis = null;
-                ZipInputStream zis = null;
-                try
-                {
-                    fis = file.Create();
-                    // TODO: ZipSecureFile
-                    // zis = ZipHelper.OpenZipStream(fis);
-                    zis = ZipHelper.OpenZipStream(fis);
-                    ze = new ZipInputStreamZipEntrySource(zis);
-                }
-                catch (IOException e2)
-                {
-                    if (zis != null)
-                    {
-                        try
-                        {
-                            zis.Close();
-                        }
-                        catch (IOException)
-                        {
-                            throw new InvalidOperationException("Can't open the specified file: '" + file + "'" +
-                                    " and couldn't close the file input stream", e);
-                        }
-                    }
-                    else if (fis != null)
-                    {
-                        try
-                        {
-                            fis.Close();
-                        }
-                        catch (IOException)
-                        {
-                            throw new InvalidOperationException("Can't open the specified file: '" + file + "'" +
-                                    " and couldn't close the file input stream", e);
-                        }
-                    }
-                    throw new InvalidOperationException("Can't open the specified file: '" + file + "'", e2);
-                }
+                ze = OpenZipEntrySourceStream(file);
             }
             this.zipArchive = ze;
         }
 
+        private static ZipEntrySource OpenZipEntrySourceStream(FileInfo file)
+        {
+            FileInputStream fis;
+            // Acquire a resource that is needed to read the next level of openZipEntrySourceStream
+            try
+            {
+                // open the file input stream
+                fis = new FileInputStream(file.Open(FileMode.Open, FileAccess.Read));
+            }
+            catch (FileNotFoundException e)
+            {
+                // If the source cannot be acquired, abort (no resources to free at this level)
+                throw new InvalidOperationException("Can't open the specified file input stream from file: '" + file + "'", e);
+            }
+
+            // If an error occurs while reading the next level of openZipEntrySourceStream, free the acquired resource
+            try
+            {
+                // read from the file input stream
+                return OpenZipEntrySourceStream(fis);
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    // abort: close the file input stream
+                    fis.Close();
+                }
+                catch (IOException e2)
+                {
+                    throw new InvalidOperationException("Could not close the specified file input stream from file: '" + file + "'", e2);
+                }
+                throw new InvalidOperationException("Failed to read the file input stream from file: '" + file + "'", e);
+            }
+        }
+
+        private static ZipEntrySource OpenZipEntrySourceStream(FileInputStream fis)
+        {
+            ThresholdInputStream zis;
+            // Acquire a resource that is needed to read the next level of openZipEntrySourceStream
+            try
+            {
+                // open the zip input stream
+                zis = ZipHelper.OpenZipStream(fis);
+            }
+            catch (IOException e)
+            {
+                // If the source cannot be acquired, abort (no resources to free at this level)
+                throw new InvalidOperationException("Could not open the file input stream", e);
+            }
+
+            // If an error occurs while reading the next level of openZipEntrySourceStream, free the acquired resource
+            try
+            {
+                // read from the zip input stream
+                return OpenZipEntrySourceStream(zis);
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    // abort: close the zip input stream
+                    zis.Close();
+                }
+                catch (IOException e2)
+                {
+                    throw new InvalidOperationException("Failed to read the zip entry source stream and could not close the zip input stream", e2);
+                }
+                throw new InvalidOperationException("Failed to read the zip entry source stream", e);
+            }
+        }
+
+
+        private static ZipEntrySource OpenZipEntrySourceStream(ThresholdInputStream zis)
+        {
+            // Acquire the final level resource. If this is acquired successfully, the zip package was read successfully from the input stream
+            try
+            {
+                // open the zip entry source stream
+                return new ZipInputStreamZipEntrySource(zis);
+            }
+            catch (IOException e)
+            {
+                throw new InvalidOperationException("Could not open the specified zip entry source stream", e);
+            }
+        }
         /**
          * Constructor. Opens a Zip based Open XML document from
          *  a custom ZipEntrySource, typically an open archive
@@ -415,10 +479,10 @@ namespace NPOI.OpenXml4Net.OPC
                 if (File.Exists(this.originalPackagePath))
                 {
                     // Case of a package previously open
-                    string tempfilePath=GenerateTempFileName(FileHelper
+                    string tempfilePath = GenerateTempFileName(FileHelper
                                     .GetDirectory(this.originalPackagePath));
 
-                    FileInfo fi=TempFile.CreateTempFile(tempfilePath, ".tmp");
+                    FileInfo fi = TempFile.CreateTempFile(tempfilePath, ".tmp");
                     // Save the final package to a temporary file
                     try
                     {
@@ -462,7 +526,7 @@ namespace NPOI.OpenXml4Net.OPC
          */
         private String GenerateTempFileName(string directory)
         {
-            FileInfo tmpFilename = null ;
+            FileInfo tmpFilename = null;
             string path = null;
             do
             {
@@ -635,7 +699,7 @@ namespace NPOI.OpenXml4Net.OPC
          *
          * @return The zip archive.
          */
-        public Util.ZipEntrySource ZipArchive
+        public ZipEntrySource ZipArchive
         {
             get
             {
