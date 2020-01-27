@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Collections;
 using ICSharpCode.SharpZipLib.Zip;
+using static NPOI.OpenXml4Net.Util.ZipSecureFile;
 
 namespace NPOI.OpenXml4Net.Util
 {
@@ -25,7 +26,7 @@ namespace NPOI.OpenXml4Net.Util
          * We'll then eat lots of memory, but be able to
          *  work with the entries at-will.
          */
-        public ZipInputStreamZipEntrySource(ZipInputStream inp)
+        public ZipInputStreamZipEntrySource(ThresholdInputStream inp)
         {
             zipEntries = new List<FakeZipEntry>();
 
@@ -40,7 +41,7 @@ namespace NPOI.OpenXml4Net.Util
                 else
                 {
                     FakeZipEntry entry = new FakeZipEntry(zipEntry, inp);
-                    //inp.Close();
+                    inp.CloseEntry();
 
                     zipEntries.Add(entry);
                 }
@@ -119,7 +120,7 @@ namespace NPOI.OpenXml4Net.Util
         {
             private byte[] data;
 
-            public FakeZipEntry(ZipEntry entry, ZipInputStream inp) : base(entry.Name)
+            public FakeZipEntry(ZipEntry entry, ThresholdInputStream inp) : base(entry.Name)
             {
 
                 // Grab the de-compressed contents for later
