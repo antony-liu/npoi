@@ -32,6 +32,7 @@ using System.Collections;
 using NPOI.SS.UserModel;
 using NPOI;
 using NPOI.Openxml4Net.Exceptions;
+using NPOI.OpenXml4Net.Util;
 
 namespace TestCases.OpenXml4Net.OPC
 {
@@ -829,7 +830,7 @@ namespace TestCases.OpenXml4Net.OPC
 
 
 
-        [Test, Ignore("need ZipSecureFile and ByteArrayOutputStream class")]
+        [Test]
         public void ZipBombCreateAndHandle()
         {
             // #50090 / #56865
@@ -862,12 +863,12 @@ namespace TestCases.OpenXml4Net.OPC
                         byte[] spam = new byte[0x7FFF];
                         for (int i = 0; i < spam.Length; i++) spam[i] = (byte)' ';
                         // 0x7FFF0000 is the maximum for 32-bit zips, but less still works
-                        while (size < 0x7FFF0000)
+                        while (size < 0x7FFF00)
                         {
                             append.Write(spam, 0, spam.Length);
                             size += spam.Length;
                         }
-                        append.Write(Encoding.ASCII.GetBytes("</Types>"), 0, 8);
+                        append.Write(Encoding.UTF8.GetBytes("</Types>"), 0, 8);
                         size += 8;
                         e.Size = (size);
                     }
@@ -884,84 +885,86 @@ namespace TestCases.OpenXml4Net.OPC
 
             byte[] buf = bos.ToByteArray();
             bos = null;
-
-            IWorkbook wb = WorkbookFactory.Create(new ByteArrayInputStream(buf));
-            wb.GetSheetAt(0);
-            wb.Close();
-            zipFile.Close();
+            Assert.Throws<IOException>(() => {
+                IWorkbook wb = WorkbookFactory.Create(new ByteArrayInputStream(buf));
+                wb.GetSheetAt(0);
+                wb.Close();
+                zipFile.Close();
+            });
+            
         }
 
-        [Test, Ignore("need ZipSecureFile class")]
+        [Test]
         public void ZipBombCheckSizes()
         {
-            //FileInfo file = OpenXml4NetTestDataSamples.GetSampleFile("sample.xlsx");
+            FileInfo file = OpenXml4NetTestDataSamples.GetSampleFile("sample.xlsx");
 
-            //try
-            //{
-            //    double min_ratio = Double.MaxValue;
-            //    long max_size = 0;
-            //    ZipFile zf = ZipHelper.OpenZipFile(file);
-            //    assertNotNull(zf);
-            //    IEnumerator entries = zf.GetEnumerator();
-            //    while (entries.MoveNext())
-            //    {
-            //        ZipEntry ze = (ZipEntry)entries.Current;
-            //        double ratio = (double)ze.CompressedSize / (double)ze.Size;
-            //        min_ratio = Math.Min(min_ratio, ratio);
-            //        max_size = Math.Max(max_size, ze.Size);
-            //    }
-            //    zf.Close();
+            try
+            {
+                double min_ratio = Double.MaxValue;
+                long max_size = 0;
+                ZipFile zf = ZipHelper.OpenZipFile(file);
+                Assert.IsNotNull(zf);
+                IEnumerator entries = zf.GetEnumerator();
+                while (entries.MoveNext())
+                {
+                    ZipEntry ze = (ZipEntry)entries.Current;
+                    double ratio = (double)ze.CompressedSize / (double)ze.Size;
+                    min_ratio = Math.Min(min_ratio, ratio);
+                    max_size = Math.Max(max_size, ze.Size);
+                }
+                zf.Close();
 
-            //    // use values close to, but within the limits 
-            //    ZipSecureFile.SetMinInflateRatio(min_ratio - 0.002);
-            //    assertEquals(min_ratio - 0.002, ZipSecureFile.getMinInflateRatio(), 0.00001);
-            //    ZipSecureFile.SetMaxEntrySize(max_size + 1);
-            //    assertEquals(max_size + 1, ZipSecureFile.getMaxEntrySize());
-            //    IWorkbook wb = WorkbookFactory.Create(file.FullName, null, true);
-            //    wb.Close();
+                // use values close to, but within the limits 
+                ZipSecureFile.MinInflateRatio = (min_ratio - 0.002);
+                Assert.AreEqual(min_ratio - 0.002, ZipSecureFile.MinInflateRatio, 0.00001);
+                ZipSecureFile.MaxEntrySize = (max_size + 1);
+                Assert.AreEqual(max_size + 1, ZipSecureFile.MaxEntrySize);
+                IWorkbook wb = WorkbookFactory.Create(file, null, true);
+                wb.Close();
 
-            //    // check ratio ouf of bounds
-            //    ZipSecureFile.setMinInflateRatio(min_ratio + 0.002);
-            //    try
-            //    {
-            //        wb = WorkbookFactory.Create(file.FullName, null, true);
-            //        wb.Close();
-            //        // this is a bit strange, as there will be different exceptions thrown
-            //        // depending if this executed via "ant test" or within eclipse
-            //        // maybe a difference in JDK ...
-            //    }
-            //    catch (InvalidDataException e)
-            //    {
-            //        checkForZipBombException(e);
-            //    }
-            //    catch (POIXMLException e)
-            //    {
-            //        checkForZipBombException(e);
-            //    }
+                // check ratio ouf of bounds
+                ZipSecureFile.MinInflateRatio = (min_ratio + 0.002);
+                try
+                {
+                    wb = WorkbookFactory.Create(file, null, true);
+                    wb.Close();
+                    // this is a bit strange, as there will be different exceptions thrown
+                    // depending if this executed via "ant test" or within eclipse
+                    // maybe a difference in JDK ...
+                }
+                catch (InvalidDataException e)
+                {
+                    checkForZipBombException(e);
+                }
+                catch (POIXMLException e)
+                {
+                    checkForZipBombException(e);
+                }
 
-            //    // check max entry size ouf of bounds
-            //    ZipSecureFile.SetMinInflateRatio(min_ratio - 0.002);
-            //    ZipSecureFile.SetMaxEntrySize(max_size - 1);
-            //    try
-            //    {
-            //        wb = WorkbookFactory.Create(file.FullName, null, true);
-            //        wb.Close();
-            //    }
-            //    catch (InvalidDataException e)
-            //    {
-            //        checkForZipBombException(e);
-            //    }
-            //    catch (POIXMLException e)
-            //    {
-            //        checkForZipBombException(e);
-            //    }
-            //}
-            //finally
-            //{
-            //    // reset otherwise a lot of ooxml tests will fail
-            //    ZipSecureFile.SetMinInflateRatio(0.01d);
-            //    ZipSecureFile.SetMaxEntrySize(0xFFFFFFFFL);
-            //}
+                // check max entry size ouf of bounds
+                ZipSecureFile.MinInflateRatio = (min_ratio - 0.002);
+                ZipSecureFile.MaxEntrySize = (max_size - 1);
+                try
+                {
+                    wb = WorkbookFactory.Create(file, null, true);
+                    wb.Close();
+                }
+                catch (InvalidDataException e)
+                {
+                    checkForZipBombException(e);
+                }
+                catch (POIXMLException e)
+                {
+                    checkForZipBombException(e);
+                }
+            }
+            finally
+            {
+                // reset otherwise a lot of ooxml tests will fail
+                ZipSecureFile.MinInflateRatio = (0.01d);
+                ZipSecureFile.MaxEntrySize = (0xFFFFFFFFL);
+            }
         }
 
         private void checkForZipBombException(Exception e)
@@ -989,36 +992,36 @@ namespace TestCases.OpenXml4Net.OPC
 
             throw new InvalidOperationException("Expected to catch an Exception because of a detected Zip Bomb, but did not find the related error message in the exception", e);
         }
-        [Ignore("need ZipSecureFile class")]
+
         [Test]
         public void TestConstructors()
         {
-            //// verify the various ways to construct a ZipSecureFile
-            //File file = OpenXML4JTestDataSamples.GetSampleFile("sample.xlsx");
-            //ZipSecureFile zipFile = new ZipSecureFile(file);
-            //Assert.IsNotNull(zipFile.Name);
-            //zipFile.close();
-            //zipFile = new ZipSecureFile(file, ZipFile.OPEN_READ);
-            //Assert.IsNotNull(zipFile.Name);
-            //zipFile.close();
-            //zipFile = new ZipSecureFile(file.AbsolutePath);
-            //Assert.IsNotNull(zipFile.Name);
-            //zipFile.close();
+            // verify the various ways to construct a ZipSecureFile
+            FileInfo file = OpenXml4NetTestDataSamples.GetSampleFile("sample.xlsx");
+            ZipSecureFile zipFile = new ZipSecureFile(file.Open(FileMode.Open, FileAccess.ReadWrite));
+            Assert.IsNotNull(zipFile.Name);
+            zipFile.Close();
+            zipFile = new ZipSecureFile(file.OpenRead());
+            Assert.IsNotNull(zipFile.Name);
+            zipFile.Close();
+            zipFile = new ZipSecureFile(file.FullName);
+            Assert.IsNotNull(zipFile.Name);
+            zipFile.Close();
         }
-        [Ignore("need ZipSecureFile class")]
+
         [Test]
         public void TestMaxTextSize()
         {
-            //long before = ZipSecureFile.MaxTextSize;
-            //try
-            //{
-            //    ZipSecureFile.MaxTextSize = 12345;
-            //    Assert.AreEqual(12345, ZipSecureFile.MaxTextSize);
-            //}
-            //finally
-            //{
-            //    ZipSecureFile.MaxTextSize = before;
-            //}
+            long before = ZipSecureFile.MaxTextSize;
+            try
+            {
+                ZipSecureFile.MaxTextSize = 12345;
+                Assert.AreEqual(12345, ZipSecureFile.MaxTextSize);
+            }
+            finally
+            {
+                ZipSecureFile.MaxTextSize = before;
+            }
         }
 
 
