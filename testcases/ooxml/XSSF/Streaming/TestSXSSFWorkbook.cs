@@ -391,7 +391,7 @@ namespace TestCases.XSSF.Streaming
                 if (out1.Exists)
                 {
                     wb = new SXSSFWorkbook(
-                            (XSSFWorkbook)WorkbookFactory.Create(out1.FullName));
+                            (XSSFWorkbook)WorkbookFactory.Create(out1));
                 }
                 else
                 {

@@ -2169,7 +2169,7 @@ namespace TestCases.XSSF.UserModel
             FileInfo xlsbFile = HSSFTestDataSamples.GetSampleFile("Simple.xlsb");
             try
             {
-                WorkbookFactory.Create(xlsbFile.FullName).Close();
+                WorkbookFactory.Create(xlsbFile).Close();
                 Assert.Fail(".xlsb files not supported");
             }
             catch (XLSBUnsupportedException e)

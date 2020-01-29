@@ -31,6 +31,7 @@ namespace NPOI.SS.Converter
     using NPOI.HPSF;
     using NPOI.XSSF.UserModel;
     using NPOI.XSSF.Model;
+    using System.IO;
 
     public class ExcelToHtmlConverter
     {
@@ -115,7 +116,7 @@ namespace NPOI.SS.Converter
         }
         public static XmlDocument Process(string excelFile)
         {
-            IWorkbook workbook = WorkbookFactory.Create(excelFile, null);
+            IWorkbook workbook = WorkbookFactory.Create(new FileInfo(excelFile), null);
             ExcelToHtmlConverter excelToHtmlConverter = new ExcelToHtmlConverter();
             excelToHtmlConverter.ProcessWorkbook(workbook);
             return excelToHtmlConverter.Document;
