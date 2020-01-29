@@ -52,8 +52,10 @@ namespace TestCases.SS
          * @param wb the workbook to close
          * @throws IOException
          */
-        private static void AssertCloseDoesNotModifyFile(String filename, IWorkbook wb) {
-            byte[] before = HSSFTestDataSamples.GetTestDataFileContent(filename);
+        private static void AssertCloseDoesNotModifyFile(String filename, IWorkbook wb, byte[] before = null)
+        {
+            if (before == null)
+                before = HSSFTestDataSamples.GetTestDataFileContent(filename);
             CloseOrRevert(wb);
             byte[] after = HSSFTestDataSamples.GetTestDataFileContent(filename);
             CollectionAssert.AreEqual(before, after, filename + " sample file was modified as a result of closing the workbook");
@@ -128,10 +130,12 @@ namespace TestCases.SS
             AssertCloseDoesNotModifyFile(xls, wb);
 
             // Package -> xssf
+            byte[] before = HSSFTestDataSamples.GetTestDataFileContent(xlsx);
             wb = WorkbookFactory.Create(HSSFTestDataSamples.GetSampleFile(xlsx), null, true);
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
-            AssertCloseDoesNotModifyFile(xlsx, wb);
+
+            AssertCloseDoesNotModifyFile(xlsx, wb, before);
         }
         /**
          * Creates the appropriate kind of Workbook, but
@@ -370,7 +374,7 @@ namespace TestCases.SS
         [Test]
         public void TestEmptyFile()
         {
-            
+
             FileInfo emptyFile = TempFile.CreateTempFile("empty", ".poi");
             try
             {

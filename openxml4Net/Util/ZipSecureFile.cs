@@ -337,6 +337,14 @@ namespace NPOI.OpenXml4Net.Util
             {
                 throw new NotImplementedException();
             }
+
+            public override void Close()
+            {
+                if (input == null)
+                    return;
+                input.Close();
+                input = null;
+            }
         }
 
     }
