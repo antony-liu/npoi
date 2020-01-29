@@ -53,17 +53,17 @@ namespace TestCases.OpenXml4Net.OPC
             try
             {
                 p.Save(targetFile.FullName);
-
-                // Compare the original and newly saved document
-                Assert.IsTrue(File.Exists(targetFile.FullName));
-                ZipFileAssert.AssertEqual(new FileInfo(originalFile), targetFile);
-                File.Delete(targetFile.FullName);
             }
             finally
             {
                 // use revert to not re-write the input file
                 p.Revert();
             }
+            // Could not open file that opend by OPCPackage.Open method, so move test statement here
+            // Compare the original and newly saved document
+            Assert.IsTrue(File.Exists(targetFile.FullName));
+            ZipFileAssert.AssertEqual(new FileInfo(originalFile), targetFile);
+            File.Delete(targetFile.FullName);
         }
 
         /**
@@ -371,15 +371,17 @@ namespace TestCases.OpenXml4Net.OPC
                     fs.Close();
                 }
                 
-                // Compare the original and newly saved document
-                Assert.IsTrue(File.Exists(targetFile.FullName));
-                ZipFileAssert.AssertEqual(new FileInfo(originalFile), targetFile);
-                File.Delete(targetFile.FullName);
             }
             finally
             {
                 p.Revert();
             }
+
+            // Could not open file that opend by OPCPackage.Open method, so move test statement here
+            // Compare the original and newly saved document
+            Assert.IsTrue(File.Exists(targetFile.FullName));
+            ZipFileAssert.AssertEqual(new FileInfo(originalFile), targetFile);
+            File.Delete(targetFile.FullName);
         }
 
         /**
