@@ -145,11 +145,11 @@ namespace NPOI.SS.UserModel
             }
             throw new InvalidFormatException("Your stream was neither an OLE2 stream, nor an OOXML stream.");
         }
-        public static IWorkbook Create(string file)
+        public static IWorkbook Create(FileInfo file)
         {
             return Create(file, null, false);
         }
-        public static IWorkbook Create(string file, string password)
+        public static IWorkbook Create(FileInfo file, string password)
         {
             return Create(file, password, false);
         }
@@ -166,16 +166,15 @@ namespace NPOI.SS.UserModel
         /// Note that for Workbooks opened this way, it is not possible
         /// to explicitly close the underlying File resource.
         /// </remarks>
-        public static IWorkbook Create(string file, string password, bool readOnly)
+        public static IWorkbook Create(FileInfo file, string password, bool readOnly)
         {
-            if (!File.Exists(file))
+            if (!file.Exists)
             {
-                throw new FileNotFoundException(file);
+                throw new FileNotFoundException(file.FullName);
             }
-            FileInfo fInfo = new FileInfo(file);
             try
             {
-                NPOIFSFileSystem fs = new NPOIFSFileSystem(fInfo, readOnly);
+                NPOIFSFileSystem fs = new NPOIFSFileSystem(file, readOnly);
                 try
                 {
                     return Create(fs, password);

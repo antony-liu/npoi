@@ -122,13 +122,13 @@ namespace TestCases.SS
             IWorkbook wb;
 
             // POIFS -> hssf
-            wb = WorkbookFactory.Create(HSSFTestDataSamples.GetSampleFile(xls).FullName, null, true);
+            wb = WorkbookFactory.Create(HSSFTestDataSamples.GetSampleFile(xls), null, true);
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             // Package -> xssf
-            wb = WorkbookFactory.Create(HSSFTestDataSamples.GetSampleFile(xlsx).FullName, null, true);
+            wb = WorkbookFactory.Create(HSSFTestDataSamples.GetSampleFile(xlsx), null, true);
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
             AssertCloseDoesNotModifyFile(xlsx, wb);
@@ -160,14 +160,14 @@ namespace TestCases.SS
 
             // File -> either
             wb = WorkbookFactory.Create(
-                  Path.GetFullPath(testdataPath + xls)
+                  HSSFTestDataSamples.GetSampleFile(xls)
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             wb = WorkbookFactory.Create(
-                  testdataPath + xlsx
+                  HSSFTestDataSamples.GetSampleFile(xlsx)
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
@@ -278,14 +278,14 @@ namespace TestCases.SS
             IWorkbook wb;
             // Unprotected, no password given, opens normally
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xls).FullName, null
+                    HSSFTestDataSamples.GetSampleFile(xls), null
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xlsx).FullName, null
+                    HSSFTestDataSamples.GetSampleFile(xlsx), null
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
@@ -293,14 +293,14 @@ namespace TestCases.SS
 
             // Unprotected, wrong password, opens normally
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xls).FullName, "wrong"
+                    HSSFTestDataSamples.GetSampleFile(xls), "wrong"
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xlsx).FullName, "wrong"
+                    HSSFTestDataSamples.GetSampleFile(xlsx), "wrong"
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
@@ -308,14 +308,14 @@ namespace TestCases.SS
 
             // Protected, correct password, opens fine
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xls_prot[0]).FullName, xls_prot[1]
+                    HSSFTestDataSamples.GetSampleFile(xls_prot[0]), xls_prot[1]
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]).FullName, xlsx_prot[1]
+                    HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]), xlsx_prot[1]
             );
             Assert.IsNotNull(wb);
             Assert.IsTrue(wb is XSSFWorkbook);
@@ -328,7 +328,7 @@ namespace TestCases.SS
             try
             {
                 wb = WorkbookFactory.Create(
-                        HSSFTestDataSamples.GetSampleFile(xls_prot[0]).FullName, "wrong"
+                        HSSFTestDataSamples.GetSampleFile(xls_prot[0]), "wrong"
                 );
                 AssertCloseDoesNotModifyFile(xls_prot[0], wb);
                 Assert.Fail("Shouldn't be able to open with the wrong password");
@@ -340,7 +340,7 @@ namespace TestCases.SS
             try
             {
                 wb = WorkbookFactory.Create(
-                        HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]).FullName, "wrong"
+                        HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]), "wrong"
                 );
                 AssertCloseDoesNotModifyFile(xlsx_prot[0], wb);
                 Assert.Fail("Shouldn't be able to open with the wrong password");
@@ -374,7 +374,7 @@ namespace TestCases.SS
             FileInfo emptyFile = TempFile.CreateTempFile("empty", ".poi");
             try
             {
-                WorkbookFactory.Create(emptyFile.FullName);
+                WorkbookFactory.Create(emptyFile);
                 Assert.Fail("Shouldn't be able to create for an empty file");
             }
             catch (EmptyFileException e)
@@ -392,7 +392,7 @@ namespace TestCases.SS
             Assert.IsFalse(nonExistantFile.Exists);
             try
             {
-                WorkbookFactory.Create(nonExistantFile.FullName, "password", true);
+                WorkbookFactory.Create(nonExistantFile, "password", true);
                 Assert.Fail("Should not be able to create for a non-existant file");
             }
             catch (FileNotFoundException)

@@ -824,34 +824,76 @@ namespace TestCases.XSSF.UserModel
         [Test]
         public void LoadWorkbookWithPivotTable()
         {
-            String fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "ooxml-pivottable.xlsx");
-
+            FileInfo file = TempFile.CreateTempFile("ooxml-pivottable", ".xlsx");
             XSSFWorkbook wb = new XSSFWorkbook();
-            SetPivotData(wb);
+            try
+            {
+                SetPivotData(wb);
 
-            FileStream fileOut = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
-            wb.Write(fileOut);
-            fileOut.Close();
+                FileStream fileOut = file.OpenWrite();
+                wb.Write(fileOut);
+                fileOut.Close();
+            }
+            finally
+            {
+                wb.Close();
+            }
 
-            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(fileName);
-            Assert.IsTrue(wb2.PivotTables.Count == 1);
+            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(file);
+            try
+            {
+                Assert.IsTrue(wb2.PivotTables.Count == 1);
+            }
+            finally
+            {
+                wb2.Close();
+            }
+            file.Delete();
+            file.Refresh();
+            Assert.IsFalse(file.Exists);
         }
 
         [Test]
         public void AddPivotTableToWorkbookWithLoadedPivotTable()
         {
-            String fileName = "ooxml-pivottable.xlsx";
+            FileInfo file = TempFile.CreateTempFile("ooxml-pivottable", ".xlsx");
 
             XSSFWorkbook wb = new XSSFWorkbook();
-            SetPivotData(wb);
+            try
+            {
+                SetPivotData(wb);
 
-            FileStream fileOut = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite);
-            wb.Write(fileOut);
-            fileOut.Close();
+                FileStream fileOut = file.OpenWrite();
+                try
+                {
+                    wb.Write(fileOut);
+                }
+                finally
+                {
+                    fileOut.Close();
+                }
+            }
+            finally
+            {
+                wb.Close();
+            }
+            
+            
 
-            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(fileName);
-            SetPivotData(wb2);
-            Assert.IsTrue(wb2.PivotTables.Count == 2);
+            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(file);
+            try
+            {
+                Assert.IsTrue(wb2.PivotTables.Count == 2);
+                SetPivotData(wb2);
+            }
+            finally
+            {
+                wb2.Close();
+            }
+
+            file.Delete();
+            file.Refresh();
+            Assert.IsFalse(file.Exists);
         }
 
         [Test]
