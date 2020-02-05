@@ -44,7 +44,6 @@ namespace TestCases.POIFS.Crypt
 
         [SetUp]
         public static void InitBouncy() {
-            throw new NotImplementedException();
             //CryptoFunctions.RegisterBouncyCastle();
 
             ///*** TODO : Set cal to now ... only Set to fixed date for debugging ... */
@@ -62,6 +61,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void office2007prettyPrintedRels() {
             OPCPackage pkg = OPCPackage.Open(testdata.GetFileInfo("office2007prettyPrintedRels.docx"), PackageAccess.READ);
             try {
@@ -77,6 +77,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void GetSignerUnsigned() {
             String[] testFiles = {
                 "hello-world-unsigned.docx",
@@ -105,6 +106,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void GetSigner() {
             String[] testFiles = {
                 "hyperlink-example-signed.docx",
@@ -148,6 +150,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void GetMultiSigners() {
             String testFile = "hello-world-signed-twice.docx";
             OPCPackage pkg = OPCPackage.Open(testdata.GetFileInfo(testFile), PackageAccess.READ);
@@ -180,6 +183,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestSignSpreadsheet()
         {
             String testFile = "hello-world-unsigned.xlsx";
@@ -189,6 +193,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestManipulation() {
             //// sign & validate
             //String testFile = "hello-world-unsigned.xlsx";
@@ -219,6 +224,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestSignSpreadsheetWithSignatureInfo() {
             //InitKeyPair("Test", "CN=Test");
             //String testFile = "hello-world-unsigned.xlsx";
@@ -243,8 +249,9 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestSignEnvelopingDocument() {
-            String testFile = "hello-world-unsigned.xlsx";
+            //String testFile = "hello-world-unsigned.xlsx";
             //OPCPackage pkg = OPCPackage.Open(copy(testdata.GetFile(testFile)), PackageAccess.READ_WRITE);
 
             //InitKeyPair("Test", "CN=Test");
@@ -431,6 +438,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestCertChain() {
             //KeyStore keystore = KeyStore.GetInstance("PKCS12");
             //String password = "test";
@@ -477,6 +485,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestNonSha1() {
             String testFile = "hello-world-unsigned.xlsx";
             InitKeyPair("Test", "CN=Test");

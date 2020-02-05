@@ -127,6 +127,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void TestCertificateEncryption1() {
             POIFSFileSystem fs = new POIFSFileSystem();
             EncryptionInfo info = new EncryptionInfo(EncryptionMode.Agile, CipherAlgorithm.aes128, HashAlgorithm.sha1, -1, -1, ChainingMode.cbc);
