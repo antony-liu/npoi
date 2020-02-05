@@ -2708,6 +2708,7 @@ namespace TestCases.XSSF.UserModel
          *  long time test, run over 1 minute.
          */
         [Test, RunSerialyAndSweepTmpFiles]
+        [Ignore("Implement this test in future, need ZipSecureFile")]
         public void Bug57880()
         {
             Console.WriteLine("long time test, run over 1 minute.");
