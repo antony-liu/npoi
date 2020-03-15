@@ -661,39 +661,39 @@ namespace NPOI.SS.Util
         }
 
         /**
-         * Utility method that returns the named FillPatternType value from the given map.
+         * Utility method that returns the named FillPattern value from the given map.
          *
          * @param properties map of named properties (String -> Object)
          * @param name property name
-         * @return FillPatternType style if set, otherwise {@link FillPatternType#NO_FILL}
+         * @return FillPattern style if set, otherwise {@link FillPattern#NO_FILL}
          * @since POI 3.15 beta 3
          */
-        private static FillPatternType GetFillPattern(Dictionary<String, Object> properties, String name)
+        private static FillPattern GetFillPattern(Dictionary<String, Object> properties, String name)
         {
             Object value = properties[name];
-            FillPatternType pattern;
-            if (value is FillPatternType)
+            FillPattern pattern;
+            if (value is FillPattern)
             {
-                pattern = (FillPatternType)value;
+                pattern = (FillPattern)value;
             }
-            // @deprecated 3.15 beta 2. getFillPattern will only work on FillPatternType enums instead of codes in the future.
+            // @deprecated 3.15 beta 2. getFillPattern will only work on FillPattern enums instead of codes in the future.
             else if (value is short)
             {
                 //if (log.check(POILogger.WARN))
                 //{
                 //    log.log(POILogger.WARN, "Deprecation warning: CellUtil properties map uses Short values for "
-                //            + name + ". Should use FillPatternType enums instead.");
+                //            + name + ". Should use FillPattern enums instead.");
                 //}
                 short code = (short)value;
-                pattern = (FillPatternType)code;
+                pattern = (FillPattern)code;
             }
             else if (value == null)
             {
-                pattern = FillPatternType.NoFill;
+                pattern = FillPattern.NoFill;
             }
             else
             {
-                throw new RuntimeException("Unexpected fill pattern style class. Must be FillPatternType or Short (deprecated).");
+                throw new RuntimeException("Unexpected fill pattern style class. Must be FillPattern or Short (deprecated).");
             }
             return pattern;
         }
