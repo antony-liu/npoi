@@ -2658,6 +2658,7 @@ namespace TestCases.HSSF.UserModel
          *  the bit excel cares about
          */
         [Test]
+        [Ignore("Implement this test in future, based on crypt functions")]
         public void Test50833()
         {
             HSSFWorkbook wb = OpenSample("50833.xls");
@@ -2775,6 +2776,7 @@ namespace TestCases.HSSF.UserModel
          *  some may squeeze a WRITEPROTECT in the middle
          */
         [Test]
+        [Ignore("Implement this test in future, based on crypt functions")]
         public void Test51832()
         {
             try
@@ -2962,6 +2964,7 @@ namespace TestCases.HSSF.UserModel
             Assert.AreEqual(rstyle.BorderBottom, BorderStyle.Double);
         }
         [Test]
+        [Ignore("Implement this test in future, based on crypt functions")]
         public void Bug35897()
         {
             // password is abc

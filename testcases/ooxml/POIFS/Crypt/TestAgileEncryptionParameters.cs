@@ -60,6 +60,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("need multiple test cases with 60 combinations of parameters(ca 6,ha 5,cm 2)  values")]
         public void TestAgileEncryptionModes() {
             int maxKeyLen = Cipher.GetMaxAllowedKeyLength(ca.jceId);
             Assume.That(maxKeyLen >= ca.defaultKeySize, "Please install JCE Unlimited Strength Jurisdiction Policy files");

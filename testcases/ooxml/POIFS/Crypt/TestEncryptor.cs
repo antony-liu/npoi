@@ -32,6 +32,7 @@ namespace TestCases.POIFS.Crypt
     public class TestEncryptor
     {
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void BinaryRC4Encryption()
         {
             // please contribute a real sample file, which is binary rc4 encrypted
@@ -166,6 +167,7 @@ namespace TestCases.POIFS.Crypt
         }
 
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void StandardEncryption()
         {
             FileStream file = POIDataSamples.GetDocumentInstance().GetFile("bug53475-password-is-solrcell.docx");
@@ -263,6 +265,7 @@ namespace TestCases.POIFS.Crypt
          * http://stackoverflow.com/questions/28593223
          */
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void EncryptPackageWithoutCoreProperties()
         {
             // Open our file without core properties

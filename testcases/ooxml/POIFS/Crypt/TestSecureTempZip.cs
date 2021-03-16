@@ -38,6 +38,7 @@ namespace TestCases.POIFS.Crypt
          * which are streamed into POI opposed to having everything in memory
          */
         [Test]
+        [Ignore("Implement this test in future, maybe based on poi 4.2")]
         public void ProtectedTempZip()
         {
             FileInfo tmpFile = TempFile.CreateTempFile("protectedXlsx", ".zip");
