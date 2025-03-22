@@ -278,6 +278,7 @@ namespace TestCases.XSSF.UserModel
             Stream output = File.OpenWrite(file.FullName);
             wb.Write(output);
             output.Close();
+            wb.Close();
 
             XSSFWorkbook wbLoaded = new XSSFWorkbook(file.ToString());
             XSSFSheet sheetLoaded = (XSSFSheet)wbLoaded.GetSheet("sheet1");

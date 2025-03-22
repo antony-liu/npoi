@@ -34,8 +34,8 @@ namespace TestCases.OpenXml4Net
             int dotPos = outputFileName.LastIndexOf('.');
             String suffix = outputFileName.Substring(dotPos);
             string path= TempFile.GetTempFilePath(outputFileName.Substring(0,dotPos), suffix);
-            FileStream fs = File.Create(path);
-            fs.Close();
+            using(FileStream fs = File.Create(path)){}
+            //fs.Close();
             return new FileInfo(path);
         }
 
