@@ -6626,5 +6626,14 @@ lblforbreak:
                 RemoveRelation(part.DocumentPart, true);
             }
         }
+
+        public XSSFHeaderFooterProperties HeaderFooterProperties
+        {
+            get
+            {
+                return new XSSFHeaderFooterProperties(GetSheetTypeHeaderFooter());
+            }
+            
+        }
     }
 }
