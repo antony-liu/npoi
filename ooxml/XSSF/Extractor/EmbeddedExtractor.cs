@@ -202,7 +202,7 @@ namespace NPOI.SS.Extractor
             public override bool CanExtract(DirectoryNode dn)
             {
                 ClassID clsId = dn.StorageClsid;
-                return ClassID.OLE10_PACKAGE.Equals(clsId);
+                return ClassIDPredefined.Lookup(clsId) == ClassIDPredefined.OLE_V1_PACKAGE;
             }
             public override EmbeddedData Extract(DirectoryNode dn)
             {
@@ -299,50 +299,21 @@ namespace NPOI.SS.Extractor
             }
             public override EmbeddedData Extract(DirectoryNode dn)
             {
+                ClassIDPredefined clsId = ClassIDPredefined.Lookup(dn.StorageClsid);
 
+                String contentType = null;
+                String ext = null;
 
-                ClassID clsId = dn.StorageClsid;
+                if(clsId != null)
+                {
+                    contentType = clsId.ContentType;
+                    ext = clsId.FileExtension;
+                }
 
-                String contentType, ext;
-                if (ClassID.WORD2007.Equals(clsId))
+                if(contentType == null || ext == null)
                 {
-                    ext = ".docx";
-                    contentType = "application/vnd.Openxmlformats-officedocument.wordProcessingml.document";
-                }
-                else if (ClassID.WORD2007_MACRO.Equals(clsId))
-                {
-                    ext = ".docm";
-                    contentType = "application/vnd.ms-word.document.macroEnabled.12";
-                }
-                else if (ClassID.EXCEL2007.Equals(clsId) || ClassID.EXCEL2003.Equals(clsId) || ClassID.EXCEL2010.Equals(clsId))
-                {
-                    ext = ".xlsx";
-                    contentType = "application/vnd.Openxmlformats-officedocument.spreadsheetml.sheet";
-                }
-                else if (ClassID.EXCEL2007_MACRO.Equals(clsId))
-                {
-                    ext = ".xlsm";
-                    contentType = "application/vnd.ms-excel.sheet.macroEnabled.12";
-                }
-                else if (ClassID.EXCEL2007_XLSB.Equals(clsId))
-                {
-                    ext = ".xlsb";
-                    contentType = "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
-                }
-                else if (ClassID.POWERPOINT2007.Equals(clsId))
-                {
-                    ext = ".pptx";
-                    contentType = "application/vnd.Openxmlformats-officedocument.presentationml.presentation";
-                }
-                else if (ClassID.POWERPOINT2007_MACRO.Equals(clsId))
-                {
-                    ext = ".ppsm";
-                    contentType = "application/vnd.ms-powerpoint.slideShow.macroEnabled.12";
-                }
-                else
-                {
-                    ext = ".zip";
                     contentType = "application/zip";
+                    ext = ".zip";
                 }
 
                 DocumentInputStream dis = dn.CreateDocumentInputStream("package");
@@ -362,17 +333,17 @@ namespace NPOI.SS.Extractor
 
             protected static bool CanExtractExcel(DirectoryNode dn)
             {
-                ClassID clsId = dn.StorageClsid;
-                return (ClassID.EXCEL95.Equals(clsId)
-                    || ClassID.EXCEL97.Equals(clsId)
+                ClassIDPredefined clsId = ClassIDPredefined.Lookup(dn.StorageClsid);
+                return (ClassIDPredefined.EXCEL_V7.Equals(clsId)
+                    || ClassIDPredefined.EXCEL_V8.Equals(clsId)
                     || dn.HasEntry("Workbook") /*...*/);
             }
 
             protected static bool CanExtractWord(DirectoryNode dn)
             {
-                ClassID clsId = dn.StorageClsid;
-                return (ClassID.WORD95.Equals(clsId)
-                    || ClassID.WORD97.Equals(clsId)
+                ClassIDPredefined clsId = ClassIDPredefined.Lookup(dn.StorageClsid);
+                return (ClassIDPredefined.WORD_V7.Equals(clsId)
+                    || ClassIDPredefined.WORD_V8.Equals(clsId)
                     || dn.HasEntry("WordDocument"));
             }
             public override EmbeddedData Extract(DirectoryNode dn)
