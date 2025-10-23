@@ -37,7 +37,7 @@ using NPOI.OpenXml4Net.Exceptions;
 using NPOI.SS;
 using System.Linq;
 using NPOI.POIFS.FileSystem;
-using System.Data;
+using NPOI.HPSF;
 
 namespace NPOI.XSSF.UserModel
 {
@@ -2615,7 +2615,7 @@ namespace NPOI.XSSF.UserModel
             POIFSFileSystem poifs = new POIFSFileSystem();
             DirectoryNode root = poifs.Root;
             root.CreateDocument(Ole10Native.OLE10_NATIVE, new ByteArrayInputStream(bos.ToByteArray()));
-            root.StorageClsid = (HPSF.ClassID.OLE10_PACKAGE);
+            root.StorageClsid = ClassIDPredefined.OLE_V1_PACKAGE.GetClassID();
 
             // TODO: generate CombObj stream
 
