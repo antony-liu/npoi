@@ -2729,7 +2729,7 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
             this.caField = false;
             this.bxField = false;
         }
-        public bool isSetRef()
+        public bool IsSetRef()
         {
             return this.refField != null;
         }
@@ -2752,6 +2752,7 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
             obj.valueField = this.valueField;
             return obj;
         }
+
         [XmlAttribute]
         [DefaultValue(ST_CellFormulaType.normal)]
         public ST_CellFormulaType t

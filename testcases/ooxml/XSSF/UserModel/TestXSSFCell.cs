@@ -750,6 +750,58 @@ namespace TestCases.XSSF.UserModel
                 wb.Close();
             }
         }
+
+        [Test]
+        public void TestBug58106RemoveSharedFormula()
+        {
+            XSSFWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("58106.xlsx");
+            try
+            {
+                XSSFSheet sheet = wb.GetSheetAt(0) as XSSFSheet;
+                XSSFRow row = sheet.GetRow(12) as XSSFRow;
+                XSSFCell cell = row.GetCell(1) as XSSFCell;
+                CT_CellFormula f = cell.GetCTCell().f;
+                ClassicAssert.AreEqual("B13:G13", f.@ref);
+                ClassicAssert.AreEqual("SUM(B1:B3)", f.Value);
+                ClassicAssert.AreEqual(0, f.si);
+                ClassicAssert.AreEqual(ST_CellFormulaType.shared, f.t);
+                for(char i = 'C'; i <= 'G'; i++)
+                {
+                    XSSFCell sc =row.GetCell(i-'A') as XSSFCell;
+                    CT_CellFormula sf = sc.GetCTCell().f;
+
+                    ClassicAssert.IsFalse(sf.IsSetRef());
+                    ClassicAssert.AreEqual("", sf.Value);
+                    ClassicAssert.AreEqual(0, sf.si);
+                    ClassicAssert.AreEqual(ST_CellFormulaType.shared, sf.t);
+                }
+                ClassicAssert.AreEqual("B13:G13", sheet.GetSharedFormula(0).@ref);
+
+                cell.SetCellType(CellType.Numeric);
+
+                ClassicAssert.IsFalse(cell.GetCTCell().IsSetF());
+
+                XSSFCell nextFormulaMaster = row.GetCell(2) as XSSFCell;
+                ClassicAssert.AreEqual("C13:G13", nextFormulaMaster.GetCTCell().f.@ref);
+                ClassicAssert.AreEqual("SUM(C1:C3)", nextFormulaMaster.GetCTCell().f.Value);
+                ClassicAssert.AreEqual(0, nextFormulaMaster.GetCTCell().f.si);
+                for(char i = 'D'; i <= 'G'; i++)
+                {
+                    XSSFCell sc =row.GetCell(i-'A') as XSSFCell;
+                    CT_CellFormula sf = sc.GetCTCell().f;
+                    ClassicAssert.IsFalse(sf.IsSetRef());
+                    ClassicAssert.AreEqual("", sf.Value);
+                    ClassicAssert.AreEqual(0, sf.si);
+                    ClassicAssert.AreEqual(ST_CellFormulaType.shared, sf.t);
+                }
+                ClassicAssert.AreEqual("C13:G13", sheet.GetSharedFormula(0).@ref);
+
+            }
+            catch (Exception) 
+            {
+                wb.Close();
+            }
+        }
     }
 
 }
