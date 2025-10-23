@@ -947,6 +947,10 @@ namespace NPOI.XSSF.UserModel
             }
             if (prevType == CellType.Formula && cellType != CellType.Formula)
             {
+                if(_cell.IsSetF())
+                {
+                    (_row.Sheet as XSSFSheet).OnDeleteFormula(this, null);
+                }
                 ((XSSFWorkbook)Sheet.Workbook).OnDeleteFormula(this);
             }
 

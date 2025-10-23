@@ -111,7 +111,7 @@ namespace NPOI.OOXML.XSSF.UserModel.Helpers
 
         private static void UpdateRefInCTCellFormula(IRow row, FormulaShifter Shifter, CT_CellFormula f)
         {
-            if (f.isSetRef())
+            if (f.IsSetRef())
             {
                 string ref1 = f.@ref;
                 string shiftedRef = ShiftFormula(row, ref1, Shifter);
@@ -190,7 +190,7 @@ namespace NPOI.OOXML.XSSF.UserModel.Helpers
                         }
                     }
 
-                    if (f.isSetRef())
+                    if (f.IsSetRef())
                     {
                         //Range of cells which the formula applies to.
                         string ref1 = f.@ref;

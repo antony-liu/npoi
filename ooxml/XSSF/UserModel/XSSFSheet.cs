@@ -1451,7 +1451,7 @@ namespace NPOI.XSSF.UserModel
             CT_Cell ct = cell.GetCTCell();
             CT_CellFormula f = ct.f;
             if(f != null && f.t == ST_CellFormulaType.shared
-                         && f.isSetRef() && f.Value != null)
+                         && f.IsSetRef() && f.Value != null)
             {
                 // save a detached  copy to avoid XmlValueDisconnectedException,
                 // this may happen when the master cell of a shared formula
@@ -1654,7 +1654,7 @@ namespace NPOI.XSSF.UserModel
             CT_CellFormula f = cell.GetCTCell().f;
             if(f != null
                && f.t == ST_CellFormulaType.shared
-               && f.isSetRef()
+               && f.IsSetRef()
                && f.Value != null)
             {
                 bool breakit = false;
