@@ -2027,10 +2027,10 @@ namespace NPOI.HSSF.UserModel
         protected static Dictionary<String, ClassID> GetOleMap()
         {
             Dictionary<String, ClassID> olemap = new Dictionary<String, ClassID>();
-            olemap.Add("PowerPoint Document", ClassID.PPT_SHOW);
+            olemap.Add("PowerPoint Document", ClassIDPredefined.POWERPOINT_V8.GetClassID());
             foreach (String str in InternalWorkbook.WORKBOOK_DIR_ENTRY_NAMES)
             {
-                olemap.Add(str, ClassID.XLS_WORKBOOK);
+                olemap.Add(str, ClassIDPredefined.EXCEL_V7_WORKBOOK.GetClassID());
             }
             // ... to be continued
             return olemap;
@@ -2082,15 +2082,11 @@ namespace NPOI.HSSF.UserModel
                 if (!Directory.HasEntry(storageStr))
                 {
                     oleDir = Directory.CreateDirectory(storageStr);
-                    oleDir.StorageClsid = (/*setter*/ClassID.OLE10_PACKAGE);
+                    oleDir.StorageClsid = ClassIDPredefined.OLE_V1_PACKAGE.GetClassID();
                 }
             } while (oleDir == null);
 
-            // the following data was taken from an example libre office document
-            // beside this "\u0001Ole" record there were several other records, e.g. CompObj,
-            // OlePresXXX, but it seems, that they aren't neccessary
-            byte[] oleBytes = { 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            oleDir.CreateDocument("\u0001Ole", new MemoryStream(oleBytes));
+            Ole10Native.CreateOleMarkerEntry(oleDir);
 
             Ole10Native oleNative = new Ole10Native(label, fileName, command, oleData);
             using (MemoryStream bos = RecyclableMemory.GetStream())

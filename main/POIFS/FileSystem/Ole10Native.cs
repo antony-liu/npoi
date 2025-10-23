@@ -33,6 +33,15 @@ namespace NPOI.POIFS.FileSystem
     {
         public static String OLE10_NATIVE = "\x0001Ole10Native";
         protected static String ISO1 = "ISO-8859-1";
+        //arbitrarily selected; may need to increase
+        private static int MAX_RECORD_LENGTH = 100_000_000;
+
+        /**
+         * Default content of the \u0001Ole entry
+         */
+        private static byte[] OLE_MARKER_BYTES =
+        { 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        private static String OLE_MARKER_NAME = "\u0001Ole";
 
         // (the fields as they appear in the raw record:)
         private int totalSize;             // 4 bytes, total size of record not including this field
@@ -91,7 +100,8 @@ namespace NPOI.POIFS.FileSystem
         {
             DocumentEntry nativeEntry =
                (DocumentEntry)directory.GetEntry(OLE10_NATIVE);
-            byte[] data = new byte[nativeEntry.Size];
+            byte[] data = IOUtils.SafelyAllocate(nativeEntry.Size, MAX_RECORD_LENGTH);
+
             directory.CreateDocumentInputStream(nativeEntry).Read(data);
 
             return new Ole10Native(data, 0);
@@ -196,11 +206,33 @@ namespace NPOI.POIFS.FileSystem
             { //cast to avoid overflow
                 throw new Ole10NativeException("Invalid Ole10Native: declared data length > available data");
             }
-            dataBuffer = new byte[dataSize];
+            dataBuffer = IOUtils.SafelyAllocate(dataSize, MAX_RECORD_LENGTH);
             Array.Copy(data, ofs, dataBuffer, 0, dataSize);
             ofs += dataSize;
         }
 
+
+        /**
+         * Add the \1OLE marker entry, which is not the Ole10Native entry.
+         * Beside this "\u0001Ole" record there were several other records, e.g. CompObj,  
+         * OlePresXXX, but it seems, that they aren't necessary
+         */
+        public static void CreateOleMarkerEntry(DirectoryEntry parent)
+        {
+            if (!parent.HasEntry(OLE_MARKER_NAME)) {
+                parent.CreateDocument(OLE_MARKER_NAME, new ByteArrayInputStream(OLE_MARKER_BYTES));
+            }
+        }
+
+        /**
+         * Add the \1OLE marker entry, which is not the Ole10Native entry.
+         * Beside this "\u0001Ole" record there were several other records, e.g. CompObj,  
+         * OlePresXXX, but it seems, that they aren't necessary
+         */
+        public static void CreateOleMarkerEntry(POIFSFileSystem poifs)
+        { 
+            CreateOleMarkerEntry(poifs.Root);
+        }
         /*
          * Helper - determine length of zero terminated string (ASCIIZ).
          */
