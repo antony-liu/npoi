@@ -122,7 +122,7 @@ namespace TestCases.POIFS.FileSystem
                 it.MoveNext();
                 entry = it.Current;
                 ClassicAssert.AreEqual(true, entry.IsDocumentEntry);
-                ClassicAssert.AreEqual("\u0001Ole10Native", entry.Name);
+                ClassicAssert.AreEqual(Ole10Native.OLE10_NATIVE, entry.Name);
 
                 it.MoveNext();
                 entry = it.Current;
