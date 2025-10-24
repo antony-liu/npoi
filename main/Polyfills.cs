@@ -35,5 +35,16 @@ namespace NPOI
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal static bool Contains(this ReadOnlySpan<string> source, string c) => source.IndexOf(c) != -1;
 #endif
+        internal static string ReplaceFirst(this string text, string search, string replace)
+        {
+            if(string.IsNullOrEmpty(text) || string.IsNullOrEmpty(search))
+                return text;
+
+            int pos = text.IndexOf(search);
+            if(pos < 0)
+                return text;
+
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+        }
     }
 }

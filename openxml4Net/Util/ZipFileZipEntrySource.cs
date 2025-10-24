@@ -12,7 +12,7 @@ namespace NPOI.OpenXml4Net.Util
      * Should be as low in terms of memory as a
      *  normal ZipFile implementation is.
      */
-    public class ZipFileZipEntrySource : ZipEntrySource
+    public class ZipFileZipEntrySource : IZipEntrySource
     {
         private ZipFile zipArchive;
         public ZipFileZipEntrySource(ZipFile zipFile)
@@ -34,14 +34,17 @@ namespace NPOI.OpenXml4Net.Util
             get { return zipArchive == null; }
         }
 
-        public IEnumerator Entries
+        public IEnumerator<ZipEntry> Entries
         {
             get
             {
                 if (zipArchive == null)
                     throw new InvalidDataException("Zip File is closed");
-                return zipArchive.GetEnumerator();
-
+                var e = zipArchive.GetEnumerator();
+                while(e.MoveNext())
+                {
+                    yield return e.Current as ZipEntry;
+                }
             }
         }
 
