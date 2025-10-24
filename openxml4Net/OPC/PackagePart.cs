@@ -608,7 +608,7 @@ namespace NPOI.OpenXml4Net.OPC
          * @throws InvalidFormatException
          *             Throws if
          */
-        private void LoadRelationships()
+        internal void LoadRelationships()
         {
             if (this._relationships == null && !this.IsRelationshipPart)
             {

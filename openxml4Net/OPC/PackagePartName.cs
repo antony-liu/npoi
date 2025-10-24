@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -30,18 +32,17 @@ namespace NPOI.OpenXml4Net.OPC
         /**
          * Reserved characters for sub delimitations.
          */
-        private static String[] RFC3986_PCHAR_SUB_DELIMS = { "!", "$", "&", "'",
-            "(", ")", "*", "+", ",", ";", "=" };
+        private static String RFC3986_PCHAR_SUB_DELIMS = "!$&'()*+,;=";
 
         /**
          * Unreserved character (+ ALPHA & DIGIT).
          */
-        private static String[] RFC3986_PCHAR_UNRESERVED_SUP = { "-", ".", "_", "~" };
+        private static String RFC3986_PCHAR_UNRESERVED_SUP = "-._~";
 
         /**
          * Authorized reserved characters for pChar.
          */
-        private static String[] RFC3986_PCHAR_AUTHORIZED_SUP = { ":", "@" };
+        private static String RFC3986_PCHAR_AUTHORIZED_SUP = ":@";
 
         /**
          * Flag to know if this part name is from a relationship part name.
@@ -238,8 +239,10 @@ namespace NPOI.OpenXml4Net.OPC
             }
 
             // Split the URI into several part and analyze each
-            String[] segments = partUri.OriginalString.Split('/');
-            if (segments.Length <= 1 || !segments[0].Equals(""))
+            String[] segments = partUri.OriginalString
+                .ReplaceFirst("^"+PackagingUriHelper.FORWARD_SLASH_CHAR, "")
+                .Split([PackagingUriHelper.FORWARD_SLASH_STRING], StringSplitOptions.None);
+            if (segments.Length < 1)
                 throw new InvalidFormatException(
                         "A part name shall not have empty segments [M1.3]: "
                                 + partUri.OriginalString);
@@ -290,104 +293,64 @@ namespace NPOI.OpenXml4Net.OPC
          */
         private static void CheckPCharCompliance(String segment)
         {
-            bool errorFlag;
+
             int length = segment.Length;
             for (int i = 0; i < length; ++i)
             {
                 char c = segment[i];
-                errorFlag = true;
 
                 /* Check rule M1.6 */
 
-                // Check for digit or letter
-                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-                        || (c >= '0' && c <= '9'))
-                {
-                    errorFlag = false;
-                }
-                else
-                {
+                if(
+                    // Check for digit or letter
+                    IsDigitOrLetter(c) ||
                     // Check "-", ".", "_", "~"
-                    for (int j = 0; j < RFC3986_PCHAR_UNRESERVED_SUP.Length; ++j)
-                    {
-                        if (c == RFC3986_PCHAR_UNRESERVED_SUP[j][0])
-                        {
-                            errorFlag = false;
-                            break;
-                        }
-                    }
-
+                    RFC3986_PCHAR_UNRESERVED_SUP.IndexOf(c) > -1 ||
                     // Check ":", "@"
-                    for (int j = 0; errorFlag
-                            && j < RFC3986_PCHAR_AUTHORIZED_SUP.Length; ++j)
-                    {
-                        if (c == RFC3986_PCHAR_AUTHORIZED_SUP[j][0])
-                        {
-                            errorFlag = false;
-                        }
-                    }
-
+                    RFC3986_PCHAR_AUTHORIZED_SUP.IndexOf(c) > -1 ||
                     // Check "!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "="
-                    for (int j = 0; errorFlag
-                            && j < RFC3986_PCHAR_SUB_DELIMS.Length; ++j)
-                    {
-                        if (c == RFC3986_PCHAR_SUB_DELIMS[j][0])
-                        {
-                            errorFlag = false;
-                        }
-                    }
-                }
-
-                if (errorFlag && c == '%')
+                    RFC3986_PCHAR_SUB_DELIMS.IndexOf(c) > -1
+                )
                 {
-                    // We certainly found an encoded character, check for length
-                    // now ( '%' HEXDIGIT HEXDIGIT)
-                    if ((length - i) < 2)
-                    {
-                        throw new InvalidFormatException("The segment " + segment
-                                + " contain invalid encoded character !");
-                    }
-
-                    // If not percent encoded character error occur then reset the
-                    // flag -> the character is valid
-                    errorFlag = false;
-
-                    // Decode the encoded character
-                    char decodedChar = (char)Convert.ToInt32(segment.Substring(
-                            i + 1, 2), 16);
-                    i += 2;
-
-                    /* Check rule M1.7 */
-                    if (decodedChar == '/' || decodedChar == '\\')
-                        throw new InvalidFormatException(
-                                "A segment shall not contain percent-encoded forward slash ('/'), or backward slash ('\') characters. [M1.7]");
-
-                    /* Check rule M1.8 */
-
-                    // Check for unreserved character like define in RFC3986
-                    if ((decodedChar >= 'A' && decodedChar <= 'Z')
-                            || (decodedChar >= 'a' && decodedChar <= 'z')
-                            || (decodedChar >= '0' && decodedChar <= '9'))
-                        errorFlag = true;
-
-                    // Check for unreserved character "-", ".", "_", "~"
-                    for (int j = 0; !errorFlag
-                            && j < RFC3986_PCHAR_UNRESERVED_SUP.Length; ++j)
-                    {
-                        if (c == RFC3986_PCHAR_UNRESERVED_SUP[j][0])
-                        {
-                            errorFlag = true;
-                            break;
-                        }
-                    }
-                    if (errorFlag)
-                        throw new InvalidFormatException(
-                                "A segment shall not contain percent-encoded unreserved characters. [M1.8]");
+                    continue;
                 }
 
-                if (errorFlag)
+
+                if(c != '%')
+                {
                     throw new InvalidFormatException(
-                            "A segment shall not hold any characters other than pchar characters. [M1.6]");
+                        "A segment shall not hold any characters other than pchar characters. [M1.6]");
+                }
+
+                // We certainly found an encoded character, check for length
+                // now ( '%' HEXDIGIT HEXDIGIT)
+                if((length - i) < 2 || !IsHexDigit(segment[i+1]) || !IsHexDigit(segment[i+2]))
+                {
+                    throw new InvalidFormatException("The segment " + segment + " contain invalid encoded character !");
+                }
+
+                // Decode the encoded character
+                char decodedChar = (char) int.Parse(segment.Substring(i + 1, 2), NumberStyles.HexNumber);
+                i += 2;
+
+                /* Check rule M1.7 */
+                if(decodedChar == '/' || decodedChar == '\\')
+                {
+                    throw new InvalidFormatException(
+                        "A segment shall not contain percent-encoded forward slash ('/'), or backward slash ('\') characters. [M1.7]");
+                }
+
+                /* Check rule M1.8 */
+                if(
+                    // Check for unreserved character like define in RFC3986
+                    IsDigitOrLetter(decodedChar) ||
+                    // Check for unreserved character "-", ".", "_", "~"
+                    RFC3986_PCHAR_UNRESERVED_SUP.IndexOf(decodedChar) > -1
+                )
+                {
+                    throw new InvalidFormatException(
+                        "A segment shall not contain percent-encoded unreserved characters. [M1.8]");
+                }
             }
         }
 
@@ -492,7 +455,7 @@ namespace NPOI.OpenXml4Net.OPC
         {
             get
             {
-                return this.partNameURI.OriginalString;
+                return URI.OriginalString;
             }
         }
 
@@ -505,24 +468,14 @@ namespace NPOI.OpenXml4Net.OPC
 
         public override bool Equals(Object other)
         {
-            if (other is PackagePartName name)
-            {
-                // String.equals() is compatible with our compareTo(), but cheaper
-                return this.partNameURI.OriginalString.ToLower().Equals
-                (
-                    name.partNameURI.OriginalString.ToLower()
-                );
-            }
-            else
-            {
-                return false;
-            }
+            return (other is PackagePartName) &&
+                Compare(this.Name, ((PackagePartName) other).Name) == 0;
         }
 
 
         public override int GetHashCode()
         {
-            return this.partNameURI.OriginalString.ToLower().GetHashCode();
+            return this.Name.ToLower().GetHashCode();
         }
 
 
@@ -566,21 +519,9 @@ namespace NPOI.OpenXml4Net.OPC
         public static int Compare(PackagePartName obj1, PackagePartName obj2)
         {
             // NOTE could also throw a NullPointerException() if desired
-            if (obj1 == null)
-            {
-                // (null) == (null), (null) < (non-null)
-                return (obj2 == null ? 0 : -1);
-            }
-            else if (obj2 == null)
-            {
-                // (non-null) > (null)
-                return 1;
-            }
-
-            return Compare
-            (
-                obj1.URI.OriginalString.ToLower(),
-                obj2.URI.OriginalString.ToLower()
+            return Compare(
+               obj1?.Name,
+               obj2?.Name
             );
         }
 
@@ -607,44 +548,60 @@ namespace NPOI.OpenXml4Net.OPC
                 return 1;
             }
 
-            int len1 = str1.Length;
-            int len2 = str2.Length;
-            for (int idx1 = 0, idx2 = 0; idx1 < len1 && idx2 < len2; /*nil*/)
+            if(str1.Equals(str2, StringComparison.OrdinalIgnoreCase))
             {
-                char c1 = str1[(idx1++)];
-                char c2 = str2[(idx2++)];
+                return 0;
+            }
+            String name1 = str1.ToLower(CultureInfo.CurrentCulture);
+            String name2 = str2.ToLower(CultureInfo.CurrentCulture);
 
-                if (char.IsDigit(c1) && char.IsDigit(c2))
+            int len1 = name1.Length;
+            int len2 = name2.Length;
+            for(int idx1 = 0, idx2 = 0; idx1 < len1 && idx2 < len2; /*nil*/)
+            {
+                char c1 = name1[idx1++];
+                char c2 = name2[idx2++];
+
+                if(char.IsDigit(c1) && char.IsDigit(c2))
                 {
                     int beg1 = idx1 - 1;  // undo previous increment
-                    while (idx1 < len1 && char.IsDigit(str1[(idx1)]))
+                    while(idx1 < len1 && char.IsDigit(name1[idx1]))
                     {
-                        ++idx1;
+                        idx1++;
                     }
 
                     int beg2 = idx2 - 1;  // undo previous increment
-                    while (idx2 < len2 && char.IsDigit(str2[(idx2)]))
+                    while(idx2 < len2 && char.IsDigit(name2[idx2]))
                     {
-                        ++idx2;
+                        idx2++;
                     }
 
                     // note: BigInteger for extra safety
-                    //int cmp = new BigInteger(str1.Substring(beg1, idx1 - beg1)).CompareTo
-                    //(
-                    //    new BigInteger(str2.Substring(beg2, idx2 - beg2))
-                    //);
-                    int cmp = decimal.Parse(str1.Substring(beg1, idx1 - beg1)).CompareTo(
-                        decimal.Parse(str2.Substring(beg2, idx2 - beg2))
-                        );
-                    if (cmp != 0) return cmp;
+                    BigInteger b1 = new BigInteger(name1.Substring(beg1, idx1-beg1));
+                    BigInteger b2 = new BigInteger(name2.Substring(beg2, idx2-beg2));
+                    int cmp = b1.CompareTo(b2);
+                    if(cmp != 0)
+                    {
+                        return cmp;
+                    }
                 }
-                else if (c1 != c2)
+                else if(c1 != c2)
                 {
                     return (c1 - c2);
                 }
             }
 
             return (len1 - len2);
+        }
+
+        private static bool IsDigitOrLetter(char c)
+        {
+            return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        }
+
+        private static bool IsHexDigit(char c)
+        {
+            return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
         }
     }
 }

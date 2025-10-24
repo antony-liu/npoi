@@ -58,7 +58,7 @@ namespace NPOI.XSSF.Model
         /**
          *  Array of individual string items in the Shared String table.
          */
-        private readonly List<CT_Rst> strings = new List<CT_Rst>();
+        private readonly List<CT_Rst> ctStrings = new List<CT_Rst>();
 
         /**
          *  Maps strings and their indexes in the <code>strings</code> arrays.
@@ -536,6 +536,17 @@ namespace NPOI.XSSF.Model
         }
 
         /**
+         * Return a string item by index
+         *
+         * @param idx index of item to return.
+         * @return the item at the specified position in this Shared String table.
+         */
+        public IRichTextString GetItemAt(int idx)
+        {
+            return new XSSFRichTextString(ctStrings[idx]);
+        }
+
+        /**
          * Return an integer representing the total count of strings in the workbook. This count does not
          * include any numbers, it counts only the total of text strings in the workbook.
          *
@@ -593,9 +604,9 @@ namespace NPOI.XSSF.Model
             CT_Rst newSt = new CT_Rst();
             _sstDoc.GetSst().si.Add(newSt);
             newSt.Set(st);
-            int idx = strings.Count;
+            int idx = ctStrings.Count;
             stmap[s] = idx;
-            strings.Add(newSt);
+            ctStrings.Add(newSt);
             _dirty = true;
             return idx;
         }
@@ -617,6 +628,25 @@ namespace NPOI.XSSF.Model
         /**
          * Write this table out as XML.
          *
+         * @return list of shared string instances
+         */
+        public IList<IRichTextString> SharedStringItems
+        {
+            get
+            {
+                List<IRichTextString> items = new List<IRichTextString>();
+                foreach(CT_Rst rst in ctStrings)
+                {
+                    items.Add(new XSSFRichTextString(rst));
+                }
+                return items.AsReadOnly();
+            }
+        }
+
+        /**
+         * 
+         * this table out as XML.
+         * 
          * @param out The stream to write to.
          * @throws IOException if an error occurs while writing.
          */

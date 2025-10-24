@@ -15,7 +15,7 @@ namespace NPOI.OpenXml4Net.Util
      * Be sure to call {@link #close()} as soon as you're
      *  done, to free up that memory!
      */
-    public class ZipInputStreamZipEntrySource : ZipEntrySource
+    public class ZipInputStreamZipEntrySource : IZipEntrySource
     {
         private List<FakeZipEntry> zipEntries;
 
@@ -50,7 +50,7 @@ namespace NPOI.OpenXml4Net.Util
             inp.Close();
         }
 
-        public IEnumerator Entries
+        public IEnumerator<ZipEntry> Entries
         {
             get
             {
@@ -78,7 +78,7 @@ namespace NPOI.OpenXml4Net.Util
          * Why oh why oh why are Iterator and Enumeration
          *  still not compatible?
          */
-        internal sealed class EntryEnumerator : IEnumerator
+        internal sealed class EntryEnumerator : IEnumerator<ZipEntry>
         {
             private List<FakeZipEntry>.Enumerator iterator;
 
@@ -92,18 +92,26 @@ namespace NPOI.OpenXml4Net.Util
                 return iterator.MoveNext();
             }
 
-            public object Current
+            public ZipEntry Current
             {
                 get
                 {
-                    return iterator.Current;
+                    return iterator.Current as ZipEntry;
                 }
             }
+
+            object IEnumerator.Current => Current;
+
 
             #region IEnumerator Members
 
 
             public void Reset()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Dispose()
             {
                 throw new NotImplementedException();
             }
