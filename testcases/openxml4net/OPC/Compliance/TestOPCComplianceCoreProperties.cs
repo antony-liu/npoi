@@ -134,7 +134,18 @@ namespace TestCases.OpenXml4Net.OPC.Compliance
         {
             Stream is1 = OpenXml4NetTestDataSamples.OpenComplianceSampleStream("OPCCompliance_CoreProperties_OnlyOneCorePropertiesPart.docx");
             OPCPackage pkg;
-            pkg = OPCPackage.Open(is1);
+            try
+            {
+                pkg = OPCPackage.Open(is1);
+            }
+            catch(InvalidFormatException e)
+            {
+                throw new RuntimeException(e);
+            }
+            catch(IOException e)
+            {
+                throw new RuntimeException(e);
+            }
 
             Uri partUri = CreateURI("/docProps/core2.xml");
             try

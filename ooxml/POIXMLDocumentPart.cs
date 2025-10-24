@@ -680,7 +680,7 @@ namespace NPOI
          * @return the Created child POIXMLDocumentPart
          */
 
-        protected RelationPart CreateRelationship(POIXMLRelation descriptor, POIXMLFactory factory, int idx, bool noRelation)
+        public RelationPart CreateRelationship(POIXMLRelation descriptor, POIXMLFactory factory, int idx, bool noRelation)
         {
             try
             {

@@ -28,6 +28,7 @@ namespace TestCases.POIFS.Crypt
     using Org.BouncyCastle.Security;
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
 
     [TestFixture]
@@ -61,7 +62,7 @@ namespace TestCases.POIFS.Crypt
             is1.Close();
 
             // provide ZipEntrySource to poi which decrypts on the fly
-            ZipEntrySource source = fileToSource(tmpFile, CipherAlgorithm.aes128, keyBytes, ivBytes);
+            IZipEntrySource source = fileToSource(tmpFile, CipherAlgorithm.aes128, keyBytes, ivBytes);
 
             // test the source
             OPCPackage opc = OPCPackage.Open(source);
@@ -126,7 +127,7 @@ namespace TestCases.POIFS.Crypt
             throw new NotImplementedException();
         }
 
-        private ZipEntrySource fileToSource(FileInfo tmpFile, CipherAlgorithm cipherAlgorithm, byte[] keyBytes, byte[] ivBytes)
+        private IZipEntrySource fileToSource(FileInfo tmpFile, CipherAlgorithm cipherAlgorithm, byte[] keyBytes, byte[] ivBytes)
         {
             SecretKeySpec skeySpec = new SecretKeySpec(keyBytes, cipherAlgorithm.jceId);
             Cipher ciDec = CryptoFunctions.GetCipher(skeySpec, cipherAlgorithm, ChainingMode.cbc, ivBytes, Cipher.DECRYPT_MODE, "PKCS5PAdding");
@@ -134,7 +135,7 @@ namespace TestCases.POIFS.Crypt
             return new AesZipFileZipEntrySource(zf, ciDec);
         }
 
-        class AesZipFileZipEntrySource : ZipEntrySource
+        class AesZipFileZipEntrySource : IZipEntrySource
         {
             ZipFile zipFile;
             Cipher ci;
@@ -151,11 +152,15 @@ namespace TestCases.POIFS.Crypt
              * Note: the file sizes are rounded up to the next cipher block size,
              * so don't rely on file sizes of these custom encrypted zip file entries!
              */
-            public IEnumerator Entries
+            public IEnumerator<ZipEntry> Entries
             {
                 get
                 {
-                    return zipFile.GetEnumerator();
+                    var e = zipFile.GetEnumerator();
+                    while (e.MoveNext())
+                    {
+                        yield return e.Current as ZipEntry;
+                    }
                 }
 
             }

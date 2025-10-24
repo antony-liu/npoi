@@ -509,7 +509,7 @@ namespace TestCases.XSSF.UserModel
          * The OPC spec tolerates both of these peculiarities, so does POI
          */
         [Test]
-        public void Test49609()
+        public void Bug49609()
         {
             XSSFWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("49609.xlsx");
             ClassicAssert.AreEqual("FAM", wb.GetSheetName(0));

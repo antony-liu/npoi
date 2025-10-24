@@ -61,7 +61,7 @@ namespace NPOI.XSSF.Model
         /**
          *  Array of individual string items in the Shared String table.
          */
-        private readonly List<CT_Rst> strings = new List<CT_Rst>();
+        private readonly List<CT_Rst> ctStrings = new List<CT_Rst>();
 
         /**
          *  Maps strings and their indexes in the <code>strings</code> arrays
@@ -119,7 +119,7 @@ namespace NPOI.XSSF.Model
                     string key = GetKey(st);
                     if (key != null && !stmap.ContainsKey(key))
                         stmap.Add(key, cnt);
-                    strings.Add(st);
+                    ctStrings.Add(st);
                     cnt++;
                 }
             }
@@ -144,7 +144,7 @@ namespace NPOI.XSSF.Model
         [Removal( Version = "4.2")]
         public CT_Rst GetEntryAt(int idx)
         {
-            return strings[idx];
+            return ctStrings[idx];
         }
 
         /**
@@ -153,9 +153,9 @@ namespace NPOI.XSSF.Model
          * @param idx index of item to return.
          * @return the item at the specified position in this Shared String table.
          */
-        public IRichTextString getItemAt(int idx)
+        public IRichTextString GetItemAt(int idx)
         {
-            return new XSSFRichTextString(strings[idx]);
+            return new XSSFRichTextString(ctStrings[idx]);
         }
 
         /**
@@ -214,9 +214,9 @@ namespace NPOI.XSSF.Model
             CT_Rst newSt = new CT_Rst();
             _sstDoc.GetSst().si.Add(newSt);
             newSt.Set(st);
-            int idx = strings.Count;
+            int idx = ctStrings.Count;
             stmap[s] = idx;
-            strings.Add(newSt);
+            ctStrings.Add(newSt);
             return idx;
         }
 
@@ -251,7 +251,7 @@ namespace NPOI.XSSF.Model
         {
             get
             {
-                return strings.AsReadOnly();
+                return ctStrings.AsReadOnly();
             }
         }
 
@@ -265,7 +265,7 @@ namespace NPOI.XSSF.Model
             get
             {
                 List<IRichTextString> items = new List<IRichTextString>();
-                foreach(CT_Rst rst in strings)
+                foreach(CT_Rst rst in ctStrings)
                 {
                     items.Add(new XSSFRichTextString(rst));
                 }

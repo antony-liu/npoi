@@ -173,7 +173,7 @@ namespace NPOI.OpenXml4Net.OPC
          * @return A Package object
          * @ if a parsing error occur.
          */
-        public static OPCPackage Open(ZipEntrySource zipEntry)
+        public static OPCPackage Open(IZipEntrySource zipEntry)
         {
             OPCPackage pack = new ZipPackage(zipEntry, PackageAccess.READ);
             try
@@ -616,14 +616,18 @@ namespace NPOI.OpenXml4Net.OPC
             return this.packageProperties;
         }
 
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public bool PartExists(Uri uri)
         {
             if (uri.IsAbsoluteUri)
                 return false;
 
-            PackagePart pp = GetPartImpl(new PackagePartName(uri.OriginalString, true));
+            PackagePart pp = partList.Get(new PackagePartName(uri.OriginalString, true));
             return pp != null;
         }
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public PackagePart GetPart(Uri uri)
         {
             ThrowExceptionIfWriteOnly();
@@ -643,7 +647,7 @@ namespace NPOI.OpenXml4Net.OPC
                     return null;
                 }
             }
-            return GetPartImpl(partName);
+            return partList.Get(partName);
         }
         /**
          * Retrieve a part identified by its name.
@@ -671,7 +675,7 @@ namespace NPOI.OpenXml4Net.OPC
                     return null;
                 }
             }
-            return GetPartImpl(partName);
+            return partList.Get(partName);
         }
 
         /**
@@ -791,95 +795,70 @@ namespace NPOI.OpenXml4Net.OPC
             ThrowExceptionIfWriteOnly();
 
             // If the part list is null, we parse the package to retrieve all parts.
-            if (partList == null)
+            if(partList == null)
             {
                 /* Variables use to validate OPC Compliance */
 
                 // Check rule M4.1 -> A format consumer shall consider more than
                 // one core properties relationship for a package to be an error
-                // (We just log it and move on, as real files break this!)
+                // (We just log it and Move on, as real files break this!)
                 bool hasCorePropertiesPart = false;
                 bool needCorePropertiesPart = true;
 
-                PackagePart[] parts = this.GetPartsImpl();
-                this.partList = new PackagePartCollection();
-                foreach (PackagePart part in parts)
+                partList = GetPartsImpl();
+                foreach(PackagePart part in partList.SortedValues)
                 {
-                    bool pnFound = false;
-                    foreach (PackagePartName pn in partList.Keys)
+                    part.LoadRelationships();
+
+                    // Check OPC compliance rule M4.1
+                    if(ContentTypes.CORE_PROPERTIES_PART.Equals(part.ContentType))
                     {
-                        if (part.PartName.Name.StartsWith(pn.Name))
+                        if(!hasCorePropertiesPart)
                         {
-                            pnFound = true;
-                            break;
+                            hasCorePropertiesPart = true;
+                        }
+                        else
+                        {
+                            logger.Log(POILogger.WARN, "OPC Compliance error [M4.1]: " +
+                                    "there is more than one core properties relationship in the package! " +
+                                    "POI will use only the first, but other software may reject this file.");
                         }
                     }
 
-                    if (pnFound)
-                        throw new InvalidFormatException(
-                                "A part with the name '"
-                                        + part.PartName +
-                                        "' already exist : Packages shall not contain equivalent " +
-                                    "part names and package implementers shall neither create " +
-                                    "nor recognize packages with equivalent part names. [M1.12]");
-
-                    // Check OPC compliance rule M4.1
-                    if (part.ContentType.Equals(
-                            ContentTypes.CORE_PROPERTIES_PART))
+                    partUnmarshallers.TryGetValue(part._contentType, out PartUnmarshaller partUnmarshaller);
+                    if(partUnmarshaller != null)
                     {
-                        if (!hasCorePropertiesPart)
-                            hasCorePropertiesPart = true;
-                        else
-                            Console.WriteLine(
-                                    "OPC Compliance error [M4.1]: there is more than one core properties relationship in the package ! " +
-                                    "POI will use only the first, but other software may reject this file.");
-                    }
-
-                    if (partUnmarshallers.TryGetValue(part._contentType, out PartUnmarshaller partUnmarshaller))
-                    {
-                        UnmarshallContext context = new UnmarshallContext(this,
-                                part.PartName);
+                        UnmarshallContext context = new UnmarshallContext(this, part.PartName);
                         try
                         {
-                            PackagePart unmarshallPart = partUnmarshaller
-                                    .Unmarshall(context, part.GetInputStream());
-                            partList[unmarshallPart.PartName] = unmarshallPart;
+                            PackagePart unmarshallPart = partUnmarshaller.Unmarshall(context, part.GetInputStream());
+                            partList.Remove(part.PartName);
+                            partList.Put(unmarshallPart.PartName, unmarshallPart);
 
                             // Core properties case-- use first CoreProperties part we come across
                             // and ignore any subsequent ones
-                            if (unmarshallPart is PackagePropertiesPart propertiesPart &&
+                            if(unmarshallPart is PackagePropertiesPart &&
                                     hasCorePropertiesPart &&
                                     needCorePropertiesPart)
                             {
-                                this.packageProperties = propertiesPart;
+                                this.packageProperties = (PackagePropertiesPart) unmarshallPart;
                                 needCorePropertiesPart = false;
                             }
                         }
-                        catch (IOException)
+                        catch(IOException ioe)
                         {
                             logger.Log(POILogger.WARN, "Unmarshall operation : IOException for "
                                     + part.PartName);
                             continue;
                         }
-                        catch (InvalidOperationException invoe)
+                        catch(InvalidOperationException invoe)
                         {
-                            throw new InvalidFormatException(invoe.Message);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            partList[part.PartName] = part;
-                        }
-                        catch (InvalidOperationException e)
-                        {
-                            throw new InvalidFormatException(e.Message);
+                            throw new InvalidFormatException(invoe.Message, invoe);
                         }
                     }
                 }
             }
-            return new List<PackagePart>(partList.Values);
+            return [.. partList.SortedValues];
         }
         public PackagePart CreatePart(Uri partName, String contentType)
         {
@@ -937,23 +916,9 @@ namespace NPOI.OpenXml4Net.OPC
             {
                 throw new ArgumentException("contentType");
             }
-            bool pnFound = false;
-            bool pnDeleted = false;
-            foreach (PackagePartName pn in partList.Keys)
-            {
-                if (partName.Name.StartsWith(pn.Name))
-                {
-                    pnFound = true;
-                    if (partList[pn].IsDeleted)
-                    {
-                        pnDeleted = true;
-                    }
-                    break;
-                }
-            }
             // Check if the specified part name already exists
-            if (pnFound
-                    && !pnDeleted)
+            if(partList.ContainsKey(partName)
+                    && !partList.Get(partName).IsDeleted)
             {
                 throw new PartAlreadyExistsException(
                         "A part with the name '" + partName.Name + "'" +
@@ -964,26 +929,27 @@ namespace NPOI.OpenXml4Net.OPC
             /* Check OPC compliance */
 
             // Rule [M4.1]: The format designer shall specify and the format producer
-            // producer
-            // shall Create at most one core properties relationship for a package.
+            // shall create at most one core properties relationship for a package.
             // A format consumer shall consider more than one core properties
             // relationship for a package to be an error. If present, the
             // relationship shall target the Core Properties part.
             // Note - POI will read files with more than one Core Properties, which
             //  Office sometimes produces, but is strict on generation
-            if (contentType == ContentTypes.CORE_PROPERTIES_PART)
+            if(contentType.Equals(ContentTypes.CORE_PROPERTIES_PART))
             {
-                if (this.packageProperties != null)
+                if(this.packageProperties != null)
+                {
                     throw new InvalidOperationException(
                             "OPC Compliance error [M4.1]: you try to add more than one core properties relationship in the package !");
+                }
             }
 
             /* End check OPC compliance */
 
             PackagePart part = this.CreatePartImpl(partName, contentType,
-                    loadRelationships);
+                loadRelationships);
             this.contentTypeManager.AddContentType(partName, contentType);
-            this.partList[partName] = part;
+            this.partList.Put(partName, part);
             this.isDirty = true;
             return part;
         }
@@ -1059,14 +1025,14 @@ namespace NPOI.OpenXml4Net.OPC
                 throw new ArgumentException("part");
             }
 
-            if (partList.TryGetValue(part.PartName, out PackagePart value))
+            if(partList.ContainsKey(part.PartName))
             {
-                if (!value.IsDeleted)
+                if(!partList.Get(part.PartName).IsDeleted)
                 {
                     throw new InvalidOperationException(
                             "A part with the name '"
                                     + part.PartName.Name
-                                    + "' already exists : Packages shall not contain equivalent part names and package implementers shall neither Create nor recognize packages with equivalent part names. [M1.12]");
+                                    + "' already exists : Packages shall not contain equivalent part names and package implementers shall neither create nor recognize packages with equivalent part names. [M1.12]");
                 }
                 // If the specified partis flagged as deleted, we make it
                 // available
@@ -1074,7 +1040,7 @@ namespace NPOI.OpenXml4Net.OPC
                 // and delete the old part to replace it thereafeter
                 this.partList.Remove(part.PartName);
             }
-            this.partList[part.PartName] = part;
+            this.partList.Put(part.PartName, part);
             this.isDirty = true;
             return part;
         }
@@ -1102,33 +1068,33 @@ namespace NPOI.OpenXml4Net.OPC
          * @param PartName
          *            The part name of the part to Remove.
          */
-        public void RemovePart(PackagePartName PartName)
+        public void RemovePart(PackagePartName partName)
         {
             ThrowExceptionIfReadOnly();
-            if (PartName == null || !this.ContainPart(PartName))
+            if (partName == null || !this.ContainPart(partName))
                 throw new ArgumentException("PartName");
 
             // Delete the specified part from the package.
-            if (this.partList.TryGetValue(PartName, out PackagePart value))
+            if(this.partList.ContainsKey(partName))
             {
-                value.IsDeleted = (true);
-                this.RemovePartImpl(PartName);
-                this.partList.Remove(PartName);
+                this.partList.Get(partName).IsDeleted = true;
+                this.RemovePartImpl(partName);
+                this.partList.Remove(partName);
             }
             else
             {
-                this.RemovePartImpl(PartName);
+                this.RemovePartImpl(partName);
             }
 
             // Delete content type
-            this.contentTypeManager.RemoveContentType(PartName);
+            this.contentTypeManager.RemoveContentType(partName);
 
             // If this part is a relationship part, then delete all relationships of
             // the source part.
-            if (PartName.IsRelationshipPartURI())
+            if (partName.IsRelationshipPartURI())
             {
                 Uri sourceURI = PackagingUriHelper
-                        .GetSourcePartUriFromRelationshipPartUri(PartName.URI);
+                        .GetSourcePartUriFromRelationshipPartUri(partName.URI);
                 PackagePartName sourcePartName;
                 try
                 {
@@ -1169,24 +1135,24 @@ namespace NPOI.OpenXml4Net.OPC
          *             Throws if the associated relationship part of the specified
          *             part is not valid.
          */
-        public void RemovePartRecursive(PackagePartName PartName)
+        public void RemovePartRecursive(PackagePartName partName)
         {
             // Retrieves relationship part, if one exists
-            PackagePart relPart = this.partList[PackagingUriHelper
-                    .GetRelationshipPartName(PartName)];
+            PackagePart relPart = this.partList.Get(PackagingUriHelper
+                .GetRelationshipPartName(partName));
             // Retrieves PackagePart object from the package
-            PackagePart partToRemove = this.partList[PartName];
+            PackagePart partToRemove = this.partList.Get(partName);
 
-            if (relPart != null)
+            if(relPart != null)
             {
                 PackageRelationshipCollection partRels = new PackageRelationshipCollection(
-                        partToRemove);
-                foreach (PackageRelationship rel in partRels)
+                    partToRemove);
+                foreach(PackageRelationship rel in partRels)
                 {
-                    PackagePartName PartNameToRemove = PackagingUriHelper
-                            .CreatePartName(PackagingUriHelper.ResolvePartUri(rel
-                                    .SourceUri, rel.TargetUri));
-                    RemovePart(PartNameToRemove);
+                    PackagePartName partNameToRemove = PackagingUriHelper
+                        .CreatePartName(PackagingUriHelper.ResolvePartUri(rel
+                                .SourceUri, rel.TargetUri));
+                    RemovePart(partNameToRemove);
                 }
 
                 // Finally delete its relationship part if one exists
@@ -1744,6 +1710,8 @@ namespace NPOI.OpenXml4Net.OPC
          *            The URI of the part to retrieve.
          * @return The package part located by the specified URI, else <b>null</b>.
          */
+        [Obsolete]
+        [Removal(Version = "4.2")]
         protected abstract PackagePart GetPartImpl(PackagePartName PartName);
 
         /**
@@ -1751,7 +1719,7 @@ namespace NPOI.OpenXml4Net.OPC
          * 
          * @return A list of the part owned by the package.
          */
-        protected abstract PackagePart[] GetPartsImpl();
+        protected abstract PackagePartCollection GetPartsImpl();
         /**
          * Replace a content type in this package.
          *
@@ -1827,6 +1795,22 @@ namespace NPOI.OpenXml4Net.OPC
             RemovePart(partName);
             this.contentTypeManager.RemoveContentType(partName);
             this.isDirty = true;
+        }
+
+        /**
+         * Get an unused part index based on the namePattern, which doesn't exist yet
+         * and has the lowest positive index
+         *
+         * @param nameTemplate
+         *      The template for new part names containing a {@code '#'} for the index,
+         *      e.g. "/ppt/slides/slide#.xml"
+         * @return the next available part name index
+         * @throws InvalidFormatException if the nameTemplate is null or doesn't contain
+         *      the index char (#) or results in an invalid part name 
+         */
+        public int GetUnusedPartIndex(String nameTemplate)
+        {
+            return partList.GetUnusedPartIndex(nameTemplate);
         }
     }
 
