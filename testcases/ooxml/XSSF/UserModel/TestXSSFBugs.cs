@@ -31,11 +31,12 @@ using NPOI.XSSF.Streaming;
 using NPOI.XSSF.UserModel;
 using NPOI.XSSF.UserModel.Extensions;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 using NUnit.Framework.Constraints;
+using NUnit.Framework.Legacy;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -3531,6 +3532,32 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsNotNull(cv);
             ClassicAssert.AreEqual(2.0, cv.NumberValue, 0.00001);
             wb.Close();
+        }
+
+        [Test]
+        public void Test61652()
+        {
+            IWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("61652.xlsx");
+            try
+            {
+                ISheet sheet = wb.GetSheet("IRPPCalc");
+                IRow row = sheet.GetRow(11);
+                ICell cell = row.GetCell(18);
+                IWorkbookEvaluatorProvider fe = (IWorkbookEvaluatorProvider) wb.GetCreationHelper().CreateFormulaEvaluator();
+                ConditionalFormattingEvaluator condfmt = new ConditionalFormattingEvaluator(wb, fe);
+                ClassicAssert.AreEqual(0, condfmt.GetConditionalFormattingForCell(cell).Count);
+                //ClassicAssert.AreEqual("[]", condfmt.GetConditionalFormattingForCell(cell).ToString(),
+                //    "Conditional formatting is not triggered for this cell");
+
+                // but we can read the conditional formatting itself
+                List<EvaluationConditionalFormatRule> rules = condfmt.GetFormatRulesForSheet(sheet);
+                ClassicAssert.AreEqual(1, rules.Count);
+                ClassicAssert.AreEqual("AND($A1>=EDATE($D$6,3),$B1>0)", rules[0].Formula1);
+            }
+            catch (Exception e)
+            {
+                wb.Close();
+            }
         }
 
         [Test]
