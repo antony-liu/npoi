@@ -91,5 +91,26 @@ namespace TestCases.Util
             ClassicAssert.AreEqual(0x33, lei.ReadUByte());
             ClassicAssert.AreEqual(0, lei.Available());
         }
+
+        [Test]
+        public void TestBufferOverrun()
+        {
+            byte[] srcBuf = HexRead.ReadFromString("99 88 77");
+            ILittleEndianInput lei = new LittleEndianByteArrayInputStream(srcBuf);
+
+            // do initial read to increment the read index beyond zero
+            ClassicAssert.AreEqual(0x8899, lei.ReadUShort());
+
+            // only one byte left, so this should fail
+            try
+            {
+                lei.ReadFully(new byte[4]);
+                Assert.Fail("Should catch exception here");
+            }
+            catch(RuntimeException e)
+            {
+                ClassicAssert.IsTrue(e.Message.Contains("Buffer overrun"));
+            }
+        }
     }
 }

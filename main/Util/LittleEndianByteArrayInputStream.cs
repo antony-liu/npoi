@@ -76,7 +76,8 @@ namespace NPOI.Util
         {
             if (i > _endIndex - _ReadIndex)
             {
-                throw new RuntimeException("Buffer overrun");
+                throw new RuntimeException("Buffer overrun, having " + count + " bytes in the stream and position is at " + _ReadIndex +
+                    ", but trying to increment position by " + i);
             }
         }
 
@@ -86,11 +87,11 @@ namespace NPOI.Util
         }
         public void SetReadIndex(int pos)
         {
-	       if (pos < 0 || pos >= _endIndex) {
-	            throw new ArgumentOutOfRangeException();
-	       }
-	       this._ReadIndex = pos;
-	    }
+           if (pos < 0 || pos >= _endIndex) {
+                throw new ArgumentOutOfRangeException();
+           }
+           this._ReadIndex = pos;
+        }
         public int ReadByte()
         {
             CheckPosition(1);
@@ -152,7 +153,7 @@ namespace NPOI.Util
             return (b1 << 8) + (b0 << 0);
         }
         public long ReadUInt() {
-	        return ReadInt() & 0x00FFFFFFFFL; 
+            return ReadInt() & 0x00FFFFFFFFL; 
         }
         public void ReadFully(byte[] buf, int off, int len)
         {
