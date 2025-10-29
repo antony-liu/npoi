@@ -3719,6 +3719,27 @@ namespace NPOI.XSSF.UserModel
             //  unique within the sheet. Find the next one
             int tableNumber = GetPackagePart().Package
                 .GetPartsByContentType(XSSFRelation.TABLE.ContentType).Count + 1;
+            // the id could already be taken after insertion/deletion of different tables
+            //outerloop:
+            
+            while(true)
+            {
+                bool continueFind = false;
+                foreach(PackagePart packagePart in GetPackagePart().Package.GetPartsByContentType(XSSFRelation.TABLE.ContentType))
+                {
+                    String fileName = XSSFRelation.TABLE.GetFileName(tableNumber);
+                    if(fileName.Equals(packagePart.PartName.Name))
+                    {
+                        // duplicate found, increase the number and start iterating again
+                        tableNumber++;
+                        //continue outerloop;
+                        continueFind = true;
+                    }
+                }
+                if(continueFind)
+                    continue;
+                break;
+            }
             RelationPart rp = CreateRelationship(
                 XSSFRelation.TABLE,
                 XSSFFactory.GetInstance(),

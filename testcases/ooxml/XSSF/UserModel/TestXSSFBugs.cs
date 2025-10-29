@@ -3561,6 +3561,28 @@ namespace TestCases.XSSF.UserModel
         }
 
         [Test]
+        public void Test61543()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+
+            XSSFSheet sheet = wb.CreateSheet() as XSSFSheet;
+            XSSFTable table1 = sheet.CreateTable() ;
+            XSSFTable table2 = sheet.CreateTable();
+            XSSFTable table3 = sheet.CreateTable();
+
+            sheet.RemoveTable(table1);
+
+            sheet.CreateTable();
+
+            sheet.RemoveTable(table2);
+            sheet.RemoveTable(table3);
+
+            sheet.CreateTable();
+
+            wb.Close();
+        }
+
+        [Test]
         public void TestBug690()
         {
             using (var workbook = new XSSFWorkbook())
