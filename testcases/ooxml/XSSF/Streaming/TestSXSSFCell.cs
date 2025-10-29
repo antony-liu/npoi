@@ -83,14 +83,6 @@ namespace TestCases.XSSF.Streaming
                 }
             }
         }
-
-        [Test]
-        public void TestSetErrorValeFormula()
-        {
-            Assume.That(false, "This test is disabled because it fails for SXSSF because " +
-                        "handling of errors in formulas is slightly different than in XSSF, " +
-                        "but this proved to be non-trivial to solve...");
-        }
     }
 
 }
