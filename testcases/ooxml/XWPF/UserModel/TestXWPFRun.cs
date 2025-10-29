@@ -38,7 +38,7 @@ namespace TestCases.XWPF.UserModel
     {
 
         public CT_R ctRun;
-        public IRunBody p;
+        public XWPFParagraph p;
         [SetUp]
         public void SetUp()
         {
@@ -455,7 +455,23 @@ namespace TestCases.XWPF.UserModel
         }
 
         [Test]
-        public void testSetGetHighlight()
+        public void TestSetGetLang() 
+        {
+            XWPFRun run = p.CreateRun() as XWPFRun;
+            ClassicAssert.IsNull(run.Lang);
+
+            run.GetCTR().AddNewRPr().AddNewLang().val = "en-CA";
+            ClassicAssert.AreEqual("en-CA", run.Lang);
+
+            run.GetCTR().rPr.lang.val = "fr-CA";
+            ClassicAssert.AreEqual("fr-CA", run.Lang);
+
+            run.GetCTR().rPr.lang.val = null;
+            ClassicAssert.IsNull(run.Lang);
+        }
+
+        [Test]
+        public void TestSetGetHighlight()
         {
             XWPFRun run = new XWPFRun(ctRun, p);
             ClassicAssert.AreEqual(false, run.IsHighlighted);
