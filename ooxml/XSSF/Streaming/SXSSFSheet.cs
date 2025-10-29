@@ -903,7 +903,11 @@ namespace NPOI.XSSF.Streaming
 
         public ICellRange<ICell> RemoveArrayFormula(ICell cell)
         {
-            return _sh.RemoveArrayFormula(cell);
+            // the simple approach via _sh does not work as it creates rows in the XSSFSheet and thus causes
+            // corrupted .xlsx files as rows appear multiple times in the resulting sheetX.xml files
+            // return _sh.removeArrayFormula(cell);
+
+            throw new RuntimeException("NotImplemented");
         }
 
         public void RemoveColumnBreak(int column)
@@ -1022,7 +1026,11 @@ namespace NPOI.XSSF.Streaming
 
         public ICellRange<ICell> SetArrayFormula(string formula, CellRangeAddress range)
         {
-            return _sh.SetArrayFormula(formula, range);
+            // the simple approach via _sh does not work as it creates rows in the XSSFSheet and thus causes
+            // corrupted .xlsx files as rows appear multiple times in the resulting sheetX.xml files
+            // return _sh.setArrayFormula(formula, range);
+
+            throw new RuntimeException("NotImplemented");
         }
 
         public IAutoFilter SetAutoFilter(CellRangeAddress range)

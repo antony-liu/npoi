@@ -3,8 +3,11 @@ using NPOI.SS.Util;
 using NPOI.Util;
 using NPOI.XSSF;
 using NPOI.XSSF.Streaming;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NPOI.XSSF.UserModel;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System.IO;
+using TestCases.SS;
 using TestCases.SS.UserModel;
 
 namespace TestCases.XSSF.Streaming
@@ -82,6 +85,73 @@ namespace TestCases.XSSF.Streaming
                     throw;
                 }
             }
+        }
+
+        [Test]
+        public void Bug61648()
+        {
+            // works as expected
+            WriteWorkbook(new XSSFWorkbook(), XSSFITestDataProvider.instance);
+
+            // does not work
+            SXSSFWorkbook wb = new SXSSFWorkbook();
+            try
+            {
+                WriteWorkbook(wb, SXSSFITestDataProvider.instance);
+                ClassicAssert.Fail("Should catch exception here");
+            } catch(RuntimeException e)
+            {
+                // this is not implemented yet
+                wb.Close();
+            }
+        }
+
+        void WriteWorkbook(IWorkbook wb, ITestDataProvider testDataProvider)
+        {
+            ISheet sheet = wb.CreateSheet("array formula test");
+
+            int rowIndex = 0;
+            int colIndex = 0;
+            IRow row = sheet.CreateRow(rowIndex++);
+
+            ICell cell = row.CreateCell(colIndex++);
+            cell.SetCellType(CellType.String);
+            cell.SetCellValue("multiple");
+            cell = row.CreateCell(colIndex++);
+            cell.SetCellType(CellType.String);
+            cell.SetCellValue("unique");
+
+            WriteRow(sheet, rowIndex++, 80d, "INDEX(A2:A7, MATCH(FALSE, ISBLANK(A2:A7), 0))");
+            WriteRow(sheet, rowIndex++, 30d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B2, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+            WriteRow(sheet, rowIndex++, 30d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B3, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+            WriteRow(sheet, rowIndex++, 2d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B4, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+            WriteRow(sheet, rowIndex++, 30d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B5, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+            WriteRow(sheet, rowIndex++, 2d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B6, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+
+            /*FileOutputStream fileOut = new FileOutputStream(filename);
+            wb.write(fileOut);
+            fileOut.Close();*/
+
+            IWorkbook wbBack = testDataProvider.WriteOutAndReadBack(wb);
+            ClassicAssert.IsNotNull(wbBack);
+            wbBack.Close();
+
+            wb.Close();
+        }
+
+        void WriteRow(ISheet sheet, int rowIndex, double col0Value, string col1Value)
+        {
+            int colIndex = 0;
+            IRow row = sheet.CreateRow(rowIndex);
+
+            // numeric value cell
+            ICell cell = row.CreateCell(colIndex++);
+            cell.SetCellType(CellType.Numeric);
+            cell.SetCellValue(col0Value);
+
+            // formula value cell
+            CellRangeAddress range = new CellRangeAddress(rowIndex, rowIndex, colIndex, colIndex);
+            sheet.SetArrayFormula(col1Value, range);
         }
     }
 }
