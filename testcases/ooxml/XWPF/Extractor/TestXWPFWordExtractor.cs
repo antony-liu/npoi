@@ -449,5 +449,16 @@ namespace TestCases.XWPF.Extractor
             extractor.SetConcatenatePhoneticRuns(false);
             ClassicAssert.AreEqual("\u6771\u4EAC", extractor.Text.Trim());
         }
+
+        [Test]
+        public void TestCTPictureBase()
+        {
+            //This forces ctpicturebase to be included in the poi-ooxml-schemas jar
+            XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("61991.docx");
+            XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
+            String txt = extractor.Text;
+            POITestCase.AssertContains(txt, "Sequencing data");
+            extractor.Close();
+        }
     }
 }
