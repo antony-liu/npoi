@@ -54,7 +54,9 @@ namespace NPOI.XSSF.UserModel
         /**
          * Width of one character of the default font in pixels. Same for Calibry and Arial.
          */
-        public static float DEFAULT_CHARACTER_WIDTH = 7.0017f;
+        [Obsolete]
+        [Removal(Version="4.1")]
+        public static float DEFAULT_CHARACTER_WIDTH = Units.DEFAULT_CHARACTER_WIDTH;
 
         /**
          * Excel silently tRuncates long sheet names to 31 chars.
@@ -171,6 +173,8 @@ namespace NPOI.XSSF.UserModel
          */
         private List<XSSFPivotTable> pivotTables;
         private List<CT_PivotCache> pivotCaches;
+
+        private XSSFFactory xssfFactory;
         /**
          * Create a new SpreadsheetML workbook.
          */
@@ -179,15 +183,23 @@ namespace NPOI.XSSF.UserModel
         {
 
         }
-
+        public XSSFWorkbook(XSSFFactory factory)
+            : this(XSSFWorkbookType.XLSX, factory)
+        {
+        }
         /**
          * Create a new SpreadsheetML workbook.
          * @param workbookType The type of workbook to make (.xlsx or .xlsm).
          */
-        public XSSFWorkbook(XSSFWorkbookType workbookType) :
-                base(newPackage(workbookType))
+        public XSSFWorkbook(XSSFWorkbookType workbookType)
+            : this(workbookType, null)
         {
+        }
 
+        private XSSFWorkbook(XSSFWorkbookType workbookType, XSSFFactory factory)
+            : base(newPackage(workbookType))
+        {
+            this.xssfFactory = (factory == null) ? XSSFFactory.GetInstance() : factory;
             OnWorkbookCreate();
         }
 
@@ -206,10 +218,11 @@ namespace NPOI.XSSF.UserModel
         public XSSFWorkbook(OPCPackage pkg)
             : base(pkg)
         {
+            this.xssfFactory = XSSFFactory.GetInstance();
             BeforeDocumentRead();
 
             //build a tree of POIXMLDocumentParts, this workbook being the root
-            Load(XSSFFactory.GetInstance());
+            Load(this.xssfFactory);
 
             // some broken Workbooks miss this...
             if (!workbook.IsSetBookViews())
@@ -236,10 +249,11 @@ namespace NPOI.XSSF.UserModel
         public XSSFWorkbook(Stream fileStream, bool readOnly = false)
             : base(PackageHelper.Open(fileStream, readOnly))
         {
+            this.xssfFactory = XSSFFactory.GetInstance();
             BeforeDocumentRead();
 
             //build a tree of POIXMLDocumentParts, this workbook being the root
-            Load(XSSFFactory.GetInstance());
+            Load(this.xssfFactory);
 
             // some broken Workbooks miss this...
             if (!workbook.IsSetBookViews())
@@ -364,7 +378,7 @@ namespace NPOI.XSSF.UserModel
                     }
                     else
                     {
-                        stylesSource = (StylesTable)CreateRelationship(XSSFRelation.STYLES, XSSFFactory.GetInstance());
+                        stylesSource = (StylesTable)CreateRelationship(XSSFRelation.STYLES, this.xssfFactory);
                     }
                 }
                 stylesSource.SetWorkbook(this);
@@ -379,7 +393,7 @@ namespace NPOI.XSSF.UserModel
                     }
                     else
                     {
-                        sharedStringSource = (SharedStringsTable)CreateRelationship(XSSFRelation.SHARED_STRINGS, XSSFFactory.GetInstance());
+                        sharedStringSource = (SharedStringsTable)CreateRelationship(XSSFRelation.SHARED_STRINGS, this.xssfFactory);
                     }
                 }
 
@@ -467,8 +481,8 @@ namespace NPOI.XSSF.UserModel
             ctExtendedProp.SharedDoc = false;
             ctExtendedProp.SharedDocSpecified = true;
 
-            sharedStringSource = (SharedStringsTable)CreateRelationship(XSSFRelation.SHARED_STRINGS, XSSFFactory.GetInstance());
-            stylesSource = (StylesTable)CreateRelationship(XSSFRelation.STYLES, XSSFFactory.GetInstance());
+            sharedStringSource = (SharedStringsTable)CreateRelationship(XSSFRelation.SHARED_STRINGS, this.xssfFactory);
+            stylesSource = (StylesTable)CreateRelationship(XSSFRelation.STYLES, this.xssfFactory);
             stylesSource.SetWorkbook(this);
 
             namedRanges = new List<XSSFName>();
@@ -552,7 +566,7 @@ namespace NPOI.XSSF.UserModel
         public int AddPicture(Stream picStream, int format)
         {
             int imageNumber = GetAllPictures().Count + 1;
-            XSSFPictureData img = (XSSFPictureData)CreateRelationship(XSSFPictureData.RELATIONS[format], XSSFFactory.GetInstance(), imageNumber, true).DocumentPart;
+            XSSFPictureData img = (XSSFPictureData)CreateRelationship(XSSFPictureData.RELATIONS[format], this.xssfFactory, imageNumber, true).DocumentPart;
             Stream out1 = img.GetPackagePart().GetOutputStream();
             IOUtils.Copy(picStream, out1);
             out1.Close();
@@ -572,6 +586,12 @@ namespace NPOI.XSSF.UserModel
         public ISheet CloneSheet(int sheetNum)
         {
             return CloneSheet(sheetNum, null);
+        }
+
+        public override void Close()
+        {
+            base.Close();
+            sharedStringSource.Dispose();
         }
 
         /**
@@ -930,7 +950,7 @@ namespace NPOI.XSSF.UserModel
                 break;
             }
 
-            RelationPart rp = CreateRelationship(XSSFRelation.WORKSHEET, XSSFFactory.GetInstance(), sheetNumber, false);
+            RelationPart rp = CreateRelationship(XSSFRelation.WORKSHEET, this.xssfFactory, sheetNumber, false);
             XSSFSheet wrapper = rp.DocumentPart as XSSFSheet;
             wrapper.sheet = sheet;
             sheet.id = (rp.Relationship.Id);
@@ -2490,7 +2510,7 @@ namespace NPOI.XSSF.UserModel
                 imageNumber = previous + 1;
             }
             
-            XSSFPictureData img = (XSSFPictureData)CreateRelationship(XSSFPictureData.RELATIONS[(int)format], XSSFFactory.GetInstance(), imageNumber, true).DocumentPart;
+            XSSFPictureData img = (XSSFPictureData)CreateRelationship(XSSFPictureData.RELATIONS[(int)format], this.xssfFactory, imageNumber, true).DocumentPart;
             try
             {
                 Stream out1 = img.GetPackagePart().GetOutputStream();
@@ -2553,7 +2573,7 @@ namespace NPOI.XSSF.UserModel
             Stream outputStream;
             if (!opc.ContainPart(ppName))
             {
-                POIXMLDocumentPart relationship = CreateRelationship(XSSFRelation.VBA_MACROS, XSSFFactory.GetInstance());
+                POIXMLDocumentPart relationship = CreateRelationship(XSSFRelation.VBA_MACROS, this.xssfFactory);
                 outputStream = relationship.GetPackagePart().GetOutputStream();
             }
             else

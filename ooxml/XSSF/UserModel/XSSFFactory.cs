@@ -30,7 +30,7 @@ namespace NPOI.XSSF.UserModel
      */
     public class XSSFFactory : POIXMLFactory
     {
-        private XSSFFactory()
+        protected XSSFFactory()
         {
 
         }

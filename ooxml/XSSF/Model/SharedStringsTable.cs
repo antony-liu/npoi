@@ -55,7 +55,7 @@ namespace NPOI.XSSF.Model
      * @author Nick Birch
      * @author Yegor Kozlov
      */
-    public class SharedStringsTable : POIXMLDocumentPart
+    public class SharedStringsTable : POIXMLDocumentPart, IDisposable
     {
 
         /**
@@ -72,14 +72,14 @@ namespace NPOI.XSSF.Model
          * An integer representing the total count of strings in the workbook. This count does not
          * include any numbers, it counts only the total of text strings in the workbook.
          */
-        private int count;
+        protected int count;
 
         /**
          * An integer representing the total count of unique strings in the Shared String Table.
          * A string is unique even if it is a copy of another string, but has different formatting applied
          * at the character level.
          */
-        private int uniqueCount;
+        protected int uniqueCount;
 
         private SstDocument _sstDoc;
 
@@ -116,7 +116,7 @@ namespace NPOI.XSSF.Model
                 uniqueCount = (int)sst.uniqueCount;
                 foreach (CT_Rst st in sst.si)
                 {
-                    string key = GetKey(st);
+                    string key = XmlText(st);
                     if (key != null && !stmap.ContainsKey(key))
                         stmap.Add(key, cnt);
                     ctStrings.Add(st);
@@ -129,7 +129,7 @@ namespace NPOI.XSSF.Model
             }
         }
 
-        private static String GetKey(CT_Rst st)
+        private static String XmlText(CT_Rst st)
         {
             return st.XmlText;
         }
@@ -202,7 +202,7 @@ namespace NPOI.XSSF.Model
         [Removal(Version = "4.2")]
         public int AddEntry(CT_Rst st)
         {
-            String s = GetKey(st);
+            String s = XmlText(st);
             count++;
             if (stmap.TryGetValue(s, out int entry))
             {
@@ -302,6 +302,18 @@ namespace NPOI.XSSF.Model
             Stream out1 = part.GetOutputStream();
             WriteTo(out1);
             out1.Close();
+        }
+        /**
+         * Close any open resources, like temp files. This method is called by <code>XSSFWorkbook#close()</code>.
+         * <p>
+         *     This implementation is empty but subclasses may need to implement some logic.
+         * </p>
+         *
+         * @since 4.0.0
+         * @throws IOException if an error occurs while closing.
+         */
+        public void Dispose()
+        {
         }
     }
 }

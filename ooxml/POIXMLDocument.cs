@@ -159,7 +159,7 @@ namespace NPOI
          * Closes the underlying {@link OPCPackage} from which this
          *  document was read, if there is one
          */
-        public void Close()
+        public virtual void Close()
         {
             if (pkg != null)
             {
