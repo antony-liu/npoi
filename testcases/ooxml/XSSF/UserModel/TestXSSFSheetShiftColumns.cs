@@ -1,8 +1,8 @@
-/*
+﻿/*
  *  ====================================================================
  *    Licensed to the Apache Software Foundation (ASF) under one or more
  *    contributor license agreements.  See the NOTICE file distributed with
- *    this work for Additional information regarding copyright ownership.
+ *    this work for additional information regarding copyright ownership.
  *    The ASF licenses this file to You under the Apache License, Version 2.0
  *    (the "License"); you may not use this file except in compliance with
  *    the License.  You may obtain a copy of the License at
@@ -17,44 +17,46 @@
  * ====================================================================
  */
 
-namespace TestCases.XSSF.Streaming
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace TestCases.XSSF.UserModel
 {
+
+
+    using NPOI.SS.UserModel;
+
+
     using NPOI.XSSF;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NPOI.XSSF.UserModel;
+    using NUnit.Framework;
     using TestCases.SS.UserModel;
 
-    /**
-     * Tests for XSSFRow
-     */
-    [TestFixture]
-    public class TestSXSSFRow : BaseTestXRow
+    public class TestXSSFSheetShiftColumns : BaseTestSheetShiftColumns
     {
-
-        public TestSXSSFRow()
-            : base(SXSSFITestDataProvider.instance)
+        public TestXSSFSheetShiftColumns()
+            : base()
         {
-
+            _testDataProvider = XSSFITestDataProvider.instance;
+        }
+        [SetUp]
+        public override void Init()
+        {
+            workbook = new XSSFWorkbook();
+            base.Init();
+        }
+        protected override IWorkbook openWorkbook(string spreadsheetFileName)
+        {
+            return XSSFTestDataSamples.OpenSampleWorkbook(spreadsheetFileName);
         }
 
-
-        [TearDown]
-        public void TearDown()
+        protected override IWorkbook GetReadBackWorkbook(IWorkbook wb)
         {
-            //((SXSSFITestDataProvider)_testDataProvider).Cleanup();
+            return XSSFTestDataSamples.WriteOutAndReadBack(wb);
         }
 
-        [Test]
-        [Ignore("see <https://bz.apache.org/bugzilla/show_bug.cgi?id=62030#c1>")]
-        public override void TestCellShiftingRight()
-        {
-            // Remove when SXSSFRow.shiftCellsRight() is implemented.
-        }
-        [Test]
-        [Ignore("see <https://bz.apache.org/bugzilla/show_bug.cgi?id=62030#c1>")]
-        public override void TestCellShiftingLeft()
-        {
-            // Remove when SXSSFRow.shiftCellsLeft() is implemented. 
-        }
     }
-
 }

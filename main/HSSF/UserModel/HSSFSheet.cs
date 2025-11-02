@@ -37,6 +37,7 @@ namespace NPOI.HSSF.UserModel
     using NPOI.HSSF.UserModel.helpers;
 
     using SixLabors.Fonts;
+    using NPOI.HSSF.UserModel.Helpers;
 
     /// <summary>
     /// High level representation of a worksheet.
@@ -1759,6 +1760,27 @@ namespace NPOI.HSSF.UserModel
                     Math.Max(0, row),
                     SpreadsheetVersion.EXCEL97.LastRowIndex);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startColumn"></param>
+        /// <param name="endColumn"></param>
+        /// <param name="n"></param>
+        public void ShiftColumns(int startColumn, int endColumn, int n)
+        {
+            HSSFColumnShifter columnShifter = new HSSFColumnShifter(this);
+            columnShifter.ShiftColumns(startColumn, endColumn, n);
+
+            int sheetIndex = _workbook.GetSheetIndex(this);
+            short externSheetIndex = (short)book.CheckExternSheet(sheetIndex);
+            String sheetName = _workbook.GetSheetName(sheetIndex);
+            FormulaShifter formulaShifter = FormulaShifter.CreateForColumnShift(
+                externSheetIndex, sheetName, startColumn, endColumn, n, SpreadsheetVersion.EXCEL97);
+            updateFormulasForShift(formulaShifter);
+            // add logic for hyperlinks etc, like in shiftRows() 
+        }
+
         /// <summary>
         /// Inserts the chart records.
         /// </summary>

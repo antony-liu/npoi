@@ -15,7 +15,8 @@ namespace NPOI.SS.UserModel.Helpers
         /**
          * Update formulas.
          */
-        public abstract void updateFormulas(FormulaShifter formulaShifter);
+        public abstract void UpdateFormulas(FormulaShifter formulaShifter);
+        
 
         /**
          * Shifts, grows, or shrinks the merged regions due to a row shift
@@ -27,13 +28,13 @@ namespace NPOI.SS.UserModel.Helpers
          * @param n     the number of rows or columns to shift
          * @return a list of affected merged regions, excluding contain deleted ones
          */
-        public abstract List<CellRangeAddress> shiftMergedRegions(int start, int end, int n);
+        public abstract List<CellRangeAddress> ShiftMergedRegions(int start, int end, int n);
 
         /**
          * Update conditional formatting
          * @param formulaShifter The {@link FormulaShifter} to use
          */
-        public abstract void updateConditionalFormatting(FormulaShifter formulaShifter);
+        public abstract void UpdateConditionalFormatting(FormulaShifter formulaShifter);
 
         /**
          * Shift the Hyperlink anchors (not the hyperlink text, even if the hyperlink
@@ -42,9 +43,9 @@ namespace NPOI.SS.UserModel.Helpers
          *
          * @param formulaShifter the formula shifting policy
          */
-        public abstract void updateHyperlinks(FormulaShifter formulaShifter);
+        public abstract void UpdateHyperlinks(FormulaShifter formulaShifter);
 
-
+        public abstract void UpdateColumnFormulas(IColumn column, FormulaShifter formulaShifter);
 
         public static CellRangeAddress ShiftRange(FormulaShifter Shifter, CellRangeAddress cra, int currentExternSheetIx)
         {

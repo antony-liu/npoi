@@ -3135,9 +3135,98 @@ namespace NPOI.XSSF.UserModel
         /// <param name="n">the number of column to shift</param>
         public void ShiftColumns(int startColumn, int endColumn, int n)
         {
+            //XSSFVMLDrawing vml = GetVMLDrawing(false);
+            //ShiftCommentsForColumns(vml, startColumn, endColumn, n);
+            //FormulaShifter formulaShifter = FormulaShifter.CreateForColumnShift(this.Workbook.GetSheetIndex(this), this.SheetName, startColumn, endColumn, n, SpreadsheetVersion.EXCEL2007);
+            //XSSFColumnShifter columnShifter = new XSSFColumnShifter(this);
+            //columnShifter.ShiftColumns(startColumn, endColumn, n);
+            //columnShifter.ShiftMergedRegions(startColumn, startColumn, n);
+            //columnShifter.UpdateFormulas(formulaShifter);
+            //columnShifter.UpdateConditionalFormatting(formulaShifter);
+            //columnShifter.UpdateHyperlinks(formulaShifter);
+            //columnShifter.UpdateNamedRanges(formulaShifter);
             ShiftColumns(startColumn, endColumn, n, false, false);
         }
+        private void rebuildRows()
+        {
+            //rebuild the _rows map
+            List<XSSFRow> rowList = new List<XSSFRow>(_rows.Values);
+            _rows.Clear();
+            foreach(XSSFRow r in rowList)
+            {
+                // Performance optimization: explicit boxing is slightly faster than auto-unboxing, though may use more memory
+                int rownumI = r.RowNum;
+                _rows[rownumI] = r;
+            }
+        }
 
+        private static int ShiftedRowNum(int startRow, int endRow, int n, int rownum)
+        {
+            // no change if before any affected row
+            if(rownum < startRow && (n > 0 || (startRow - rownum) > n))
+            {
+                return rownum;
+            }
+
+            // no change if after any affected row
+            if(rownum > endRow && (n < 0 || (rownum - endRow) > n))
+            {
+                return rownum;
+            }
+
+            // row before and things are moved up
+            if(rownum < startRow)
+            {
+                // row is moved down by the shifting
+                return rownum + (endRow - startRow);
+            }
+
+            // row is after and things are moved down
+            if(rownum > endRow)
+            {
+                // row is moved up by the shifting
+                return rownum - (endRow - startRow);
+            }
+
+            // row is part of the shifted block
+            return rownum + n;
+        }
+
+        private void ShiftCommentsForColumns(XSSFVMLDrawing vml, int startColumnIndex, int endColumnIndex, int n)
+        {
+            // then do the actual moving and also adjust comments/rowHeight
+            // we need to sort it in a way so the shifting does not mess up the structures, 
+            // i.e. when shifting down, start from down and go up, when shifting up, vice-versa
+            SortedDictionary<XSSFComment, int> commentsToShift = new SortedDictionary<XSSFComment, int>(new ShiftCommentComparator(n));
+
+            if(sheetComments != null)
+            {
+                CT_CommentList lst = sheetComments.GetCTComments().commentList;
+                foreach(CT_Comment comment in lst.GetCommentArray())
+                {
+                    String oldRef = comment.@ref;
+                    CellReference ref1 = new CellReference(oldRef);
+
+                    int columnIndex =ref1.Col;
+                    int newColumnIndex = XSSFSheet.ShiftedRowNum(startColumnIndex, endColumnIndex, n, columnIndex);
+                    if(newColumnIndex != columnIndex)
+                    {
+                        XSSFComment xssfComment = new XSSFComment(sheetComments, comment,
+                            vml == null ? null : vml.FindCommentShape(ref1.Row, columnIndex));
+                        commentsToShift[xssfComment] = newColumnIndex;
+                    }
+                }
+            }
+            // adjust all the affected comment-structures now
+            // the Map is sorted and thus provides them in the order that we need here, 
+            // i.e. from down to up if shifting down, vice-versa otherwise
+            foreach(KeyValuePair<XSSFComment, int> entry in commentsToShift)
+            {
+                entry.Key.Column = entry.Value;
+            }
+
+            rebuildRows();
+        }
         /// <summary>
         /// Shifts rows between startRow and endRow n number of rows. If you
         /// use a negative number, it will shift rows up. Code ensures that

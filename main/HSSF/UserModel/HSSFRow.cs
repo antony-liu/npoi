@@ -222,7 +222,7 @@ namespace NPOI.HSSF.UserModel
             int cellIx = firstcell + 1;
             ICell r = RetrieveCell(cellIx);
 
-            if (cells.Count == 0)
+            if (cells.Count == 0 || (cells.TryGetValue(0, out ICell value) && value == null))
                 return 0;
 
             while (r == null)
@@ -342,7 +342,7 @@ namespace NPOI.HSSF.UserModel
         {
             // Ensure the destination is free
             //if (cells.Count > newColumn && cells[newColumn] != null)
-            if(cells.ContainsKey(newColumn))
+            if(cells.TryGetValue(newColumn, out ICell value) && value != null)
             {
                 throw new ArgumentException("Asked to move cell to column " + newColumn + " but there's already a cell there");
             }
@@ -351,7 +351,7 @@ namespace NPOI.HSSF.UserModel
             bool existflag = false;
             foreach (ICell cellinrow in cells.Values)
             {
-                if (cellinrow.Equals(cell))
+                if (cellinrow != null && cellinrow.Equals(cell))
                 {
                     existflag = true;
                     break;
@@ -369,10 +369,10 @@ namespace NPOI.HSSF.UserModel
             AddCell(cell);
         }
         /**
- * Returns the HSSFSheet this row belongs to
- *
- * @return the HSSFSheet that owns this row
- */
+         * Returns the HSSFSheet this row belongs to
+         *
+         * @return the HSSFSheet that owns this row
+         */
         public ISheet Sheet
         {
             get
@@ -769,6 +769,65 @@ namespace NPOI.HSSF.UserModel
 
             return (this.RowNum == other.RowNum) &&
                    (this.Sheet == other.Sheet);
+        }
+
+        /**
+         * Shifts column range [firstShiftColumnIndex-lastShiftColumnIndex] step places to the right.
+         * @param startColumn the column to start shifting
+         * @param endColumn the column to end shifting
+         * @param step length of the shifting step
+         */
+        public void ShiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            if(step < 0)
+                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
+            if(firstShiftColumnIndex > lastShiftColumnIndex)
+                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
+            //if(lastShiftColumnIndex + step + 1> cells.Count)
+            //    extend(lastShiftColumnIndex + step + 1);
+            for(int columnIndex = lastShiftColumnIndex; columnIndex >= firstShiftColumnIndex; columnIndex--)
+            { // process cells backwards, because of shifting 
+                HSSFCell cell = GetCell(columnIndex) as HSSFCell;
+                cells[columnIndex+step] = null;
+                if(cell != null)
+                    MoveCell(cell, (short) (columnIndex+step));
+            }
+            for(int columnIndex = firstShiftColumnIndex; columnIndex <= firstShiftColumnIndex+step-1; columnIndex++)
+                cells[columnIndex] = null;
+        }
+        //private void extend(int newLenght)
+        //{
+        //    HSSFCell[] temp = cells.Values.Clone();
+        //    cells = new HSSFCell[newLenght];
+        //    System.arraycopy(temp, 0, cells, 0, temp.length);
+        //}
+        /**
+         * Shifts column range [firstShiftColumnIndex-lastShiftColumnIndex] step places to the left.
+         * @param startColumn the column to start shifting
+         * @param endColumn the column to end shifting
+         * @param step length of the shifting step
+         */
+        public void ShiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            if(step < 0)
+                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
+            if(firstShiftColumnIndex > lastShiftColumnIndex)
+                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
+            if(firstShiftColumnIndex - step < 0)
+                throw new InvalidOperationException("Column index less than zero : " + (firstShiftColumnIndex + step).ToString());
+            for(int columnIndex = firstShiftColumnIndex; columnIndex <= lastShiftColumnIndex; columnIndex++)
+            {
+                HSSFCell cell = GetCell(columnIndex) as HSSFCell;
+                if(cell != null)
+                {
+                    cells[columnIndex - step] = null;
+                    MoveCell(cell, columnIndex - step);
+                }
+                else
+                    cells[columnIndex - step] = null;
+            }
+            for(int columnIndex = lastShiftColumnIndex - step + 1; columnIndex <= lastShiftColumnIndex; columnIndex++)
+                cells[columnIndex] = null;
         }
 
         /// <summary>

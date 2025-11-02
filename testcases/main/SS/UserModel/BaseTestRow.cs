@@ -482,6 +482,79 @@ namespace TestCases.SS.UserModel
 
             wb2.Close();
         }
+
+        [Test]
+        public virtual void TestCellShiftingRight()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            ISheet sheet = wb.CreateSheet("sheet1");
+            IRow row = sheet.CreateRow(0);
+            row.CreateCell(0, CellType.Numeric).SetCellValue(0);
+            row.CreateCell(1, CellType.Numeric).SetCellValue(1);
+            row.CreateCell(2, CellType.Numeric).SetCellValue(2);//C
+            row.CreateCell(3, CellType.Numeric).SetCellValue(3);//D
+            row.CreateCell(4, CellType.Numeric).SetCellValue(4);//E
+            row.CreateCell(5, CellType.Numeric).SetCellValue(5);//F
+            row.CreateCell(6, CellType.Numeric).SetCellValue(6);//G
+            try
+            {
+                row.ShiftCellsLeft(6, 4, 2); // range [6-4] is illegal
+                Assert.Fail("expected shiftLeft to Assert.Fail");
+            }
+            catch(ArgumentException e)
+            {
+                row.ShiftCellsRight(2, 4, 1);
+                //should be [0.0, 1.0, null, 2.0, 3.0, 4.0, 6.0, null]
+
+                ICell h1 = row.GetCell(7);
+                ClassicAssert.IsNull(h1);
+                ICell g1 = row.GetCell(6);
+                ClassicAssert.AreEqual(6, g1.NumericCellValue, 0.01);
+                ICell f1 = row.GetCell(5);
+                ClassicAssert.AreEqual(4, f1.NumericCellValue, 0.01);
+                ICell e1 = row.GetCell(4);
+                ClassicAssert.AreEqual(3, e1.NumericCellValue, 0.01);
+                ICell d1 = row.GetCell(3);
+                ClassicAssert.AreEqual(2, d1.NumericCellValue, 0.01);
+                ICell c1 = row.GetCell(2);
+                ClassicAssert.IsNull(c1);
+            }
+        }
+        [Test]
+        public virtual void TestCellShiftingLeft()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            ISheet sheet = wb.CreateSheet("sheet1");
+            IRow row = sheet.CreateRow(0);
+            row.CreateCell(0, CellType.Numeric).SetCellValue(0);
+            row.CreateCell(1, CellType.Numeric).SetCellValue(1);
+            row.CreateCell(2, CellType.Numeric).SetCellValue(2);//C
+            row.CreateCell(3, CellType.Numeric).SetCellValue(3);//D
+            row.CreateCell(4, CellType.Numeric).SetCellValue(4);//E
+            row.CreateCell(5, CellType.Numeric).SetCellValue(5);//F
+            row.CreateCell(6, CellType.Numeric).SetCellValue(6);//G
+            try
+            {
+                row.ShiftCellsLeft(4, 6, -2); // step = -1 is illegal
+                Assert.Fail("expected shiftLeft to Assert.Fail");
+            }
+            catch(ArgumentException e)
+            {
+                row.ShiftCellsLeft(4, 6, 2);
+                //should be [0.0, 1.0, 4.0, 5.0, 6.0, null, null, null]
+
+                ICell b1 = row.GetCell(1);
+                ClassicAssert.AreEqual(1, b1.NumericCellValue, 0.01);
+                ICell c1 = row.GetCell(2);
+                ClassicAssert.AreEqual(4, c1.NumericCellValue, 0.01);
+                ICell d1 = row.GetCell(3);
+                ClassicAssert.AreEqual(5, d1.NumericCellValue, 0.01);
+                ICell e1 = row.GetCell(4);
+                ClassicAssert.AreEqual(6, e1.NumericCellValue, 0.01);
+                ICell f1 = row.GetCell(5);
+                ClassicAssert.IsNull(f1);
+            }
+        }
     }
 
 }

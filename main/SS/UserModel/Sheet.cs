@@ -522,6 +522,15 @@ namespace NPOI.SS.UserModel
         void ShiftRows(int startRow, int endRow, int n, bool copyRowHeight, bool resetOriginalRowHeight);
 
         /// <summary>
+        /// Shifts columns between startColumn and endColumn, n number of columns.
+        /// If you use a negative number, it will shift columns left.
+        /// Code ensures that columns don't wrap around
+        /// </summary>
+        /// <param name="startColumn">the column to start shifting</param>
+        /// <param name="endColumn">the column to end shifting</param>
+        /// <param name="n">the number of columns to shift</param>
+        void ShiftColumns(int startColumn, int endColumn, int n);
+        /// <summary>
         /// Creates a split (freezepane). Any existing freezepane or split pane is overwritten.
         /// </summary>
         /// <param name="colSplit">Horizonatal position of split</param>

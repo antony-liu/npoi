@@ -55,7 +55,7 @@ namespace NPOI.XSSF.UserModel
          * the xml bean Containing information about the cell's location, value,
          * data type, formatting, and formula
          */
-        private readonly CT_Cell _cell;
+        private CT_Cell _cell;
 
         /**
          * the XSSFRow this cell belongs to
@@ -1278,6 +1278,11 @@ namespace NPOI.XSSF.UserModel
         {
             return _cell;
         }
+        internal CT_Cell NewCTCell()
+        {
+            _cell = new CT_Cell();
+            return _cell;
+        }
 
         /**
          * Chooses a new bool value for the cell when its type is changing.<p/>
@@ -1414,6 +1419,24 @@ namespace NPOI.XSSF.UserModel
             String msg = "Cell " + ref1.FormatAsString() + " is part of a multi-cell array formula. " +
                     "You cannot change part of an array.";
             NotifyArrayFormulaChanging(msg);
+        }
+
+        //Moved from XSSFRow.shift(). Not sure what is purpose. 
+        public void UpdateCellReferencesForShifting(String msg)
+        {
+            if(IsPartOfArrayFormulaGroup)
+                NotifyArrayFormulaChanging(msg);
+            XSSFSheet sheet = Sheet as XSSFSheet;
+            CalculationChain calcChain = (sheet.Workbook as XSSFWorkbook).GetCalculationChain();
+            int sheetId = (int)sheet.sheet.sheetId;
+
+            //remove the reference in the calculation chain
+            if(calcChain != null)
+                calcChain.RemoveItem(sheetId, GetReference());
+
+            CT_Cell ctCell = GetCTCell();
+            String r = new CellReference(RowIndex, ColumnIndex).FormatAsString();
+            ctCell.r = r;
         }
 
         #region ICell Members

@@ -1,8 +1,8 @@
-/*
+﻿/*
  *  ====================================================================
  *    Licensed to the Apache Software Foundation (ASF) under one or more
  *    contributor license agreements.  See the NOTICE file distributed with
- *    this work for Additional information regarding copyright ownership.
+ *    this work for additional information regarding copyright ownership.
  *    The ASF licenses this file to You under the Apache License, Version 2.0
  *    (the "License"); you may not use this file except in compliance with
  *    the License.  You may obtain a copy of the License at
@@ -17,44 +17,40 @@
  * ====================================================================
  */
 
-namespace TestCases.XSSF.Streaming
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace TestCases.XSSF.UserModel.Helpers
 {
-    using NPOI.XSSF;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NPOI.SS.UserModel;
+
+    using NPOI.XSSF.UserModel;
+    using NPOI.XSSF.UserModel.Helpers;
+    using NUnit.Framework;
     using TestCases.SS.UserModel;
 
-    /**
-     * Tests for XSSFRow
-     */
-    [TestFixture]
-    public class TestSXSSFRow : BaseTestXRow
+    public class TestXSSFColumnShifting : BaseTestColumnShifting
     {
-
-        public TestSXSSFRow()
-            : base(SXSSFITestDataProvider.instance)
+        public TestXSSFColumnShifting()
+            : base()
         {
 
+            
         }
 
-
-        [TearDown]
-        public void TearDown()
+        [SetUp]
+        public override void Init()
         {
-            //((SXSSFITestDataProvider)_testDataProvider).Cleanup();
+            wb = new XSSFWorkbook();
+            base.Init();
         }
 
-        [Test]
-        [Ignore("see <https://bz.apache.org/bugzilla/show_bug.cgi?id=62030#c1>")]
-        public override void TestCellShiftingRight()
+        protected override void InitColumnShifter()
         {
-            // Remove when SXSSFRow.shiftCellsRight() is implemented.
-        }
-        [Test]
-        [Ignore("see <https://bz.apache.org/bugzilla/show_bug.cgi?id=62030#c1>")]
-        public override void TestCellShiftingLeft()
-        {
-            // Remove when SXSSFRow.shiftCellsLeft() is implemented. 
+            columnShifter = new XSSFColumnShifter((XSSFSheet) sheet1);
         }
     }
-
 }

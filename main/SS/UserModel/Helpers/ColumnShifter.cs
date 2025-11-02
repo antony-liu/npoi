@@ -1,39 +1,23 @@
-﻿/* ====================================================================
-   Licensed to the Apache Software Foundation (ASF) under one or more
-   contributor license agreements.  See the NOTICE file distributed with
-   this work for Additional information regarding copyright ownership.
-   The ASF licenses this file to You under the Apache License, Version 2.0
-   (the "License"); you may not use this file except in compliance with
-   the License.  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-==================================================================== */
-
+﻿using NPOI.SS.Formula;
+using NPOI.SS.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-using NPOI.SS.Formula;
-using NPOI.SS.UserModel;
-using NPOI.SS.Util;
-
-namespace NPOI.XSSF.UserModel.Helpers
+namespace NPOI.SS.UserModel.Helpers
 {
     /// <summary>
     /// Helper for Shifting columns left or right
     /// This abstract class exists to consolidate duplicated code between 
     /// XSSFColumnShifter and HSSFColumnShifter
     /// </summary>
-    public abstract class ColumnShifter
+    public abstract class ColumnShifter : BaseRowColShifter
     {
-        protected XSSFSheet sheet;
+        protected ISheet sheet;
 
-        public ColumnShifter(XSSFSheet sh)
+        public ColumnShifter(ISheet sh)
         {
             sheet = sh;
         }
@@ -48,7 +32,7 @@ namespace NPOI.XSSF.UserModel.Helpers
         /// <param name="n">the number of columns to shift</param>
         /// <returns>an array of affected merged regions, doesn't contain 
         /// deleted ones</returns>
-        public List<CellRangeAddress> ShiftMergedRegions(
+        public override List<CellRangeAddress> ShiftMergedRegions(
             int startColumn,
             int endColumn,
             int n)
@@ -59,12 +43,12 @@ namespace NPOI.XSSF.UserModel.Helpers
             //boundaries when they are Shifted
             int size = sheet.NumMergedRegions;
 
-            for (int i = 0; i < size; i++)
+            for(int i = 0; i < size; i++)
             {
                 CellRangeAddress merged = sheet.GetMergedRegion(i);
 
                 // remove merged region that overlaps Shifting
-                if (RemovalNeeded(merged, startColumn, endColumn, n))
+                if(RemovalNeeded(merged, startColumn, endColumn, n))
                 {
                     _ = removedIndices.Add(i);
                     continue;
@@ -76,14 +60,14 @@ namespace NPOI.XSSF.UserModel.Helpers
                     merged.LastColumn <= endColumn;
 
                 //don't check if it's not within the Shifted area
-                if (!inStart || !inEnd)
+                if(!inStart || !inEnd)
                 {
                     continue;
                 }
 
                 //only shift if the region outside the Shifted columns is not
                 //merged too
-                if (!merged.ContainsColumn(startColumn - 1)
+                if(!merged.ContainsColumn(startColumn - 1)
                     && !merged.ContainsColumn(endColumn + 1))
                 {
                     merged.FirstColumn += n;
@@ -94,13 +78,13 @@ namespace NPOI.XSSF.UserModel.Helpers
                 }
             }
 
-            if (removedIndices.Count != 0)
+            if(removedIndices.Count != 0)
             {
                 sheet.RemoveMergedRegions(removedIndices.ToList());
             }
 
             //read so it doesn't Get Shifted again
-            foreach (CellRangeAddress region in shiftedRegions)
+            foreach(CellRangeAddress region in shiftedRegions)
             {
                 _ = sheet.AddMergedRegion(region);
             }
@@ -125,34 +109,22 @@ namespace NPOI.XSSF.UserModel.Helpers
             return merged.Intersects(overwrite);
         }
 
-        /// <summary>
-        /// Updated named ranges
-        /// </summary>
-        /// <param name="Shifter"></param>
-        public abstract void UpdateNamedRanges(FormulaShifter Shifter);
-
-        /// <summary>
-        /// Update formulas.
-        /// </summary>
-        /// <param name="Shifter"></param>
-        public abstract void UpdateFormulas(FormulaShifter Shifter);
-
-        /// <summary>
-        /// Update the formulas in specified column using the formula Shifting 
-        /// policy specified by Shifter
-        /// </summary>
-        /// <param name="column">the column to update the formulas on</param>
-        /// <param name="Shifter">the formula Shifting policy</param>
-        public abstract void UpdateColumnFormulas(IColumn column, FormulaShifter Shifter);
-
-        public abstract void UpdateConditionalFormatting(FormulaShifter Shifter);
-
-        /// <summary>
-        /// Shift the Hyperlink anchors (not the hyperlink text, even if the 
-        /// hyperlink is of type LINK_DOCUMENT and refers to a cell that was 
-        /// Shifted). Hyperlinks do not track the content they point to.
-        /// </summary>
-        /// <param name="Shifter">the formula Shifting policy</param>
-        public abstract void UpdateHyperlinks(FormulaShifter Shifter);
+        
+        public void ShiftColumns(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            if(step > 0)
+            {
+                foreach(IRow row in sheet)
+                    if(row != null)
+                        row.ShiftCellsRight(firstShiftColumnIndex, lastShiftColumnIndex, step);
+            }
+            else if(step < 0)
+            {
+                foreach(IRow row in sheet)
+                    if(row != null)
+                        row.ShiftCellsLeft(firstShiftColumnIndex, lastShiftColumnIndex, -step);
+            }
+            //else step == 0 => nothing to shift
+        }
     }
 }

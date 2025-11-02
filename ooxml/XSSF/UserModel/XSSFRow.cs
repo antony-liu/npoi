@@ -479,13 +479,13 @@ namespace NPOI.XSSF.UserModel
                     destCell.CopyCellFrom(srcCell, policy);
                 }
 
-                XSSFRowShifter rowShifter = new XSSFRowShifter(_sheet);
                 int sheetIndex = _sheet.Workbook.GetSheetIndex(_sheet);
                 string sheetName = _sheet.Workbook.GetSheetName(sheetIndex);
                 int srcRowNum = srcRow.RowNum;
                 int destRowNum = RowNum;
                 int rowDifference = destRowNum - srcRowNum;
                 FormulaShifter shifter = FormulaShifter.CreateForRowCopy(sheetIndex, sheetName, srcRowNum, srcRowNum, rowDifference, SpreadsheetVersion.EXCEL2007);
+                XSSFRowShifter rowShifter = new XSSFRowShifter(_sheet);
                 rowShifter.UpdateRowFormulas(this, shifter);
                 // Copy merged regions that are fully contained on the row
                 // FIXME: is this something that rowShifter could be doing?
@@ -588,21 +588,7 @@ namespace NPOI.XSSF.UserModel
                     "You cannot change part of an array.";
             foreach (ICell c in this)
             {
-                XSSFCell cell = (XSSFCell)c;
-                if (cell.IsPartOfArrayFormulaGroup)
-                {
-                    cell.NotifyArrayFormulaChanging(msg);
-                }
-
-                //remove the reference in the calculation chain
-                if (calcChain != null)
-                {
-                    calcChain.RemoveItem(sheetId, cell.GetReference());
-                }
-
-                CT_Cell CT_Cell = cell.GetCTCell();
-                string r = new CellReference(rownum, cell.ColumnIndex).FormatAsString();
-                CT_Cell.r = r;
+                ((XSSFCell) c).UpdateCellReferencesForShifting(msg);
             }
 
             RowNum = rownum;
@@ -806,5 +792,80 @@ namespace NPOI.XSSF.UserModel
             return _cells.Keys.Max();
         }
         #endregion
+
+        /// <summary>
+        /// Shifts column range [firstShiftColumnIndex-lastShiftColumnIndex] step places to the right.
+        /// </summary>
+        /// <param name="firstShiftColumnIndex">the column to start shifting</param>
+        /// <param name="lastShiftColumnIndex">the column to end shifting</param>
+        /// <param name="step">length of the shifting step</param>
+        /// <exception cref="IllegalArgumentException"></exception>
+        public void ShiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            if(step < 0)
+                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
+            if(firstShiftColumnIndex > lastShiftColumnIndex)
+                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
+            for(int columnIndex = lastShiftColumnIndex; columnIndex >= firstShiftColumnIndex; columnIndex--)
+            {
+                // process cells backwards, because of shifting 
+                ShiftCell(columnIndex, step);
+            }
+            for(int columnIndex = firstShiftColumnIndex; columnIndex <= firstShiftColumnIndex+step-1; columnIndex++)
+            {
+                _cells.Remove(columnIndex);
+                XSSFCell targetCell = GetCell(columnIndex) as XSSFCell;
+                if(targetCell != null)
+                    //targetCell.GetCTCell().set(CTCell.Factory.newInstance());
+                    targetCell.NewCTCell();
+            }
+        }
+        /**
+         * Shifts column range [firstShiftColumnIndex-lastShiftColumnIndex] step places to the left.
+         * @param startColumn the column to start shifting
+         * @param endColumn the column to end shifting
+         * @param step length of the shifting step
+         */
+        public void ShiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            if(step < 0)
+                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
+            if(firstShiftColumnIndex > lastShiftColumnIndex)
+                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
+            if(firstShiftColumnIndex - step < 0)
+                throw new InvalidOperationException("Column index less than zero : " + (firstShiftColumnIndex + step).ToString());
+            for(int columnIndex = firstShiftColumnIndex; columnIndex <= lastShiftColumnIndex; columnIndex++)
+            {
+                ShiftCell(columnIndex, -step);
+            }
+            for(int columnIndex = lastShiftColumnIndex-step+1; columnIndex <= lastShiftColumnIndex; columnIndex++)
+            {
+                _cells.Remove(columnIndex);
+                XSSFCell targetCell = GetCell(columnIndex) as XSSFCell;
+                if(targetCell != null)
+                    //targetCell.GetCTCell().set(CTCell.Factory.newInstance());
+                    targetCell.NewCTCell();
+            }
+        }
+        private void ShiftCell(int columnIndex, int step/*pass negative value for left shift*/)
+        {
+            if(columnIndex + step < 0) // only for shifting left
+                throw new InvalidOperationException("Column index less than zero : " + (columnIndex + step).ToString());
+
+            XSSFCell currentCell = GetCell(columnIndex) as XSSFCell;
+            if(currentCell != null)
+            {
+                currentCell.SetCellNum(columnIndex+step);
+                _cells[columnIndex+step] = currentCell;
+            }
+            else
+            {
+                _cells.Remove(columnIndex+step);
+                XSSFCell targetCell = GetCell(columnIndex+step) as XSSFCell;
+                if(targetCell != null)
+                    //targetCell.GetCTCell().set(CTCell.Factory.newInstance());
+                    targetCell.NewCTCell();
+            }
+        }
     }
 }

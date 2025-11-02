@@ -1666,6 +1666,10 @@ namespace NPOI.XSSF.Streaming
             pr.tabColor = color;
         }
 
+        public void ShiftColumns(int startColumn, int endColumn, int n)
+        {
+            throw new NotSupportedException("NotImplemented");
+        }
         IEnumerator<IRow> IEnumerable<IRow>.GetEnumerator()
         {
             return ((IEnumerable<IRow>) _sh).GetEnumerator();

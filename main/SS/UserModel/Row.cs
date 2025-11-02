@@ -213,6 +213,9 @@ namespace NPOI.SS.UserModel
         bool? Hidden { get; set; }
 
         bool? Collapsed { get; set; }
+
+        public void ShiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step);
+        public void ShiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step);
     }
 }
 

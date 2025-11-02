@@ -214,6 +214,15 @@ namespace NPOI.XSSF.Streaming
             return _cells.GetHashCode();// (Sheet.GetHashCode() << 16) + RowNum;
         }
 
+        public void ShiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            throw new NotImplementedException("shiftCellsRight");
+        }
+
+        public void ShiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
+        {
+            throw new NotImplementedException("shiftCellsLeft");
+        }
 
         public ICell CopyCell(int sourceIndex, int targetIndex)
         {
@@ -499,13 +508,8 @@ namespace NPOI.XSSF.Streaming
             {
                 throw new NotImplementedException();
             }
-
-
         }
     }
-
-
-
 }
 
 
