@@ -42,13 +42,17 @@ namespace NPOI.XSSF.UserModel
         internal static Dictionary<int, ST_DataValidationType> validationTypeMappings = new Dictionary<int, ST_DataValidationType>();
         internal static Dictionary<ST_DataValidationType, int> validationTypeReverseMappings = new Dictionary<ST_DataValidationType, int>();
         internal static Dictionary<int, ST_DataValidationErrorStyle> errorStyleMappings = new Dictionary<int, ST_DataValidationErrorStyle>();
+        internal static Dictionary<ST_DataValidationErrorStyle, int> reverseErrorStyleMappings = new Dictionary<ST_DataValidationErrorStyle, int>();
         static XSSFDataValidation()
         {
 
             errorStyleMappings[ERRORSTYLE.INFO]= ST_DataValidationErrorStyle.information;
             errorStyleMappings[ERRORSTYLE.STOP]= ST_DataValidationErrorStyle.stop;
             errorStyleMappings[ERRORSTYLE.WARNING]= ST_DataValidationErrorStyle.warning;
-
+            foreach(KeyValuePair<int, ST_DataValidationErrorStyle> kv in errorStyleMappings)
+            {
+                reverseErrorStyleMappings[kv.Value]= kv.Key;
+            }
             
             operatorTypeMappings[OperatorType.BETWEEN] =  ST_DataValidationOperator.between;
             operatorTypeMappings[OperatorType.NOT_BETWEEN] =  ST_DataValidationOperator.notBetween;
@@ -203,7 +207,7 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return (int)ctDdataValidation.errorStyle;
+                return reverseErrorStyleMappings[ctDdataValidation.errorStyle];
             }
             set 
             {

@@ -285,6 +285,56 @@ namespace TestCases.XSSF.UserModel
         }
 
         [Test]
+        public void TestDefaultErrorStyle()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                XSSFSheet sheet = wb.CreateSheet() as XSSFSheet;
+
+                XSSFDataValidation validation = CreateValidation(sheet);
+                sheet.AddValidationData(validation);
+
+                List<IDataValidation> dataValidations = sheet.GetDataValidations();
+                ClassicAssert.AreEqual(ERRORSTYLE.STOP, dataValidations[0].ErrorStyle);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
+        public void TestSetErrorStyles()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                XSSFSheet sheet = wb.CreateSheet() as XSSFSheet;
+
+                XSSFDataValidation validation = CreateValidation(sheet);
+                sheet.AddValidationData(validation);
+
+                // extract generated validation from sheet
+                List<IDataValidation> dataValidations = sheet.GetDataValidations();
+                validation = dataValidations[0] as XSSFDataValidation;
+
+                // test INFO
+                validation.ErrorStyle = ERRORSTYLE.INFO;
+                ClassicAssert.AreEqual(ERRORSTYLE.INFO, dataValidations[0].ErrorStyle);
+
+                // test WARNING
+                validation.ErrorStyle = ERRORSTYLE.WARNING;
+                ClassicAssert.AreEqual(ERRORSTYLE.WARNING, dataValidations[0].ErrorStyle);
+
+                // test STOP
+                validation.ErrorStyle = ERRORSTYLE.STOP;
+                ClassicAssert.AreEqual(ERRORSTYLE.STOP, dataValidations[0].ErrorStyle);
+            }
+            finally { wb.Close(); }
+        }
+
+        [Test]
         public void TestDefaultAllowBlank()
         {
             XSSFWorkbook wb = new XSSFWorkbook();
