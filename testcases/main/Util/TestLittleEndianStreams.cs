@@ -112,5 +112,39 @@ namespace TestCases.Util
                 ClassicAssert.IsTrue(e.Message.Contains("Buffer overrun"));
             }
         }
+        [Test]
+        public void TestBufferOverrunStartOffset()
+        {
+            byte[] srcBuf = HexRead.ReadFromString("99 88 77 88 99");
+            ILittleEndianInput lei = new LittleEndianByteArrayInputStream(srcBuf, 2);
+
+            // only one byte left, so this should fail
+            try
+            {
+                lei.ReadFully(new byte[4]);
+                Assert.Fail("Should catch exception here");
+            }
+            catch(RuntimeException e)
+            {
+                ClassicAssert.IsTrue(e.Message.Contains("Buffer overrun"));
+            }
+        }
+        [Test]
+        public void TestBufferOverrunStartOffset2()
+        {
+            byte[] srcBuf = HexRead.ReadFromString("99 88 77 88 99");
+            ILittleEndianInput lei = new LittleEndianByteArrayInputStream(srcBuf, 2, 2);
+
+            // only one byte left, so this should fail
+            try
+            {
+                lei.ReadFully(new byte[4]);
+                Assert.Fail("Should catch exception here");
+            }
+            catch(RuntimeException e)
+            {
+                ClassicAssert.IsTrue(e.Message.Contains("Buffer overrun"));
+            }
+        }
     }
 }

@@ -162,8 +162,7 @@ namespace NPOI.XWPF.Model
                         XWPFFactory.GetInstance(), i);
                 wrapper.SetXWPFDocument(doc);
 
-                String pStyle = "Header";
-                CT_HdrFtr hdr = buildHdr(type, pStyle, wrapper, pars);
+                CT_HdrFtr hdr = buildHdr(type, wrapper, pars);
                 wrapper.SetHeaderFooter(hdr);
                 hdrDoc.SetHdr((CT_Hdr)hdr);
                 assignHeader(wrapper, type);
@@ -193,8 +192,7 @@ namespace NPOI.XWPF.Model
                         XWPFFactory.GetInstance(), i);
                 wrapper.SetXWPFDocument(doc);
 
-                String pStyle = "Footer";
-                CT_HdrFtr ftr = buildFtr(type, pStyle, wrapper, pars);
+                CT_HdrFtr ftr = buildFtr(type, wrapper, pars);
                 wrapper.SetHeaderFooter(ftr);
                 ftrDoc.SetFtr((CT_Ftr)ftr);
                 assignFooter(wrapper, type);
@@ -217,18 +215,18 @@ namespace NPOI.XWPF.Model
             return i;
         }
 
-        private CT_HdrFtr buildFtr(ST_HdrFtr type, String pStyle, XWPFHeaderFooter wrapper, XWPFParagraph[] pars)
+        private CT_HdrFtr buildFtr(ST_HdrFtr type, XWPFHeaderFooter wrapper, XWPFParagraph[] pars)
         {
             //CTHdrFtr ftr = buildHdrFtr(pStyle, pars);				// MB 24 May 2010
-            CT_HdrFtr ftr = buildHdrFtr(pStyle, pars, wrapper);		// MB 24 May 2010
+            CT_HdrFtr ftr = buildHdrFtr(pars, wrapper);		// MB 24 May 2010
             SetFooterReference(type, wrapper);
             return ftr;
         }
 
-        private CT_HdrFtr buildHdr(ST_HdrFtr type, String pStyle, XWPFHeaderFooter wrapper, XWPFParagraph[] pars)
+        private CT_HdrFtr buildHdr(ST_HdrFtr type, XWPFHeaderFooter wrapper, XWPFParagraph[] pars)
         {
             //CTHdrFtr hdr = buildHdrFtr(pStyle, pars);				// MB 24 May 2010
-            CT_HdrFtr hdr = buildHdrFtr(pStyle, pars, wrapper);		// MB 24 May 2010
+            CT_HdrFtr hdr = buildHdrFtr(pars, wrapper);		// MB 24 May 2010
             SetHeaderReference(type, wrapper);
             return hdr;
         }
@@ -245,12 +243,12 @@ namespace NPOI.XWPF.Model
          * that had previoulsy been instantiated in the CreateHeader(int, XWPFParagraph[]) or 
          * CreateFooter(int, XWPFParagraph[]) methods.
          */
-        private static CT_HdrFtr buildHdrFtr(String pStyle, XWPFParagraph[] paragraphs, XWPFHeaderFooter wrapper)
+        private static CT_HdrFtr buildHdrFtr(XWPFParagraph[] paragraphs, XWPFHeaderFooter wrapper)
         {
             CT_HdrFtr ftr = wrapper._getHdrFtr();
             if (paragraphs != null) {
                 for (int i = 0 ; i < paragraphs.Length ; i++) {
-                    CT_P p = ftr.AddNewP();
+                    _ = ftr.AddNewP();
                     ftr.SetPArray(i, paragraphs[i].GetCTP());
                 }
             }
