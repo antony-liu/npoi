@@ -18,7 +18,6 @@
 namespace NPOI.SS.Formula.UDF
 {
     using System;
-    using NPOI.SS.Formula.Atp;
     using NPOI.SS.Formula.Functions;
 
     /**
@@ -28,11 +27,6 @@ namespace NPOI.SS.Formula.UDF
      */
     public abstract class UDFFinder
     {
-        public static UDFFinder GetDefault()
-        {
-            return new AggregatingUDFFinder(AnalysisToolPak.instance);
-        }
-
         /**
          * Returns executor by specified name. Returns <code>null</code> if the function name is unknown.
          *

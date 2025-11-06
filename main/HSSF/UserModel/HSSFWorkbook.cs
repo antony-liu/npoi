@@ -1520,17 +1520,17 @@ namespace NPOI.HSSF.UserModel
         }
 
         /**
- * The locator of user-defined functions.
- * By default includes functions from the Excel Analysis Toolpack
- */
+         * The locator of user-defined functions.
+         * By default includes functions from the Excel Analysis Toolpack
+         */
         [NonSerialized]
-        private UDFFinder _udfFinder = new IndexedUDFFinder(UDFFinder.GetDefault());
+        private UDFFinder _udfFinder = new IndexedUDFFinder(AggregatingUDFFinder.Default);
 
         /**
- * Register a new toolpack in this workbook.
- *
- * @param toopack the toolpack to register
- */
+         * Register a new toolpack in this workbook.
+         *
+         * @param toopack the toolpack to register
+         */
         public void AddToolPack(UDFFinder toopack)
         {
             AggregatingUDFFinder udfs = (AggregatingUDFFinder)_udfFinder;

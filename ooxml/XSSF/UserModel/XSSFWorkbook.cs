@@ -123,7 +123,7 @@ namespace NPOI.XSSF.UserModel
          * The locator of user-defined functions.
          * By default includes functions from the Excel Analysis Toolpack
          */
-        private readonly IndexedUDFFinder _udfFinder = new IndexedUDFFinder(UDFFinder.GetDefault());
+        private readonly IndexedUDFFinder _udfFinder = new IndexedUDFFinder(AggregatingUDFFinder.Default);
 
         /**
          * TODO

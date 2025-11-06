@@ -20,6 +20,7 @@ namespace NPOI.SS.Formula.UDF
     using System;
     using NPOI.SS.Formula.Functions;
     using System.Collections.Generic;
+    using NPOI.SS.Formula.Atp;
 
     /**
      * Collects Add-in libraries and VB macro functions toGether into one UDF Finder
@@ -28,7 +29,16 @@ namespace NPOI.SS.Formula.UDF
      */
     public class AggregatingUDFFinder : UDFFinder
     {
-
+        /// <summary>
+        /// Default UDFFinder implementation
+        /// </summary>
+        public static UDFFinder Default
+        {
+            get
+            {
+                return new AggregatingUDFFinder(AnalysisToolPak.instance);
+            }
+        }
         private readonly List<UDFFinder> _usedToolPacks = new List<UDFFinder>();
 
         public AggregatingUDFFinder(params UDFFinder[] usedToolPacks)

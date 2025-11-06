@@ -111,7 +111,7 @@ namespace TestCases.HSSF.Model
         {
             HSSFWorkbook hwb = new HSSFWorkbook();
             InternalWorkbook wb = TestHSSFWorkbook.GetInternalWorkbook(hwb);
-            ClassicAssert.IsNotNull(wb.GetNameXPtg("ISODD", UDFFinder.GetDefault()));
+            ClassicAssert.IsNotNull(wb.GetNameXPtg("ISODD", AggregatingUDFFinder.Default));
 
             FreeRefFunction1 NotImplemented = new FreeRefFunction1();
 
