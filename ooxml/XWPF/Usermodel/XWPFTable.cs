@@ -35,7 +35,14 @@ namespace NPOI.XWPF.UserModel
         //protected List<String> styleIDs;
 
         // Create a map from this XWPF-level enum to the STBorder.Enum values
-        public enum XWPFBorderType { NIL, NONE, SINGLE, THICK, DOUBLE, DOTTED, DASHED, DOT_DASH };
+        public enum XWPFBorderType { NIL, NONE, SINGLE, THICK, DOUBLE, DOTTED, DASHED, DOT_DASH,
+            DOT_DOT_DASH, TRIPLE,
+            THIN_THICK_SMALL_GAP, THICK_THIN_SMALL_GAP, THIN_THICK_THIN_SMALL_GAP,
+            THIN_THICK_MEDIUM_GAP, THICK_THIN_MEDIUM_GAP, THIN_THICK_THIN_MEDIUM_GAP,
+            THIN_THICK_LARGE_GAP, THICK_THIN_LARGE_GAP, THIN_THICK_THIN_LARGE_GAP,
+            WAVE, DOUBLE_WAVE, DASH_SMALL_GAP, DASH_DOT_STROKED, THREE_D_EMBOSS, THREE_D_ENGRAVE,
+            OUTSET, INSET
+        };
         internal static Dictionary<XWPFBorderType, ST_Border> xwpfBorderTypeMap;
         // Create a map from the STBorder.Enum values to the XWPF-level enums
         internal static Dictionary<ST_Border, XWPFBorderType> stBorderTypeMap;
@@ -44,25 +51,65 @@ namespace NPOI.XWPF.UserModel
         static XWPFTable()
         {
             // populate enum maps
-            xwpfBorderTypeMap = new Dictionary<XWPFBorderType, ST_Border>();
-            xwpfBorderTypeMap.Add(XWPFBorderType.NIL, ST_Border.nil);
-            xwpfBorderTypeMap.Add(XWPFBorderType.NONE, ST_Border.none);
-            xwpfBorderTypeMap.Add(XWPFBorderType.SINGLE, ST_Border.single);
-            xwpfBorderTypeMap.Add(XWPFBorderType.THICK, ST_Border.thick);
-            xwpfBorderTypeMap.Add(XWPFBorderType.DOUBLE, ST_Border.@double);
-            xwpfBorderTypeMap.Add(XWPFBorderType.DOTTED, ST_Border.dotted);
-            xwpfBorderTypeMap.Add(XWPFBorderType.DASHED, ST_Border.dashed);
-            xwpfBorderTypeMap.Add(XWPFBorderType.DOT_DASH, ST_Border.dotDash);
+            xwpfBorderTypeMap = new Dictionary<XWPFBorderType, ST_Border> {
+                { XWPFBorderType.NIL, ST_Border.nil },
+                { XWPFBorderType.NONE, ST_Border.none },
+                { XWPFBorderType.SINGLE, ST_Border.single },
+                { XWPFBorderType.THICK, ST_Border.thick },
+                { XWPFBorderType.DOUBLE, ST_Border.@double },
+                { XWPFBorderType.DOTTED, ST_Border.dotted },
+                { XWPFBorderType.DASHED, ST_Border.dashed },
+                { XWPFBorderType.DOT_DASH, ST_Border.dotDash },
+                { XWPFBorderType.DOT_DOT_DASH, ST_Border.dotDotDash },
+                { XWPFBorderType.TRIPLE, ST_Border.triple },
+                { XWPFBorderType.THIN_THICK_SMALL_GAP, ST_Border.thinThickSmallGap },
+                { XWPFBorderType.THICK_THIN_SMALL_GAP, ST_Border.thickThinSmallGap },
+                { XWPFBorderType.THIN_THICK_THIN_SMALL_GAP, ST_Border.thinThickThinSmallGap },
+                { XWPFBorderType.THIN_THICK_MEDIUM_GAP, ST_Border.thinThickMediumGap },
+                { XWPFBorderType.THICK_THIN_MEDIUM_GAP, ST_Border.thickThinMediumGap },
+                { XWPFBorderType.THIN_THICK_THIN_MEDIUM_GAP, ST_Border.thinThickThinMediumGap },
+                { XWPFBorderType.THIN_THICK_LARGE_GAP, ST_Border.thinThickLargeGap },
+                { XWPFBorderType.THICK_THIN_LARGE_GAP, ST_Border.thickThinLargeGap },
+                { XWPFBorderType.THIN_THICK_THIN_LARGE_GAP, ST_Border.thinThickThinLargeGap },
+                { XWPFBorderType.WAVE, ST_Border.wave },
+                { XWPFBorderType.DOUBLE_WAVE, ST_Border.doubleWave },
+                { XWPFBorderType.DASH_SMALL_GAP, ST_Border.dashSmallGap },
+                { XWPFBorderType.DASH_DOT_STROKED, ST_Border.dashDotStroked },
+                { XWPFBorderType.THREE_D_EMBOSS, ST_Border.threeDEmboss },
+                { XWPFBorderType.THREE_D_ENGRAVE, ST_Border.threeDEngrave },
+                { XWPFBorderType.OUTSET, ST_Border.outset },
+                { XWPFBorderType.INSET, ST_Border.inset }
+            };
 
-            stBorderTypeMap = new Dictionary<ST_Border, XWPFBorderType>();
-            stBorderTypeMap.Add(ST_Border.nil, XWPFBorderType.NIL);
-            stBorderTypeMap.Add(ST_Border.none, XWPFBorderType.NONE);
-            stBorderTypeMap.Add(ST_Border.single, XWPFBorderType.SINGLE);
-            stBorderTypeMap.Add(ST_Border.thick, XWPFBorderType.THICK);
-            stBorderTypeMap.Add(ST_Border.@double, XWPFBorderType.DOUBLE);
-            stBorderTypeMap.Add(ST_Border.dotted, XWPFBorderType.DOTTED);
-            stBorderTypeMap.Add(ST_Border.dashed, XWPFBorderType.DASHED);
-            stBorderTypeMap.Add(ST_Border.dotDash, XWPFBorderType.DOT_DASH);
+            stBorderTypeMap = new Dictionary<ST_Border, XWPFBorderType> {
+                { ST_Border.nil, XWPFBorderType.NIL },
+                { ST_Border.none, XWPFBorderType.NONE },
+                { ST_Border.single, XWPFBorderType.SINGLE },
+                { ST_Border.thick, XWPFBorderType.THICK },
+                { ST_Border.@double, XWPFBorderType.DOUBLE },
+                { ST_Border.dotted, XWPFBorderType.DOTTED },
+                { ST_Border.dashed, XWPFBorderType.DASHED },
+                { ST_Border.dotDash, XWPFBorderType.DOT_DASH },
+                { ST_Border.dotDotDash, XWPFBorderType.DOT_DOT_DASH },
+                { ST_Border.triple, XWPFBorderType.TRIPLE },
+                { ST_Border.thinThickSmallGap, XWPFBorderType.THIN_THICK_SMALL_GAP },
+                { ST_Border.thickThinSmallGap, XWPFBorderType.THICK_THIN_SMALL_GAP },
+                { ST_Border.thinThickThinSmallGap, XWPFBorderType.THIN_THICK_THIN_SMALL_GAP },
+                { ST_Border.thinThickMediumGap, XWPFBorderType.THIN_THICK_MEDIUM_GAP },
+                { ST_Border.thickThinMediumGap, XWPFBorderType.THICK_THIN_MEDIUM_GAP },
+                { ST_Border.thinThickThinMediumGap, XWPFBorderType.THIN_THICK_THIN_MEDIUM_GAP },
+                { ST_Border.thinThickLargeGap, XWPFBorderType.THIN_THICK_LARGE_GAP },
+                { ST_Border.thickThinLargeGap, XWPFBorderType.THICK_THIN_LARGE_GAP },
+                { ST_Border.thinThickThinLargeGap, XWPFBorderType.THIN_THICK_THIN_LARGE_GAP },
+                { ST_Border.wave, XWPFBorderType.WAVE },
+                { ST_Border.doubleWave, XWPFBorderType.DOUBLE_WAVE },
+                { ST_Border.dashSmallGap, XWPFBorderType.DASH_SMALL_GAP },
+                { ST_Border.dashDotStroked, XWPFBorderType.DASH_DOT_STROKED },
+                { ST_Border.threeDEmboss, XWPFBorderType.THREE_D_EMBOSS },
+                { ST_Border.threeDEngrave, XWPFBorderType.THREE_D_ENGRAVE },
+                { ST_Border.outset, XWPFBorderType.OUTSET },
+                { ST_Border.inset, XWPFBorderType.INSET }
+            };
         }
         public XWPFTable(CT_Tbl table, IBody part, int row, int col)
             : this(table, part)

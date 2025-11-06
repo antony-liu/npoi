@@ -178,7 +178,14 @@ namespace TestCases.XWPF.UserModel
             xtab.InsertNewTableRow(xtab.NumberOfRows);
             ClassicAssert.AreEqual(6, xtab.NumberOfRows);
 
-
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
         [Test]
@@ -741,7 +748,7 @@ namespace TestCases.XWPF.UserModel
             }
             catch(IOException e)
             {
-                ClassicAssert.Fail("Unable to close doc");
+                Assert.Fail("Unable to close doc");
             }
         }
     }
