@@ -250,7 +250,7 @@ namespace TestCases.HSSF.UserModel
             HSSFWorkbook wb = new HSSFWorkbook();
             IFont fnt = wb.CreateFont();
             fnt.FontName = ("TestingFont");
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
 
             NPOI.SS.UserModel.ICellStyle orig = wb.CreateCellStyle();
             orig.Alignment = (HorizontalAlignment.Justify);
@@ -270,7 +270,7 @@ namespace TestCases.HSSF.UserModel
             ClassicAssert.AreEqual(HorizontalAlignment.Justify, orig.Alignment);
             ClassicAssert.AreEqual(fnt, clone.GetFont(wb));
             ClassicAssert.AreEqual(18, clone.DataFormat);
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
         }
 
         /**
@@ -284,7 +284,7 @@ namespace TestCases.HSSF.UserModel
 
             IFont fnt = wbOrig.CreateFont();
             fnt.FontName = ("TestingFont");
-            ClassicAssert.AreEqual(5, wbOrig.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wbOrig.NumberOfFontsAsInt);
 
             IDataFormat fmt = wbOrig.CreateDataFormat();
             fmt.GetFormat("MadeUpOne");
@@ -301,11 +301,11 @@ namespace TestCases.HSSF.UserModel
 
             // Now a style on another workbook
             HSSFWorkbook wbClone = new HSSFWorkbook();
-            ClassicAssert.AreEqual(4, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wbClone.NumberOfFontsAsInt);
             IDataFormat fmtClone = wbClone.CreateDataFormat();
 
             NPOI.SS.UserModel.ICellStyle clone = wbClone.CreateCellStyle();
-            ClassicAssert.AreEqual(4, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wbClone.NumberOfFontsAsInt);
 
             ClassicAssert.AreNotEqual(HorizontalAlignment.Right, clone.Alignment);
             ClassicAssert.AreNotEqual("TestingFont", clone.GetFont(wbClone).FontName);
@@ -315,7 +315,7 @@ namespace TestCases.HSSF.UserModel
             ClassicAssert.AreEqual("TestingFont", clone.GetFont(wbClone).FontName);
             ClassicAssert.AreEqual(fmtClone.GetFormat("Test##"), clone.DataFormat);
             ClassicAssert.AreNotEqual(fmtClone.GetFormat("Test##"), fmt.GetFormat("Test##"));
-            ClassicAssert.AreEqual(5, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wbClone.NumberOfFontsAsInt);
         }
         [Test]
         public void TestStyleNames()

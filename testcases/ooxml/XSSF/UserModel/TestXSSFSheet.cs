@@ -575,7 +575,7 @@ namespace TestCases.XSSF.UserModel
             };
             stylesTable.PutCellXf(cellXf);
             XSSFCellStyle cellStyle = new XSSFCellStyle(1, 1, stylesTable, null);
-            ClassicAssert.AreEqual(1, cellStyle.FontIndex);
+            ClassicAssert.AreEqual(1, cellStyle.FontIndexAsInt);
 
             sheet.SetDefaultColumnStyle(3, cellStyle);
             ClassicAssert.AreEqual(1u, ctWorksheet.GetColsArray(0).GetColArray(0).style);

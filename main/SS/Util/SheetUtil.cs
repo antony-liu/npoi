@@ -416,7 +416,7 @@ namespace NPOI.SS.Util
         {
             var wb = cell.Sheet.Workbook;
             var style = cell.CellStyle;
-            var font = wb.GetFontAt(style.FontIndex);
+            var font = wb.GetFontAt(style.FontIndexAsInt);
 
             return IFont2Font(font);
         }
@@ -478,7 +478,7 @@ namespace NPOI.SS.Util
             if (cellType == CellType.Formula)
                 cellType = cell.CachedFormulaResultType;
 
-            IFont font = wb.GetFontAt(style.FontIndex);
+            IFont font = wb.GetFontAt(style.FontIndexAsInt);
             Font windowsFont = IFont2Font(font);
 
             double width = -1;
@@ -612,7 +612,7 @@ namespace NPOI.SS.Util
          */
         public static int GetDefaultCharWidth(IWorkbook wb)
         {
-            IFont defaultFont = wb.GetFontAt((short)0);
+            IFont defaultFont = wb.GetFontAt(0);
             Font font = IFont2Font(defaultFont);
 
             return (int)Math.Ceiling(TextMeasurer.MeasureSize(new string(defaultChar, 1), new TextOptions(font) { Dpi = dpi }).Width);

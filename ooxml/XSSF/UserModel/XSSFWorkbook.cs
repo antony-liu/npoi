@@ -1032,17 +1032,17 @@ namespace NPOI.XSSF.UserModel
             return stylesSource.GetStyleAt(idx);
         }
 
-        /**
-         * Get the font at the given index number
-         *
-         * @param idx  index number
-         * @return XSSFFont at the index
-         */
+        [Obsolete("use GetFontAt(int)")]
+        [Removal(Version = "4.2")]
         public IFont GetFontAt(short idx)
         {
             return stylesSource.GetFontAt(idx);
         }
 
+        public IFont GetFontAt(int idx)
+        {
+            return stylesSource.GetFontAt(idx);
+        }
         /// <summary>
         /// Get the first named range with the given name.
         /// Note: names of named ranges are not unique as they are scoped by sheet.
@@ -1134,11 +1134,8 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        /**
-         * Get the number of fonts in the this workbook
-         *
-         * @return number of fonts
-         */
+        [Obsolete("use NumberOfFontsAsInt")]
+        [Removal(Version = "4.2")]
         public short NumberOfFonts
         {
             get
@@ -1146,7 +1143,13 @@ namespace NPOI.XSSF.UserModel
                 return (short)stylesSource.Fonts.Count;
             }
         }
-
+        public int NumberOfFontsAsInt
+        {
+            get
+            {
+                return stylesSource.Fonts.Count;
+            }
+        }
         /**
          * Get the number of named ranges in the this workbook
          *

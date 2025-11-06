@@ -24,6 +24,7 @@ namespace NPOI.HSSF.UserModel
     using NPOI.SS.UserModel;
     using System.Collections.Generic;
     using System.Threading;
+    using NPOI.Util;
 
     /// <summary>
     /// High level representation of the style of a cell in a sheet of a workbook.
@@ -186,9 +187,19 @@ namespace NPOI.HSSF.UserModel
         /// Gets the index of the font for this style.
         /// </summary>
         /// <value>The index of the font.</value>
+        [Obsolete("use FontIndexAsInt")]
+        [Removal(Version = "4.2")]
         public short FontIndex
         {
             get { return _format.FontIndex; }
+        }
+
+        public int FontIndexAsInt
+        {
+            get
+            {
+                return _format.FontIndex;
+            }
         }
 
         /// <summary>
@@ -198,7 +209,7 @@ namespace NPOI.HSSF.UserModel
         /// <returns></returns>
         public IFont GetFont(IWorkbook parentWorkbook)
         {
-            return ((HSSFWorkbook)parentWorkbook).GetFontAt(FontIndex);
+            return ((HSSFWorkbook)parentWorkbook).GetFontAt(FontIndexAsInt);
         }
 
         /// <summary>
@@ -623,7 +634,7 @@ namespace NPOI.HSSF.UserModel
                 FontRecord fr = _workbook.CreateNewFont();
                 fr.CloneStyleFrom(
                         source._workbook.GetFontRecordAt(
-                                source.FontIndex
+                                source.FontIndexAsInt
                         )
                 );
 
@@ -700,10 +711,10 @@ namespace NPOI.HSSF.UserModel
             }
         }
         /**
- * Gets the name of the user defined style.
- * Returns null for built in styles, and
- *  styles where no name has been defined
- */
+         * Gets the name of the user defined style.
+         * Returns null for built in styles, and
+         *  styles where no name has been defined
+         */
         public String UserStyleName
         {
             get

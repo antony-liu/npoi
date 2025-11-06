@@ -1225,10 +1225,10 @@ namespace TestCases.HSSF.UserModel
          * Test that fonts get added properly
          */
         [Test]
-        public void Test45338()
+        public void Bug45338()
         {
             HSSFWorkbook wb = new HSSFWorkbook();
-            ClassicAssert.AreEqual(4, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wb.NumberOfFontsAsInt);
 
             ISheet s = wb.CreateSheet();
             s.CreateRow(0);
@@ -1236,27 +1236,27 @@ namespace TestCases.HSSF.UserModel
             ICell c1 = s.GetRow(0).CreateCell(0);
             ICell c2 = s.GetRow(1).CreateCell(0);
 
-            ClassicAssert.AreEqual(4, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wb.NumberOfFontsAsInt);
 
-            IFont f1 = wb.GetFontAt((short)0);
+            IFont f1 = wb.GetFontAt(0);
             ClassicAssert.IsFalse(f1.IsBold);
 
             // Check that asking for the same font
             //  multiple times gives you the same thing.
             // Otherwise, our Tests wouldn't work!
-            ClassicAssert.AreSame(wb.GetFontAt((short)0), wb.GetFontAt((short)0));
+            ClassicAssert.AreSame(wb.GetFontAt(0), wb.GetFontAt(0));
             ClassicAssert.AreEqual(
-                    wb.GetFontAt((short)0),
-                    wb.GetFontAt((short)0)
+                    wb.GetFontAt(0),
+                    wb.GetFontAt(0)
             );
             ClassicAssert.AreEqual(
-                    wb.GetFontAt((short)2),
-                    wb.GetFontAt((short)2)
+                    wb.GetFontAt(2),
+                    wb.GetFontAt(2)
             );
             ClassicAssert.IsTrue(
-                    wb.GetFontAt((short)0)
+                    wb.GetFontAt(0)
                     !=
-                    wb.GetFontAt((short)2)
+                    wb.GetFontAt(2)
             );
 
             // Look for a new font we have
@@ -1269,10 +1269,10 @@ namespace TestCases.HSSF.UserModel
             );
 
             IFont nf = wb.CreateFont();
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
 
-            ClassicAssert.AreEqual(5, nf.Index);
-            ClassicAssert.AreEqual(nf, wb.GetFontAt((short)5));
+            ClassicAssert.AreEqual(5, nf.IndexAsInt);
+            ClassicAssert.AreEqual(nf, wb.GetFontAt(5));
 
             nf.IsBold = false;
             nf.Color = ((short)123);
@@ -1283,8 +1283,8 @@ namespace TestCases.HSSF.UserModel
             nf.TypeOffset = FontSuperScript.Sub;
             nf.Underline = FontUnderlineType.Double;
 
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
-            ClassicAssert.AreEqual(nf, wb.GetFontAt((short)5));
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
+            ClassicAssert.AreEqual(nf, wb.GetFontAt(5));
 
             // Find it now
             ClassicAssert.IsNotNull(

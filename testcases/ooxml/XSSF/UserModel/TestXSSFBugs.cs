@@ -369,21 +369,21 @@ namespace TestCases.XSSF.UserModel
                 IWorkbook wb = wbs[i];
                 int startingFonts = InitialFonts[i];
 
-                ClassicAssert.AreEqual(startingFonts, wb.NumberOfFonts);
+                ClassicAssert.AreEqual(startingFonts, wb.NumberOfFontsAsInt);
 
                 // Get a font, and slightly change it
                 IFont a = wb.CreateFont();
-                ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFonts);
+                ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFontsAsInt);
                 a.FontHeightInPoints = ((short)23);
-                ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFonts);
+                ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFontsAsInt);
 
                 // Get two more, unChanged
                 /*IFont b = */
                 wb.CreateFont();
-                ClassicAssert.AreEqual(startingFonts + 2, wb.NumberOfFonts);
+                ClassicAssert.AreEqual(startingFonts + 2, wb.NumberOfFontsAsInt);
                 /*IFont c = */
                 wb.CreateFont();
-                ClassicAssert.AreEqual(startingFonts + 3, wb.NumberOfFonts);
+                ClassicAssert.AreEqual(startingFonts + 3, wb.NumberOfFontsAsInt);
             }
         }
 
@@ -964,14 +964,14 @@ namespace TestCases.XSSF.UserModel
 
             // Column 1 has a font with regular colours
             XSSFCell cr = r.GetCell(1) as XSSFCell;
-            XSSFFont fr = wb.GetFontAt(cr.CellStyle.FontIndex) as XSSFFont;
+            XSSFFont fr = wb.GetFontAt(cr.CellStyle.FontIndexAsInt) as XSSFFont;
             XSSFColor colr = fr.GetXSSFColor();            // No theme, has colours
             ClassicAssert.AreEqual(0, colr.Theme);
             ClassicAssert.IsNotNull(colr.RGB);
 
             // Column 0 has a font with colours from a theme
             XSSFCell ct = r.GetCell(0) as XSSFCell;
-            XSSFFont ft = wb.GetFontAt(ct.CellStyle.FontIndex) as XSSFFont;
+            XSSFFont ft = wb.GetFontAt(ct.CellStyle.FontIndexAsInt) as XSSFFont;
             XSSFColor colt = ft.GetXSSFColor();
             // Has a theme, which has the colours on it
             ClassicAssert.AreEqual(9, colt.Theme);
@@ -1000,7 +1000,7 @@ namespace TestCases.XSSF.UserModel
             font1.Color = ((short)20);
             IFont font2 = wb1.CreateFont();
             font2.Color = (short)(FontColor.Red);
-            IFont font3 = wb1.GetFontAt((short)0);
+            IFont font3 = wb1.GetFontAt(0);
 
             XSSFRow row = sheet.CreateRow(2) as XSSFRow;
             XSSFCell cell = row.CreateCell(2) as XSSFCell;
@@ -1959,10 +1959,10 @@ namespace TestCases.XSSF.UserModel
 
         private void saveAndReloadReport(IWorkbook wb, FileInfo outFile)
         {
-            IFont font = wb.GetFontAt((short)0);
+            IFont font = wb.GetFontAt(0);
             if (font is XSSFFont)
             {
-                XSSFFont xfont = (XSSFFont)wb.GetFontAt((short)0);
+                XSSFFont xfont = (XSSFFont)wb.GetFontAt(0);
                 CT_Font ctFont = (CT_Font)xfont.GetCTFont();
                 ClassicAssert.AreEqual(0, ctFont.SizeOfBArray());
             }

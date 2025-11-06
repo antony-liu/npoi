@@ -308,7 +308,7 @@ namespace TestCases.XSSF.UserModel
             IWorkbook wb = new XSSFWorkbook();
 
             // cannot check on result because on some machines we get back false here!
-            SheetUtil.CanComputeColumnWidth(wb.GetFontAt((short)0));
+            SheetUtil.CanComputeColumnWidth(wb.GetFontAt(0));
 
             wb.Close();
         }

@@ -4246,7 +4246,7 @@ namespace NPOI.XSSF.UserModel
         public void CopyTo(IWorkbook dest, string name, bool copyStyle, bool keepFormulas)
         {
             StylesTable styles = ((XSSFWorkbook) dest).GetStylesSource();
-            if(copyStyle && Workbook.NumberOfFonts > 0)
+            if(copyStyle && Workbook.NumberOfFontsAsInt > 0)
             {
                 foreach(XSSFFont font in ((XSSFWorkbook) Workbook).GetStylesSource().Fonts)
                 {

@@ -17,6 +17,7 @@
 
 namespace NPOI.SS.UserModel
 {
+    using NPOI.Util;
     using System;
 
     public enum FontUnderlineType : byte
@@ -149,7 +150,21 @@ namespace NPOI.SS.UserModel
         /// <summary>
         /// get the index within the Workbook (sequence within the collection of Font objects)
         /// </summary>
+        [Obsolete("use IndexAsInt")]
+        [Removal(Version = "4.2")]
         short Index { get; }
+
+        /// <summary>
+        /// get the index within the XSSFWorkbook (sequence within the collection of Font objects)
+        /// </summary>
+        /// <returns>unique index number of the underlying record this Font represents (probably you don't care
+        /// unless you're comparing which one is which)
+        /// </returns>
+        /// <remarks>
+        /// @since 4.0.0
+        /// </remarks>
+
+        public int IndexAsInt { get;}
 
         bool IsBold { get; set; }
 

@@ -267,17 +267,17 @@ namespace TestCases.SS.Util
             // should be Assert.AreSame, but a new HSSFCellStyle is returned for each GetCellStyle() call. 
             // HSSFCellStyle wraps an underlying style record, and the underlying
             // style record is the same between multiple GetCellStyle() calls.
-            ClassicAssert.AreEqual(defaultFontIndex, A1.CellStyle.FontIndex);
-            ClassicAssert.AreEqual(defaultFontIndex, B1.CellStyle.FontIndex);
+            ClassicAssert.AreEqual(defaultFontIndex, A1.CellStyle.FontIndexAsInt);
+            ClassicAssert.AreEqual(defaultFontIndex, B1.CellStyle.FontIndexAsInt);
 
             // Get/set alignment modifies the cell's style
             CellUtil.SetFont(A1, font);
-            ClassicAssert.AreEqual(customFontIndex, A1.CellStyle.FontIndex);
+            ClassicAssert.AreEqual(customFontIndex, A1.CellStyle.FontIndexAsInt);
 
             // Get/set alignment doesn't affect the style of cells with
             // the same style prior to modifying the style
             ClassicAssert.AreNotEqual(A1.CellStyle, B1.CellStyle);
-            ClassicAssert.AreEqual(defaultFontIndex, B1.CellStyle.FontIndex);
+            ClassicAssert.AreEqual(defaultFontIndex, B1.CellStyle.FontIndexAsInt);
 
             wb.Close();
         }

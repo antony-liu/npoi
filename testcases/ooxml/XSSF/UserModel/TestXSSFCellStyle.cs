@@ -819,11 +819,11 @@ namespace TestCases.XSSF.UserModel
         public void TestCloneStyleSameWB()
         {
             XSSFWorkbook wb = new XSSFWorkbook();
-            ClassicAssert.AreEqual(1, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(1, wb.NumberOfFontsAsInt);
 
             XSSFFont fnt = (XSSFFont)wb.CreateFont();
             fnt.FontName = ("TestingFont");
-            ClassicAssert.AreEqual(2, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wb.NumberOfFontsAsInt);
 
             XSSFCellStyle orig = (XSSFCellStyle)wb.CreateCellStyle();
             orig.Alignment = (HorizontalAlignment.Right);
@@ -843,7 +843,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(HorizontalAlignment.Right, clone.Alignment);
             ClassicAssert.AreEqual(fnt, clone.GetFont());
             ClassicAssert.AreEqual(18, clone.DataFormat);
-            ClassicAssert.AreEqual(2, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(clone.GetCoreXf(), wb.GetStylesSource().GetStyleAt(clone.Index).GetCoreXf(), "Should be same CoreXF after cloning");
 
             clone.Alignment = HorizontalAlignment.Left;
@@ -860,12 +860,12 @@ namespace TestCases.XSSF.UserModel
         public void TestCloneStyleDiffWB()
         {
             XSSFWorkbook wbOrig = new XSSFWorkbook();
-            ClassicAssert.AreEqual(1, wbOrig.NumberOfFonts);
+            ClassicAssert.AreEqual(1, wbOrig.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(0, wbOrig.GetStylesSource().GetNumberFormats().Count);
 
             XSSFFont fnt = (XSSFFont)wbOrig.CreateFont();
             fnt.FontName = ("TestingFont");
-            ClassicAssert.AreEqual(2, wbOrig.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wbOrig.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(0, wbOrig.GetStylesSource().GetNumberFormats().Count);
 
             XSSFDataFormat fmt = (XSSFDataFormat)wbOrig.CreateDataFormat();
@@ -881,20 +881,20 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsTrue(fnt == orig.GetFont());
             ClassicAssert.IsTrue(fmt.GetFormat("Test##") == orig.DataFormat);
 
-            ClassicAssert.AreEqual(2, wbOrig.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wbOrig.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(3, wbOrig.GetStylesSource().GetNumberFormats().Count);
 
 
             // Now a style on another workbook
             XSSFWorkbook wbClone = new XSSFWorkbook();
-            ClassicAssert.AreEqual(1, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(1, wbClone.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(0, wbClone.GetStylesSource().GetNumberFormats().Count);
             ClassicAssert.AreEqual(1, wbClone.NumCellStyles);
 
             XSSFDataFormat fmtClone = (XSSFDataFormat)wbClone.CreateDataFormat();
             XSSFCellStyle clone = (XSSFCellStyle)wbClone.CreateCellStyle();
 
-            ClassicAssert.AreEqual(1, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(1, wbClone.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(0, wbClone.GetStylesSource().GetNumberFormats().Count);
 
             ClassicAssert.IsFalse(HorizontalAlignment.Right == clone.Alignment);
@@ -902,7 +902,7 @@ namespace TestCases.XSSF.UserModel
 
             clone.CloneStyleFrom(orig);
 
-            ClassicAssert.AreEqual(2, wbClone.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wbClone.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(2, wbClone.NumCellStyles);
             ClassicAssert.AreEqual(1, wbClone.GetStylesSource().GetNumberFormats().Count);
 
@@ -913,7 +913,7 @@ namespace TestCases.XSSF.UserModel
 
             // Save it and re-check
             XSSFWorkbook wbReload = (XSSFWorkbook)XSSFTestDataSamples.WriteOutAndReadBack(wbClone);
-            ClassicAssert.AreEqual(2, wbReload.NumberOfFonts);
+            ClassicAssert.AreEqual(2, wbReload.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(2, wbReload.NumCellStyles);
             ClassicAssert.AreEqual(1, wbReload.GetStylesSource().GetNumberFormats().Count);
 

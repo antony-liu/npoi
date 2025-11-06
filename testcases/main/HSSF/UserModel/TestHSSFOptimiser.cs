@@ -30,7 +30,7 @@ namespace TestCases.HSSF.UserModel
         {
             HSSFWorkbook wb = new HSSFWorkbook();
             // New files start with 4 built in fonts, and 21 built in styles
-            ClassicAssert.AreEqual(4, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(21, wb.NumCellStyles);
 
             // Create a test font and style, and use them
@@ -44,13 +44,13 @@ namespace TestCases.HSSF.UserModel
             row.CreateCell(0).CellStyle = (s);
 
             // Should have one more than the default of each
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(22, wb.NumCellStyles);
 
             // Optimise fonts
             HSSFOptimiser.OptimiseFonts(wb);
 
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(22, wb.NumCellStyles);
 
             ClassicAssert.AreEqual(f, s.GetFont(wb));
@@ -58,7 +58,7 @@ namespace TestCases.HSSF.UserModel
             // Optimise styles
             HSSFOptimiser.OptimiseCellStyles(wb);
 
-            ClassicAssert.AreEqual(5, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(5, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(22, wb.NumCellStyles);
 
             ClassicAssert.AreEqual(f, s.GetFont(wb));
@@ -100,19 +100,19 @@ namespace TestCases.HSSF.UserModel
 
             NPOI.SS.UserModel.ICellStyle cs1 = wb.CreateCellStyle();
             cs1.SetFont(f1);
-            ClassicAssert.AreEqual(5, cs1.FontIndex);
+            ClassicAssert.AreEqual(5, cs1.FontIndexAsInt);
 
             NPOI.SS.UserModel.ICellStyle cs2 = wb.CreateCellStyle();
             cs2.SetFont(f4);
-            ClassicAssert.AreEqual(8, cs2.FontIndex);
+            ClassicAssert.AreEqual(8, cs2.FontIndexAsInt);
 
             NPOI.SS.UserModel.ICellStyle cs3 = wb.CreateCellStyle();
             cs3.SetFont(f5);
-            ClassicAssert.AreEqual(9, cs3.FontIndex);
+            ClassicAssert.AreEqual(9, cs3.FontIndexAsInt);
 
             NPOI.SS.UserModel.ICellStyle cs4 = wb.CreateCellStyle();
             cs4.SetFont(f6);
-            ClassicAssert.AreEqual(10, cs4.FontIndex);
+            ClassicAssert.AreEqual(10, cs4.FontIndexAsInt);
 
             ClassicAssert.AreEqual(25, wb.NumCellStyles);
 
@@ -134,21 +134,21 @@ namespace TestCases.HSSF.UserModel
 
 
             // Check what we have now
-            ClassicAssert.AreEqual(10, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(10, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(25, wb.NumCellStyles);
 
             // Optimise
             HSSFOptimiser.OptimiseFonts(wb);
 
             // Check font count
-            ClassicAssert.AreEqual(8, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(8, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(25, wb.NumCellStyles);
 
             // Check font use in cell styles
-            ClassicAssert.AreEqual(5, cs1.FontIndex);
-            ClassicAssert.AreEqual(5, cs2.FontIndex); // duplicate of 1
-            ClassicAssert.AreEqual(6, cs3.FontIndex); // duplicate of 2
-            ClassicAssert.AreEqual(8, cs4.FontIndex); // two have gone
+            ClassicAssert.AreEqual(5, cs1.FontIndexAsInt);
+            ClassicAssert.AreEqual(5, cs2.FontIndexAsInt); // duplicate of 1
+            ClassicAssert.AreEqual(6, cs3.FontIndexAsInt); // duplicate of 2
+            ClassicAssert.AreEqual(8, cs4.FontIndexAsInt); // two have gone
 
 
             // And in rich text
@@ -173,7 +173,7 @@ namespace TestCases.HSSF.UserModel
             HSSFWorkbook wb = new HSSFWorkbook();
 
             // Two fonts
-            ClassicAssert.AreEqual(4, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(4, wb.NumberOfFontsAsInt);
 
             IFont f1 = wb.CreateFont();
             f1.FontHeight = ((short)11);
@@ -183,7 +183,7 @@ namespace TestCases.HSSF.UserModel
             f2.FontHeight = ((short)22);
             f2.FontName = ("Also Testing");
 
-            ClassicAssert.AreEqual(6, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(6, wb.NumberOfFontsAsInt);
 
 
             // Several styles
@@ -235,7 +235,7 @@ namespace TestCases.HSSF.UserModel
 
 
             // Check
-            ClassicAssert.AreEqual(6, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(6, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(25, wb.NumCellStyles);
 
             // cs1 -> 21
@@ -275,14 +275,14 @@ namespace TestCases.HSSF.UserModel
             csU2.SetFont(f4);
 
             // Check before the optimise
-            ClassicAssert.AreEqual(8, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(8, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(28, wb.NumCellStyles);
 
             // Optimise, should remove the two un-used ones and the one duplicate
             HSSFOptimiser.OptimiseCellStyles(wb);
 
             // Check
-            ClassicAssert.AreEqual(8, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(8, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(25, wb.NumCellStyles);
 
             // csD -> cs1 -> 21

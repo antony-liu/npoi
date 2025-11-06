@@ -23,6 +23,7 @@ namespace NPOI.HSSF.UserModel
     using System;
     using NPOI.HSSF.Record;
     using NPOI.SS.UserModel;
+    using NPOI.Util;
 
     /// <summary>
     /// Represents a Font used in a workbook.
@@ -44,14 +45,14 @@ namespace NPOI.HSSF.UserModel
         public const String FONT_ARIAL = "Arial";
 
         private FontRecord font;
-        private short index;
+        private int index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HSSFFont"/> class.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="rec">The record.</param>
-        public HSSFFont(short index, FontRecord rec)
+        public HSSFFont(int index, FontRecord rec)
         {
             font = rec;
             this.index = index;
@@ -76,12 +77,17 @@ namespace NPOI.HSSF.UserModel
         /// </summary>
         /// <value>Unique index number of the Underlying record this Font represents (probably you don't care
         /// Unless you're comparing which one is which)</value>
+        [Obsolete("use IndexAsInt")]
+        [Removal(Version = "4.2")]
         public short Index
+        {
+            get { return (short)index; }
+        }
+        
+        public int IndexAsInt
         {
             get { return index; }
         }
-
-
 
         /// <summary>
         /// Get or sets the font height in Unit's of 1/20th of a point.  Maybe you might want to

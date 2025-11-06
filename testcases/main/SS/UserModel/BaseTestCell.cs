@@ -270,7 +270,7 @@ namespace TestCases.SS.UserModel
             cs = c.CellStyle;
 
             ClassicAssert.IsNotNull(cs, "Formula Cell Style");
-            ClassicAssert.AreEqual(f.Index, cs.FontIndex, "Font Index Matches");
+            ClassicAssert.AreEqual(f.IndexAsInt, cs.FontIndexAsInt, "Font Index Matches");
             ClassicAssert.AreEqual(BorderStyle.Thin, cs.BorderTop, "Top Border");
             ClassicAssert.AreEqual(BorderStyle.Thin, cs.BorderLeft, "Left Border");
             ClassicAssert.AreEqual(BorderStyle.Thin, cs.BorderRight, "Right Border");
@@ -724,7 +724,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsTrue(style.IsLocked);
             ClassicAssert.IsFalse(style.IsHidden);
             ClassicAssert.AreEqual(0, style.Indention);
-            ClassicAssert.AreEqual(0, style.FontIndex);
+            ClassicAssert.AreEqual(0, style.FontIndexAsInt);
             ClassicAssert.AreEqual(HorizontalAlignment.General, style.Alignment);
             ClassicAssert.AreEqual(0, style.DataFormat);
             ClassicAssert.AreEqual(false, style.WrapText);

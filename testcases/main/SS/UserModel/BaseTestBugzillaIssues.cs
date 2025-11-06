@@ -382,7 +382,7 @@ namespace TestCases.SS.UserModel
 
 
             // autoSize will fail if required fonts are not installed, skip this test then
-            IFont font = wb.GetFontAt(cell0.CellStyle.FontIndex);
+            IFont font = wb.GetFontAt(cell0.CellStyle.FontIndexAsInt);
             Assume.That(SheetUtil.CanComputeColumnWidth(font),
                 "Cannot verify auoSizeColumn() because the necessary Fonts are not installed on this machine: " + font);
 
@@ -1014,21 +1014,21 @@ namespace TestCases.SS.UserModel
             IWorkbook wb = _testDataProvider.CreateWorkbook();
             int startingFonts = wb is HSSFWorkbook ? 4 : 1;
 
-            ClassicAssert.AreEqual(startingFonts, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(startingFonts, wb.NumberOfFontsAsInt);
 
             // Get a font, and slightly change it
             IFont a = wb.CreateFont();
-            ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFontsAsInt);
             a.FontHeightInPoints = ((short)23);
-            ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(startingFonts + 1, wb.NumberOfFontsAsInt);
 
             // Get two more, unchanged
             /*Font b =*/
             wb.CreateFont();
-            ClassicAssert.AreEqual(startingFonts + 2, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(startingFonts + 2, wb.NumberOfFontsAsInt);
             /*Font c =*/
             wb.CreateFont();
-            ClassicAssert.AreEqual(startingFonts + 3, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(startingFonts + 3, wb.NumberOfFontsAsInt);
 
             wb.Close();
         }

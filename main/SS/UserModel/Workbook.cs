@@ -17,12 +17,13 @@
 
 namespace NPOI.SS.UserModel
 {
+    using NPOI.SS.Formula.UDF;
+    using NPOI.Util;
+    using SixLabors.Fonts;
     using System;
     using System.Collections;
-    using System.IO;
-    using NPOI.SS.Formula.UDF;
     using System.Collections.Generic;
-    using NPOI.Util;
+    using System.IO;
 
     /// <summary>
     /// High level interface of a Excel workbook.  This is the first object most users 
@@ -172,15 +173,20 @@ namespace NPOI.SS.UserModel
         /// <summary>
         /// Get the number of fonts in the font table
         /// </summary>
+        [Obsolete("use NumberOfFontsAsInt")]
+        [Removal(Version = "4.2")]
         short NumberOfFonts { get; }
 
+        int NumberOfFontsAsInt { get; }
         /// <summary>
         /// Get the font at the given index number
         /// </summary>
         /// <param name="idx">index number (0-based)</param>
         /// <returns>font at the index</returns>
+        [Obsolete("use GetFontAt(int)")]
+        [Removal(Version = "4.2")]
         IFont GetFontAt(short idx);
-
+        IFont GetFontAt(int idx);
         /// <summary>
         /// Create a new Cell style and add it to the workbook's style table
         /// </summary>

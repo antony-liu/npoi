@@ -61,27 +61,27 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsNotNull(fontFind);
         }
         [Test]
-        public void TestNumberOfFonts()
+        public void TestGetNumberOfFonts()
         {
             IWorkbook wb = _testDataProvider.CreateWorkbook();
-            int num0 = wb.NumberOfFonts;
+            int num0 = wb.NumberOfFontsAsInt;
 
             IFont f1 = wb.CreateFont();
             f1.IsBold = true;
-            short idx1 = f1.Index;
+            int idx1 = f1.IndexAsInt;
             wb.CreateCellStyle().SetFont(f1);
 
             IFont f2 = wb.CreateFont();
             f2.Underline = FontUnderlineType.Double;
-            short idx2 = f2.Index;
+            int idx2 = f2.IndexAsInt;
             wb.CreateCellStyle().SetFont(f2);
 
             IFont f3 = wb.CreateFont();
             f3.FontHeightInPoints = ((short)23);
-            short idx3 = f3.Index;
+            int idx3 = f3.IndexAsInt;
             wb.CreateCellStyle().SetFont(f3);
 
-            ClassicAssert.AreEqual(num0 + 3, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(num0 + 3, wb.NumberOfFontsAsInt);
             ClassicAssert.IsTrue(wb.GetFontAt(idx1).IsBold);
             ClassicAssert.AreEqual(FontUnderlineType.Double, wb.GetFontAt(idx2).Underline);
             ClassicAssert.AreEqual(23, wb.GetFontAt(idx3).FontHeightInPoints);
@@ -100,16 +100,16 @@ namespace TestCases.SS.UserModel
             ICell r1c1 = r1.CreateCell(0);
             r1c1.SetCellValue(2.2);
 
-            int num0 = wb.NumberOfFonts;
+            int num0 = wb.NumberOfFontsAsInt;
 
             IFont font = wb.CreateFont();
             font.IsBold = true;
             font.IsStrikeout = (true);
             font.Color = (HSSFColor.Yellow.Index);
             font.FontName = ("Courier");
-            short font1Idx = font.Index;
+            int font1Idx = font.IndexAsInt;
             wb.CreateCellStyle().SetFont(font);
-            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFontsAsInt);
 
             ICellStyle cellStyleTitle = wb.CreateCellStyle();
             cellStyleTitle.SetFont(font);
@@ -119,8 +119,8 @@ namespace TestCases.SS.UserModel
             wb = _testDataProvider.WriteOutAndReadBack(wb);
             s1 = wb.GetSheetAt(0);
 
-            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFonts);
-            short idx = s1.GetRow(0).GetCell(0).CellStyle.FontIndex;
+            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFontsAsInt);
+            int idx = s1.GetRow(0).GetCell(0).CellStyle.FontIndexAsInt;
             IFont fnt = wb.GetFontAt(idx);
             ClassicAssert.IsNotNull(fnt);
             ClassicAssert.AreEqual(HSSFColor.Yellow.Index, fnt.Color);
@@ -130,15 +130,15 @@ namespace TestCases.SS.UserModel
             IFont font2 = wb.CreateFont();
             font2.IsItalic = (true);
             font2.FontHeightInPoints = (short)15;
-            short font2Idx = font2.Index;
+            int font2Idx = font2.IndexAsInt;
             wb.CreateCellStyle().SetFont(font2);
-            ClassicAssert.AreEqual(num0 + 2, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(num0 + 2, wb.NumberOfFontsAsInt);
 
             // Save and re-load
             wb = _testDataProvider.WriteOutAndReadBack(wb);
             s1 = wb.GetSheetAt(0);
 
-            ClassicAssert.AreEqual(num0 + 2, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(num0 + 2, wb.NumberOfFontsAsInt);
             ClassicAssert.IsNotNull(wb.GetFontAt(font1Idx));
             ClassicAssert.IsNotNull(wb.GetFontAt(font2Idx));
 
@@ -155,7 +155,7 @@ namespace TestCases.SS.UserModel
         public void Test45338()
         {
             IWorkbook wb = _testDataProvider.CreateWorkbook();
-            int num0 = wb.NumberOfFonts;
+            int num0 = wb.NumberOfFontsAsInt;
 
             ISheet s = wb.CreateSheet();
             s.CreateRow(0);
@@ -164,13 +164,13 @@ namespace TestCases.SS.UserModel
             s.GetRow(1).CreateCell(0);
 
             //default font
-            IFont f1 = wb.GetFontAt((short)0);
+            IFont f1 = wb.GetFontAt(0);
             ClassicAssert.IsFalse(f1.IsBold);
 
             // Check that asking for the same font
             //  multiple times gives you the same thing.
             // Otherwise, our Tests wouldn't work!
-            ClassicAssert.AreSame(wb.GetFontAt((short)0), wb.GetFontAt((short)0));
+            ClassicAssert.AreSame(wb.GetFontAt(0), wb.GetFontAt(0));
 
             // Look for a new font we have
             //  yet to add
@@ -182,8 +182,8 @@ namespace TestCases.SS.UserModel
             );
 
             IFont nf = wb.CreateFont();
-            short nfIdx = nf.Index;
-            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFonts);
+            int nfIdx = nf.IndexAsInt;
+            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFontsAsInt);
 
             ClassicAssert.AreEqual(nf, wb.GetFontAt(nfIdx));
 
@@ -196,11 +196,11 @@ namespace TestCases.SS.UserModel
             nf.TypeOffset = FontSuperScript.Sub;
             nf.Underline = FontUnderlineType.Double;
 
-            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFonts);
+            ClassicAssert.AreEqual(num0 + 1, wb.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(nf, wb.GetFontAt(nfIdx));
 
             ClassicAssert.AreEqual(wb.GetFontAt(nfIdx), wb.GetFontAt(nfIdx));
-            ClassicAssert.IsTrue(wb.GetFontAt((short)0) != wb.GetFontAt(nfIdx));
+            ClassicAssert.IsTrue(wb.GetFontAt(0) != wb.GetFontAt(nfIdx));
 
             // Find it now
             ClassicAssert.IsNotNull(

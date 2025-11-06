@@ -318,7 +318,7 @@ namespace NPOI.SS.Util
         {
             // Check if font belongs to workbook
             IWorkbook wb = cell.Sheet.Workbook;
-            short fontIndex = font.Index;
+            int fontIndex = font.IndexAsInt;
             if (!wb.GetFontAt(fontIndex).Equals(font))
             {
                 throw new ArgumentException("Font does not belong to this workbook");
@@ -507,7 +507,7 @@ namespace NPOI.SS.Util
             Put(properties, FILL_PATTERN, style.FillPattern);
             Put(properties, FILL_FOREGROUND_COLOR, style.FillForegroundColor);
             Put(properties, FILL_BACKGROUND_COLOR, style.FillBackgroundColor);
-            Put(properties, FONT, (int)style.FontIndex);
+            Put(properties, FONT, style.FontIndexAsInt);
             Put(properties, HIDDEN, style.IsHidden);
             Put(properties, INDENTION, style.Indention);
             Put(properties, LEFT_BORDER_COLOR, style.LeftBorderColor);
@@ -541,7 +541,7 @@ namespace NPOI.SS.Util
             style.FillPattern = GetFillPattern(properties, FILL_PATTERN);
             style.FillForegroundColor = GetShort(properties, FILL_FOREGROUND_COLOR);
             style.FillBackgroundColor = GetShort(properties, FILL_BACKGROUND_COLOR);
-            style.SetFont(workbook.GetFontAt(GetShort(properties, FONT)));
+            style.SetFont(workbook.GetFontAt(GetInt(properties, FONT)));
             style.IsHidden = GetBoolean(properties, HIDDEN);
             style.Indention = GetShort(properties, INDENTION);
             style.LeftBorderColor = GetShort(properties, LEFT_BORDER_COLOR);

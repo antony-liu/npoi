@@ -53,7 +53,7 @@ namespace NPOI.XSSF.UserModel
         private IIndexedColorMap _indexedColorMap;
         private ThemesTable _themes;
         private readonly CT_Font _ctFont;
-        private short _index;
+        private int _index;
 
         /**
          * Create a new XSSFFont
@@ -629,7 +629,17 @@ namespace NPOI.XSSF.UserModel
          * @return unique index number of the underlying record this Font represents (probably you don't care
          *  unless you're comparing which one is which)
          */
+        [Obsolete("use IndexAsInt")]
+        [Removal(Version = "4.2")]
         public short Index
+        {
+            get
+            {
+                return (short)_index;
+            }
+        }
+        
+        public int IndexAsInt
         {
             get
             {

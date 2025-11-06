@@ -128,10 +128,16 @@ namespace NPOI.XSSF.Streaming
         {
             get { return XssfWorkbook.NumberOfSheets; }
         }
-
+        [Obsolete("use NumberOfFontsAsInt")]
+        [Removal(Version = "4.2")]
         public short NumberOfFonts
         {
             get { return XssfWorkbook.NumberOfFonts; }
+        }
+
+        public int NumberOfFontsAsInt
+        {
+            get { return XssfWorkbook.NumberOfFontsAsInt; }
         }
 
         public int NumCellStyles
@@ -727,10 +733,16 @@ namespace NPOI.XSSF.Streaming
         { 
             return XssfWorkbook.FindFont(bold, color, fontHeight, name, italic, strikeout, typeOffset, underline);
         }
-
+        [Obsolete("use GetFontAt(int)")]
+        [Removal(Version = "4.2")]
         public IFont GetFontAt(short idx)
         {
-            return XssfWorkbook.GetFontAt(idx);
+            return XssfWorkbook.GetFontAt((int)idx);
+        }
+
+        public IFont GetFontAt(int idx)
+        {
+            return _wb.GetFontAt(idx);
         }
 
         public ICellStyle CreateCellStyle()

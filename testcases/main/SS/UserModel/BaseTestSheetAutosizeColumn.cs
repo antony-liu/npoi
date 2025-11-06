@@ -202,7 +202,7 @@ namespace TestCases.SS.UserModel
             TrackColumnsForAutoSizingIfSXSSF(sheet);
             IRow row = sheet.CreateRow(0);
 
-            IFont defaultFont = workbook.GetFontAt((short)0);
+            IFont defaultFont = workbook.GetFontAt(0);
 
             ICellStyle style1 = workbook.CreateCellStyle();
             IFont font1 = workbook.CreateFont();
@@ -350,9 +350,9 @@ namespace TestCases.SS.UserModel
         internal static void FixFonts(IWorkbook workbook)
         {
             //if (!JvmBugs.HasLineBreakMeasurerBug()) return;
-            for (int i = workbook.NumberOfFonts - 1; i >= 0; i--)
+            for (int i = workbook.NumberOfFontsAsInt - 1; i >= 0; i--)
             {
-                IFont f = workbook.GetFontAt((short)0);
+                IFont f = workbook.GetFontAt(0);
                 if ("Calibri".Equals(f.FontName))
                 {
                     f.FontName = (/*setter*/"Lucida Sans");

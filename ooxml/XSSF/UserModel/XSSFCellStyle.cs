@@ -21,6 +21,7 @@ using System.Xml;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel.Extensions;
 using NPOI.XSSF.Model;
+using NPOI.Util;
 namespace NPOI.XSSF.UserModel
 {
 
@@ -676,6 +677,8 @@ namespace NPOI.XSSF.UserModel
          * @return short - font index
          * @see NPOI.xssf.usermodel.XSSFWorkbook#getFontAt(short)
          */
+        [Obsolete("use FontIndexAsInt")]
+        [Removal(Version = "4.2")]
         public short FontIndex
         {
             get
@@ -683,7 +686,13 @@ namespace NPOI.XSSF.UserModel
                 return (short)FontId;
             }
         }
-
+        public int FontIndexAsInt
+        {
+            get
+            {
+                return FontId;
+            }
+        }
         /**
          * Get whether the cell's using this style are to be hidden
          *

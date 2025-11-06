@@ -17,6 +17,7 @@
 
 namespace NPOI.SS.UserModel
 {
+    using NPOI.Util;
     using Org.BouncyCastle.Utilities;
     using System;
     using static Org.BouncyCastle.Bcpg.Attr.ImageAttrib;
@@ -52,7 +53,13 @@ namespace NPOI.SS.UserModel
         /// <summary>
         /// Gets the index of the font for this style
         /// </summary>
+        [Obsolete("use FontIndexAsInt")]
+        [Removal(Version = "4.2")]
         short FontIndex { get; }
+        /// <summary>
+        /// Gets the index of the font for this style
+        /// </summary>
+        int FontIndexAsInt { get; }
 
         /// <summary>
         /// get or set whether the cell's using this style are to be hidden

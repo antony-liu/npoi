@@ -208,7 +208,7 @@ namespace TestCases.XSSF.UserModel
             try
             {
                 StylesTable styleSource = workbook.GetStylesSource();
-                short i = 0;
+                int i = 0;
                 //get default font
                 IFont fontAt = workbook.GetFontAt(i);
                 ClassicAssert.IsNotNull(fontAt);
@@ -217,7 +217,7 @@ namespace TestCases.XSSF.UserModel
                 XSSFFont customFont = new XSSFFont();
                 customFont.IsItalic = (true);
                 int x = styleSource.PutFont(customFont);
-                fontAt = workbook.GetFontAt((short)x);
+                fontAt = workbook.GetFontAt(x);
                 ClassicAssert.IsNotNull(fontAt);
             }
             finally

@@ -107,7 +107,7 @@ namespace NPOI.HSSF.UserModel
          * this holds the HSSFFont objects attached to this workbook.
          * We only create these from the low level records as required.
          */
-        private Dictionary<short, HSSFFont> fonts;
+        private Dictionary<int, HSSFFont> fonts;
 
 
 
@@ -1151,13 +1151,13 @@ namespace NPOI.HSSF.UserModel
         public NPOI.SS.UserModel.IFont CreateFont()
         {
             FontRecord font = workbook.CreateNewFont();
-            short fontindex = (short)(NumberOfFonts - 1);
+            int fontindex = (NumberOfFontsAsInt - 1);
 
             if (fontindex > 3)
             {
                 fontindex++;   // THERE Is NO FOUR!!
             }
-            if (fontindex == short.MaxValue)
+            if (fontindex >= short.MaxValue)
             {
                 throw new ArgumentException("Maximum number of fonts was exceeded");
             }
@@ -1182,8 +1182,8 @@ namespace NPOI.HSSF.UserModel
                                  String name, bool italic, bool strikeout,
                                  FontSuperScript typeOffset, FontUnderlineType underline)
         {
-            short numberOfFonts = NumberOfFonts;
-            for (short i = 0; i <= numberOfFonts; i++)
+            int numberOfFonts = NumberOfFontsAsInt;
+            for (int i = 0; i <= numberOfFonts; i++)
             {
                 // Remember - there is no 4!
                 if (i == 4) continue;
@@ -1209,11 +1209,21 @@ namespace NPOI.HSSF.UserModel
         /// Get the number of fonts in the font table
         /// </summary>
         /// <value>The number of fonts.</value>
+        [Obsolete("use FontIndexAsInt")]
+        [Removal(Version = "4.2")]
         public short NumberOfFonts
         {
             get
             {
                 return (short)workbook.NumberOfFontRecords;
+            }
+        }
+
+        public int NumberOfFontsAsInt
+        {
+            get
+            {
+                return (short) workbook.NumberOfFontRecords;
             }
         }
         public bool IsHidden
@@ -1227,16 +1237,20 @@ namespace NPOI.HSSF.UserModel
                 workbook.WindowOne.Hidden = value;
             }
         }
-
-
+        [Obsolete("use GetFontAt(int)")]
+        [Removal(Version = "4.2")]
+        public IFont GetFontAt(short idx)
+        {
+            return GetFontAt((int) idx);
+        }
         /// <summary>
         /// Get the font at the given index number
         /// </summary>
         /// <param name="idx">The index number</param>
         /// <returns>HSSFFont at the index</returns>
-        public IFont GetFontAt(short idx)
+        public IFont GetFontAt(int idx)
         {
-            if (fonts == null) fonts = new Dictionary<short, HSSFFont>();
+            if (fonts == null) fonts = new Dictionary<int, HSSFFont>();
 
             // So we don't confuse users, give them back
             //  the same object every time, but create
@@ -1262,7 +1276,7 @@ namespace NPOI.HSSF.UserModel
         /// </summary>
         public void ResetFontCache()
         {
-            fonts = new Dictionary<short, HSSFFont>();
+            fonts = new Dictionary<int, HSSFFont>();
         }
         /// <summary>
         /// Create a new Cell style and Add it to the workbook's style table
