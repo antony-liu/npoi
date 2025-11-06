@@ -3582,6 +3582,52 @@ namespace TestCases.XSSF.UserModel
             wb.Close();
         }
 
+        /**
+         * Auto column sizing failed when there were loads of fonts with
+         *  errors like ArrayIndexOutOfBoundsException: -32765
+         * TODO Get this to actually reproduce the bug...
+         */
+        [Test]
+        public void Test62108()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sheet = wb.CreateSheet() as XSSFSheet;
+            XSSFRow row = sheet.CreateRow(0) as XSSFRow;
+
+            // Create lots of fonts
+            XSSFDataFormat formats = wb.CreateDataFormat() as XSSFDataFormat;
+            XSSFFont[] fonts = new XSSFFont[50000];
+            for(int i = 0; i<fonts.Length; i++)
+            {
+                XSSFFont font = wb.CreateFont() as XSSFFont;
+                font.FontHeight = i;
+            }
+
+            // Create a moderate number of columns, which use
+            //  fonts from the start and end of the font list
+            int numCols = 125;
+            for(int i = 0; i<numCols; i++)
+            {
+                XSSFCellStyle cs = wb.CreateCellStyle() as XSSFCellStyle;
+                cs.SetDataFormat(formats.GetFormat("'Test "+i+"' #,###"));
+
+                XSSFFont font = fonts[i];
+                if(i%2==1)
+                { font = fonts[fonts.Length-i]; }
+                cs.SetFont(font);
+
+                XSSFCell c = row.CreateCell(i) as XSSFCell;
+                c.SetCellValue(i);
+                c.CellStyle = cs;
+            }
+
+            // Do the auto-size
+            for(int i = 0; i<numCols; i++)
+            {
+                sheet.AutoSizeColumn(i);
+            }
+        }
+
         [Test]
         public void TestBug690()
         {
