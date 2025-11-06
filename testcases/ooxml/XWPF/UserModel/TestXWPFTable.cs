@@ -23,6 +23,7 @@ namespace TestCases.XWPF.UserModel
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using static NPOI.XWPF.UserModel.XWPFTable;
 
 
     /**
@@ -48,6 +49,15 @@ namespace TestCases.XWPF.UserModel
             ClassicAssert.AreEqual(3, ctTable.SizeOfTrArray());
             ClassicAssert.AreEqual(2, ctTable.GetTrArray(0).SizeOfTcArray());
             ClassicAssert.IsNotNull(ctTable.GetTrArray(0).GetTcArray(0).GetPArray(0));
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
         [Test]
@@ -62,6 +72,15 @@ namespace TestCases.XWPF.UserModel
             XWPFTable xtab = new XWPFTable(ctTable, doc);
             ClassicAssert.AreEqual(123, xtab.GetCTTbl().tblGrid.gridCol[0].w);
             ClassicAssert.AreEqual(321, xtab.GetCTTbl().tblGrid.gridCol[1].w);
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
         [Test]
@@ -78,6 +97,15 @@ namespace TestCases.XWPF.UserModel
 
             XWPFTable xtab = new XWPFTable(table, doc);
             ClassicAssert.AreEqual("finally I can Write!\n", xtab.Text);
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
 
@@ -111,6 +139,15 @@ namespace TestCases.XWPF.UserModel
             //check creation of first row
             xtab = new XWPFTable(new CT_Tbl(), doc);
             ClassicAssert.AreEqual(1, xtab.GetCTTbl().GetTrArray(0).SizeOfTcArray());
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
         [Test]
         public void TestInsertRow()
@@ -158,6 +195,15 @@ namespace TestCases.XWPF.UserModel
 
             xtab.Width = 100;
             ClassicAssert.AreEqual(100, int.Parse(table.tblPr.tblW.w));
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
         [Test]
         public void TestSetGetHeight()
@@ -170,6 +216,15 @@ namespace TestCases.XWPF.UserModel
             XWPFTableRow row = xtab.CreateRow();
             row.Height = (20);
             ClassicAssert.AreEqual(20, row.Height);
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
         [Test]
         public void TestSetGetMargins()
@@ -194,13 +249,22 @@ namespace TestCases.XWPF.UserModel
             ClassicAssert.AreEqual(250, b);
             int r = table.CellMarginRight;
             ClassicAssert.AreEqual(450, r);
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
         [Test]
         public void TestSetGetHBorders()
         {
             // instantiate the following classes so they'll Get picked up by
-            // the XmlBean process and Added to the jar file. they are required
+            // the XmlBean process and added to the jar file. they are required
             // for the following XWPFTable methods.
             CT_TblBorders cttb = new CT_TblBorders();
             ClassicAssert.IsNotNull(cttb);
@@ -210,18 +274,69 @@ namespace TestCases.XWPF.UserModel
             XWPFDocument doc = new XWPFDocument();
             CT_Tbl ctTable = new CT_Tbl();
             XWPFTable table = new XWPFTable(ctTable, doc);
-            // Set inside horizontal border
-            table.SetInsideHBorder(NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType.SINGLE, 4, 0, "FF0000");
-            // Get inside horizontal border components
-            int s = table.InsideHBorderSize;
-            ClassicAssert.AreEqual(4, s);
+            // check initial state
+            XWPFBorderType? bt = table.InsideHBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            int sz = table.InsideHBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
             int sp = table.InsideHBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.InsideHBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set inside horizontal border
+            table.SetInsideHBorder(XWPFBorderType.SINGLE, 4, 0, "FF0000");
+            // Get inside horizontal border components
+            bt = table.InsideHBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            sz = table.InsideHBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.InsideHBorderSpace;
             ClassicAssert.AreEqual(0, sp);
-            String clr = table.InsideHBorderColor;
+            clr = table.InsideHBorderColor;
             ClassicAssert.AreEqual("FF0000", clr);
-            NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType bt = table.InsideHBorderType;
-            ClassicAssert.AreEqual(NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType.SINGLE, bt);
+            // remove the border and verify state
+            table.RemoveInsideHBorder();
+            bt = table.InsideHBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.InsideHBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.InsideHBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.InsideHBorderColor;
+            ClassicAssert.IsNull(clr);
+            // check other borders
+            bt = table.InsideVBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.TopBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.BottomBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.LeftBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.RightBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            // remove the rest all at once and test
+            table.RemoveBorders();
+            bt = table.InsideVBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.TopBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.BottomBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.LeftBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.RightBorderType;
+            ClassicAssert.IsNull(bt);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
+
         [Test]
         public void TestSetGetVBorders()
         {
@@ -229,18 +344,261 @@ namespace TestCases.XWPF.UserModel
             XWPFDocument doc = new XWPFDocument();
             CT_Tbl ctTable = new CT_Tbl();
             XWPFTable table = new XWPFTable(ctTable, doc);
-            // Set inside vertical border
-            table.SetInsideVBorder(NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType.DOUBLE, 4, 0, "00FF00");
-            // Get inside vertical border components
-            NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType bt = table.InsideVBorderType;
-            ClassicAssert.AreEqual(NPOI.XWPF.UserModel.XWPFTable.XWPFBorderType.DOUBLE, bt);
+            // check initial state
+            XWPFBorderType? bt = table.InsideVBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
             int sz = table.InsideVBorderSize;
-            ClassicAssert.AreEqual(4, sz);
+            ClassicAssert.AreEqual(-1, sz);
             int sp = table.InsideVBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.InsideVBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set inside vertical border
+            table.SetInsideVBorder(XWPFBorderType.DOUBLE, 4, 0, "00FF00");
+            // Get inside vertical border components
+            bt = table.InsideVBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.DOUBLE, bt);
+            sz = table.InsideVBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.InsideVBorderSpace;
             ClassicAssert.AreEqual(0, sp);
-            String clr = table.InsideVBorderColor;
+            clr = table.InsideVBorderColor;
             ClassicAssert.AreEqual("00FF00", clr);
+            // remove the border and verify state
+            table.RemoveInsideVBorder();
+            bt = table.InsideVBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.InsideVBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.InsideVBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.InsideVBorderColor;
+            ClassicAssert.IsNull(clr);
+            // check the rest
+            bt = table.InsideHBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.TopBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.BottomBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.LeftBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            bt = table.RightBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            // remove the rest one at a time and test
+            table.RemoveInsideHBorder();
+            table.RemoveTopBorder();
+            table.RemoveBottomBorder();
+            table.RemoveLeftBorder();
+            table.RemoveRightBorder();
+            bt = table.InsideHBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.TopBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.BottomBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.LeftBorderType;
+            ClassicAssert.IsNull(bt);
+            bt = table.RightBorderType;
+            ClassicAssert.IsNull(bt);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
+
+        [Test]
+        public void TestSetGetTopBorders()
+        {
+            // create a table
+            XWPFDocument doc = new XWPFDocument();
+            CT_Tbl ctTable = new CT_Tbl();
+            XWPFTable table = new XWPFTable(ctTable, doc);
+            // check initial state
+            XWPFBorderType? bt = table.TopBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            int sz = table.TopBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            int sp = table.TopBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.TopBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set top border
+            table.SetTopBorder(XWPFBorderType.THICK, 4, 0, "00FF00");
+            // Get inside vertical border components
+            bt = table.TopBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.THICK, bt);
+            sz = table.TopBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.TopBorderSpace;
+            ClassicAssert.AreEqual(0, sp);
+            clr = table.TopBorderColor;
+            ClassicAssert.AreEqual("00FF00", clr);
+            // remove the border and verify state
+            table.RemoveTopBorder();
+            bt = table.TopBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.TopBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.TopBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.TopBorderColor;
+            ClassicAssert.IsNull(clr);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
+        }
+
+        [Test]
+        public void TestSetGetBottomBorders()
+        {
+            // create a table
+            XWPFDocument doc = new XWPFDocument();
+            CT_Tbl ctTable = new CT_Tbl();
+            XWPFTable table = new XWPFTable(ctTable, doc);
+            // check initial state
+            XWPFBorderType? bt = table.BottomBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            int sz = table.BottomBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            int sp = table.BottomBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.BottomBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set inside vertical border
+            table.SetBottomBorder(XWPFBorderType.DOTTED, 4, 0, "00FF00");
+            // Get inside vertical border components
+            bt = table.BottomBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.DOTTED, bt);
+            sz = table.BottomBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.BottomBorderSpace;
+            ClassicAssert.AreEqual(0, sp);
+            clr = table.BottomBorderColor;
+            ClassicAssert.AreEqual("00FF00", clr);
+            // remove the border and verify state
+            table.RemoveBottomBorder();
+            bt = table.BottomBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.BottomBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.BottomBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.BottomBorderColor;
+            ClassicAssert.IsNull(clr);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
+        }
+
+        [Test]
+        public void TestSetGetLeftBorders()
+        {
+            // create a table
+            XWPFDocument doc = new XWPFDocument();
+            CT_Tbl ctTable = new CT_Tbl();
+            XWPFTable table = new XWPFTable(ctTable, doc);
+            // check initial state
+            XWPFBorderType? bt = table.LeftBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            int sz = table.LeftBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            int sp = table.LeftBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.LeftBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set inside vertical border
+            table.SetLeftBorder(XWPFBorderType.DASHED, 4, 0, "00FF00");
+            // Get inside vertical border components
+            bt = table.LeftBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.DASHED, bt);
+            sz = table.LeftBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.LeftBorderSpace;
+            ClassicAssert.AreEqual(0, sp);
+            clr = table.LeftBorderColor;
+            ClassicAssert.AreEqual("00FF00", clr);
+            // remove the border and verify state
+            table.RemoveLeftBorder();
+            bt = table.LeftBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.LeftBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.LeftBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.LeftBorderColor;
+            ClassicAssert.IsNull(clr);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
+        }
+
+        [Test]
+        public void TestSetGetRightBorders()
+        {
+            // create a table
+            XWPFDocument doc = new XWPFDocument();
+            CT_Tbl ctTable = new CT_Tbl();
+            XWPFTable table = new XWPFTable(ctTable, doc);
+            // check initial state
+            XWPFBorderType? bt = table.RightBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.SINGLE, bt);
+            int sz = table.RightBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            int sp = table.RightBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            string clr = table.RightBorderColor;
+            ClassicAssert.IsNull(clr);
+            // Set inside vertical border
+            table.SetRightBorder(XWPFBorderType.DOT_DASH, 4, 0, "00FF00");
+            // Get inside vertical border components
+            bt = table.RightBorderType;
+            ClassicAssert.AreEqual(XWPFBorderType.DOT_DASH, bt);
+            sz = table.RightBorderSize;
+            ClassicAssert.AreEqual(4, sz);
+            sp = table.RightBorderSpace;
+            ClassicAssert.AreEqual(0, sp);
+            clr = table.RightBorderColor;
+            ClassicAssert.AreEqual("00FF00", clr);
+            // remove the border and verify state
+            table.RemoveRightBorder();
+            bt = table.RightBorderType;
+            ClassicAssert.IsNull(bt);
+            sz = table.RightBorderSize;
+            ClassicAssert.AreEqual(-1, sz);
+            sp = table.RightBorderSpace;
+            ClassicAssert.AreEqual(-1, sp);
+            clr = table.RightBorderColor;
+            ClassicAssert.IsNull(clr);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
+        }
+
         [Test]
         public void TestSetGetRowBandSize()
         {
@@ -250,7 +608,16 @@ namespace TestCases.XWPF.UserModel
             table.RowBandSize = 12;
             int sz = table.RowBandSize;
             ClassicAssert.AreEqual(12, sz);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
+
         [Test]
         public void TestSetGetColBandSize()
         {
@@ -260,6 +627,14 @@ namespace TestCases.XWPF.UserModel
             table.ColBandSize = 16;
             int sz = table.ColBandSize;
             ClassicAssert.AreEqual(16, sz);
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
         [Test]
         public void TestCreateTable()
@@ -275,10 +650,10 @@ namespace TestCases.XWPF.UserModel
             // assert the table is empty
             List<XWPFTableRow> rows = table.Rows;
             ClassicAssert.AreEqual(noRows, rows.Count, "Table has less rows than requested.");
-            foreach (XWPFTableRow xwpfRow in rows)
+            foreach(XWPFTableRow xwpfRow in rows)
             {
                 ClassicAssert.IsNotNull(xwpfRow);
-                for (int i = 0; i < 7; i++)
+                for(int i = 0; i < 7; i++)
                 {
                     XWPFTableCell xwpfCell = xwpfRow.GetCell(i);
                     ClassicAssert.IsNotNull(xwpfCell);
@@ -288,6 +663,15 @@ namespace TestCases.XWPF.UserModel
                 }
             }
             doc.Package.Revert();
+
+            try
+            {
+                doc.Close();
+            }
+            catch(IOException e)
+            {
+                Assert.Fail("Unable to close doc");
+            }
         }
 
         [Test]
@@ -339,7 +723,7 @@ namespace TestCases.XWPF.UserModel
         }
 
         [Test]
-        public void TestSetGetTableAlignment() 
+        public void TestSetGetTableAlignment()
         {
             XWPFDocument doc = new XWPFDocument();
             XWPFTable tbl = doc.CreateTable(1, 1);
@@ -354,8 +738,8 @@ namespace TestCases.XWPF.UserModel
             try
             {
                 doc.Close();
-            } 
-            catch (IOException e)
+            }
+            catch(IOException e)
             {
                 ClassicAssert.Fail("Unable to close doc");
             }

@@ -2540,6 +2540,56 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         {
             return this.insideV != null;
         }
+
+        public bool IsSetTop()
+        {
+            return this.top != null;
+        }
+
+        public bool IsSetBottom()
+        {
+            return this.bottom != null;
+        }
+
+        public bool IsSetLeft()
+        {
+            return this.left != null;
+        }
+
+        public bool IsSetRight()
+        {
+            return this.right != null;
+        }
+
+        public void UnsetInsideH()
+        {
+            this.insideH = null;
+        }
+
+        public void UnsetInsideV()
+        {
+            this.insideV = null;
+        }
+
+        public void UnsetTop()
+        {
+            this.top = null;
+        }
+
+        public void UnsetBottom()
+        {
+            this.bottom = null;
+        }
+
+        public void UnsetLeft()
+        {
+            this.left = null;
+        }
+
+        public void UnsetRight()
+        {
+            this.right = null;
+        }
     }
 
 
@@ -2915,6 +2965,11 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         public void UnsetJc()
         {
             this.jc = null;
+        }
+
+        public void UnsetTblBorders()
+        {
+            this.tblBorders = null;
         }
     }
 

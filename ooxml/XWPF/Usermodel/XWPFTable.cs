@@ -235,13 +235,13 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 return tblPr.IsSetTblW() ? int.Parse(tblPr.tblW.w) : -1;
             }
             set 
             {
 
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_TblWidth tblWidth = tblPr.IsSetTblW() ? tblPr.tblW : tblPr
                         .AddNewTblW();
                 tblWidth.w = value.ToString();
@@ -260,25 +260,11 @@ namespace NPOI.XWPF.UserModel
             }
         }
 
-        public int NumberOfColumns
-        {
-            get
-            {
-                return ctTbl.SizeOfTrArray() > 0 ? ctTbl.GetTrArray(0)
-                        .SizeOfTcArray() : 0;
-            }
-        }
-
-        public CT_TblPr GetTrPr()
-        {
-            return (ctTbl.tblPr != null) ? ctTbl.tblPr : ctTbl
-                    .AddNewTblPr();
-        }
-
         /// <summary>
         /// Returns CTTblPr object for table. Creates it if it does not exist.
         /// </summary>
-        private CT_TblPr GetTblPr() {
+        private CT_TblPr GetTblPr()
+        {
             return GetTblPr(true);
         }
 
@@ -290,8 +276,122 @@ namespace NPOI.XWPF.UserModel
         /// <param name="force">- force creation of CTTblPr element if necessary</param>
         private CT_TblPr GetTblPr(bool force)
         {
-            return (ctTbl.tblPr != null) ? ctTbl.tblPr 
+            return (ctTbl.tblPr != null) ? ctTbl.tblPr
                     : (force ? ctTbl.AddNewTblPr() : null);
+        }
+
+        /// <summary>
+        /// Return CTTblBorders object for table. If force parameter is true, will
+        /// create the element if necessary. If force parameter is false, returns
+        /// null when CTTblBorders element is missing.
+        /// </summary>
+        /// <param name="force">- force creation of CTTblBorders element if necessary</param>
+        private CT_TblBorders GetTblBorders(bool force)
+        {
+            CT_TblPr tblPr = GetTblPr(force);
+            return tblPr == null ? null
+                   : tblPr.IsSetTblBorders() ? tblPr.tblBorders
+                   : force ? tblPr.AddNewTblBorders()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Inside Vertical border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Inside Vertical border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Inside Vertical border if necessary.</param>
+        private CT_Border GetTblInsideVBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetInsideV() ? ctb.insideV
+                   : force ? ctb.AddNewInsideV()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Inside Horizontal border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Inside Horizontal border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Inside Horizontal border if necessary.</param>
+        private CT_Border GetTblInsideHBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetInsideH() ? ctb.insideH
+                   : force ? ctb.AddNewInsideH()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Top border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Top border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Top border if necessary.</param>
+        private CT_Border GetTblTopBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetTop() ? ctb.top
+                   : force ? ctb.AddNewTop()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Bottom border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Bottom border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Bottom border if necessary.</param>
+        private CT_Border GetTblBottomBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetBottom() ? ctb.bottom
+                   : force ? ctb.AddNewBottom()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Left border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Left border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Left border if necessary.</param>
+        private CT_Border GetTblLeftBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetLeft() ? ctb.left
+                   : force ? ctb.AddNewLeft()
+                   : null;
+        }
+
+        /// <summary>
+        /// Return CTBorder object for Right border. If force parameter is true,
+        /// will create the element if necessary. If force parameter is false, returns
+        /// null when Right border is missing.
+        /// </summary>
+        /// <param name="force">- force creation of Right border if necessary.</param>
+        private CT_Border GetTblRightBorder(bool force)
+        {
+            CT_TblBorders ctb = GetTblBorders(force);
+            return ctb == null ? null
+                   : ctb.IsSetRight() ? ctb.right
+                   : force ? ctb.AddNewRight()
+                   : null;
+        }
+
+        public int NumberOfColumns
+        {
+            get
+            {
+                return ctTbl.SizeOfTrArray() > 0 ? ctTbl.GetTrArray(0)
+                        .SizeOfTcArray() : 0;
+            }
         }
 
         /// <summary>
@@ -364,7 +464,7 @@ namespace NPOI.XWPF.UserModel
             }
             set
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_String styleStr = tblPr.tblStyle;
                 if (styleStr == null)
                 {
@@ -373,23 +473,12 @@ namespace NPOI.XWPF.UserModel
                 styleStr.val = value;
             }
         }
-        public XWPFBorderType InsideHBorderType
+        public XWPFBorderType? InsideHBorderType
         {
             get
             {
-                XWPFBorderType bt = XWPFBorderType.NONE;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideH())
-                    {
-                        CT_Border border = ctb.insideH;
-                        bt = stBorderTypeMap[border.val];
-                    }
-                }
-                return bt;
+                CT_Border b = GetTblInsideHBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
             }
         }
 
@@ -397,19 +486,10 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int size = -1;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideH())
-                    {
-                        CT_Border border = ctb.insideH;
-                        size = (int)border.sz;
-                    }
-                }
-                return size;
+                CT_Border b = GetTblInsideHBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int)b.sz.Value : -1)
+                                : -1;
             }
         }
 
@@ -417,19 +497,10 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int space = -1;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideH())
-                    {
-                        CT_Border border = ctb.insideH;
-                        space = (int)border.space;
-                    }
-                }
-                return space;
+                CT_Border b = GetTblInsideHBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int)b.space.Value : -1)
+                                : -1;
             }
         }
 
@@ -437,40 +508,20 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                String color = null;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideH())
-                    {
-                        CT_Border border = ctb.insideH;
-                        color = border.color;
-                    }
-                }
-                return color;
+                CT_Border b = GetTblInsideHBorder(false);
+                //return (b != null)
+                //        ? (b.IsSetColor() ? b.color : null)
+                //                : null;
+                return b?.color;
             }
         }
 
-        public XWPFBorderType InsideVBorderType
+        public XWPFBorderType? InsideVBorderType
         {
             get
             {
-                XWPFBorderType bt = XWPFBorderType.NONE;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideV())
-                    {
-                        CT_Border border = ctb.insideV;
-                        bt = stBorderTypeMap[border.val];
-                    }
-                }
-
-                return bt;
+                CT_Border b = GetTblInsideVBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
             }
         }
 
@@ -478,19 +529,10 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int size = -1;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideV())
-                    {
-                        CT_Border border = ctb.insideV;
-                        size = (int)border.sz;
-                    }
-                }
-                return size;
+                CT_Border b = GetTblInsideVBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int)b.sz.Value : -1)
+                                : -1;
             }
         }
 
@@ -498,19 +540,10 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int space = -1;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideV())
-                    {
-                        CT_Border border = ctb.insideV;
-                        space = (int)border.space;
-                    }
-                }
-                return space;
+                CT_Border b = GetTblInsideVBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int)b.space.Value : -1)
+                                : -1;
             }
         }
 
@@ -518,28 +551,279 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                String color = null;
-
-                CT_TblPr tblPr = GetTrPr();
-                if (tblPr.IsSetTblBorders())
-                {
-                    CT_TblBorders ctb = tblPr.tblBorders;
-                    if (ctb.IsSetInsideV())
-                    {
-                        CT_Border border = ctb.insideV;
-                        color = border.color;
-                    }
-                }
-                return color;
+                CT_Border b = GetTblInsideVBorder(false);
+                //return (b != null)
+                //        ? (b.color ? b.xgetColor().getStringValue() : null)
+                //                : null;
+                return b?.color;
             }
         }
 
+        /**
+         * Get top border type
+         *
+         * @return {@link XWPFBorderType} of the top borders or null if missing
+         */
+        public XWPFBorderType? TopBorderType
+        {
+            get
+            {
+                CT_Border b = GetTblTopBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
+            }
+        }
+
+        /**
+         * Get top border size
+         * 
+         * @return The width of the top borders in 1/8th points,
+         * -1 if missing.
+         */
+        public int TopBorderSize
+        {
+            get
+            {
+                CT_Border b = GetTblTopBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get top border spacing
+         * 
+         * @return The offset to the top borders in points,
+         * -1 if missing.
+         */
+        public int TopBorderSpace
+        {
+            get
+            {
+                CT_Border b = GetTblTopBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int) b.space.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get top border color
+         * 
+         * @return The color of the top borders, null if missing.
+         */
+        public String TopBorderColor
+        {
+            get
+            {
+                CT_Border b = GetTblTopBorder(false);
+                //return (b != null)
+                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
+                //                : null;
+                return b?.color;
+            }
+        }
+
+        /**
+         * Get bottom border type
+         *
+         * @return {@link XWPFBorderType} of the bottom borders or null if missing
+         */
+        public XWPFBorderType? BottomBorderType
+        {
+            get
+            {
+                CT_Border b = GetTblBottomBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
+            }
+        }
+
+        /**
+         * Get bottom border size
+         * 
+         * @return The width of the bottom borders in 1/8th points,
+         * -1 if missing.
+         */
+        public int BottomBorderSize
+        {
+            get
+            {
+                CT_Border b = GetTblBottomBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get bottom border spacing
+         * 
+         * @return The offset to the bottom borders in points,
+         * -1 if missing.
+         */
+        public int BottomBorderSpace
+        {
+            get
+            {
+                CT_Border b = GetTblBottomBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int) b.space.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get bottom border color
+         * 
+         * @return The color of the bottom borders, null if missing.
+         */
+        public String BottomBorderColor
+        {
+            get
+            {
+                CT_Border b = GetTblBottomBorder(false);
+                //return (b != null)
+                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
+                //                : null;
+                return b?.color;
+            }
+        }
+
+        /**
+         * Get Left border type
+         *
+         * @return {@link XWPFBorderType} of the Left borders or null if missing
+         */
+        public XWPFBorderType? LeftBorderType
+        {
+            get
+            {
+                CT_Border b = GetTblLeftBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
+            }
+        }
+
+        /**
+         * Get Left border size
+         * 
+         * @return The width of the Left borders in 1/8th points,
+         * -1 if missing.
+         */
+        public int LeftBorderSize
+        {
+            get
+            {
+                CT_Border b = GetTblLeftBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get Left border spacing
+         * 
+         * @return The offset to the Left borders in points,
+         * -1 if missing.
+         */
+        public int LeftBorderSpace
+        {
+            get
+            {
+                CT_Border b = GetTblLeftBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int) b.space.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get Left border color
+         * 
+         * @return The color of the Left borders, null if missing.
+         */
+        public String LeftBorderColor
+        {
+            get
+            {
+                CT_Border b = GetTblLeftBorder(false);
+                //return (b != null)
+                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
+                //                : null;
+                return b?.color;
+            }
+        }
+
+        /**
+         * Get Right border type
+         *
+         * @return {@link XWPFBorderType} of the Right borders or null if missing
+         */
+        public XWPFBorderType? RightBorderType
+        {
+            get
+            {
+                CT_Border b = GetTblRightBorder(false);
+                return (b != null) ? stBorderTypeMap[b.val] : null;
+            }
+        }
+
+        /**
+         * Get Right border size
+         * 
+         * @return The width of the Right borders in 1/8th points,
+         * -1 if missing.
+         */
+        public int RightBorderSize
+        {
+            get
+            {
+                CT_Border b = GetTblRightBorder(false);
+                return (b != null)
+                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get Right border spacing
+         * 
+         * @return The offset to the Right borders in points,
+         * -1 if missing.
+         */
+        public int RightBorderSpace
+        {
+            get
+            {
+                CT_Border b = GetTblRightBorder(false);
+                return (b != null)
+                        ? (b.space.HasValue ? (int) b.space.Value : -1)
+                                : -1;
+            }
+        }
+
+        /**
+         * Get Right border color
+         * 
+         * @return The color of the Right borders, null if missing.
+         */
+        public String RightBorderColor
+        {
+            get
+            {
+                CT_Border b = GetTblRightBorder(false);
+                //return (b != null)
+                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
+                //                : null;
+                return b?.color;
+            }
+        }
         public int RowBandSize
         {
             get
             {
                 int size = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.IsSetTblStyleRowBandSize())
                 {
                     CT_DecimalNumber rowSize = tblPr.tblStyleRowBandSize;
@@ -549,7 +833,7 @@ namespace NPOI.XWPF.UserModel
             }
             set 
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_DecimalNumber rowSize = tblPr.IsSetTblStyleRowBandSize() ? tblPr.tblStyleRowBandSize : tblPr.AddNewTblStyleRowBandSize();
                 rowSize.val = value.ToString();			
             }
@@ -560,7 +844,7 @@ namespace NPOI.XWPF.UserModel
             get
             {
                 int size = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.IsSetTblStyleColBandSize())
                 {
                     CT_DecimalNumber colSize = tblPr.tblStyleColBandSize;
@@ -570,71 +854,253 @@ namespace NPOI.XWPF.UserModel
             }
             set 
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_DecimalNumber colSize = tblPr.IsSetTblStyleColBandSize() ? tblPr.tblStyleColBandSize : tblPr.AddNewTblStyleColBandSize();
                 colSize.val = value.ToString();
             }
         }
-        public void SetTopBorder(XWPFBorderType type, int size, int space, String rgbColor)
-        {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.top!=null ? ctb.top : ctb.AddNewTop();
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
-        }
-        public void SetBottomBorder(XWPFBorderType type, int size, int space, String rgbColor)
-        {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.bottom != null ? ctb.bottom : ctb.AddNewBottom();
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
-        }
-        public void SetLeftBorder(XWPFBorderType type, int size, int space, String rgbColor)
-        {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.left != null ? ctb.left : ctb.AddNewLeft();
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
-        }
-        public void SetRightBorder(XWPFBorderType type, int size, int space, String rgbColor)
-        {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.right != null ? ctb.right : ctb.AddNewRight();
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
-        }
+
+        /// <summary>
+        /// Set Inside horizontal borders for a table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
         public void SetInsideHBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.IsSetInsideH() ? ctb.insideH : ctb.AddNewInsideH();
+            CT_Border b = GetTblInsideHBorder(true);
             b.val = (xwpfBorderTypeMap[(type)]);
+            b.sz = (ulong) size;
+            b.space = (ulong) space;
+            b.color = (rgbColor);
+        }
+
+        /// <summary>
+        /// Set Inside Vertical borders for table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
+        public void SetInsideVBorder(XWPFBorderType type, int size, int space, String rgbColor)
+        {
+            CT_Border b = GetTblInsideVBorder(true);
+            b.val = (xwpfBorderTypeMap[type]);
+            b.sz = (ulong) size;
+            b.space = (ulong) space;
+            b.color = (rgbColor);
+        }
+
+        /// <summary>
+        /// Set Top borders for table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
+        public void SetTopBorder(XWPFBorderType type, int size, int space, String rgbColor)
+        {
+            CT_Border b = GetTblTopBorder(true);
+            b.val = xwpfBorderTypeMap[type];
             b.sz = (ulong)size;
             b.space = (ulong)space;
             b.color = (rgbColor);
         }
 
-        public void SetInsideVBorder(XWPFBorderType type, int size, int space, String rgbColor)
+        /// <summary>
+        /// Set Bottom borders for table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
+        public void SetBottomBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_TblPr tblPr = GetTrPr();
-            CT_TblBorders ctb = tblPr.IsSetTblBorders() ? tblPr.tblBorders : tblPr.AddNewTblBorders();
-            CT_Border b = ctb.IsSetInsideV() ? ctb.insideV : ctb.AddNewInsideV();
-            b.val = (xwpfBorderTypeMap[type]);
+            CT_Border b = GetTblBottomBorder(true);
+            b.val = xwpfBorderTypeMap[type];
             b.sz = (ulong)size;
             b.space = (ulong)space;
             b.color = (rgbColor);
+        }
+
+        /// <summary>
+        /// Set Left borders for table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
+        public void SetLeftBorder(XWPFBorderType type, int size, int space, String rgbColor)
+        {
+            CT_Border b = GetTblLeftBorder(true);
+            b.val = xwpfBorderTypeMap[type];
+            b.sz = (ulong)size;
+            b.space = (ulong)space;
+            b.color = (rgbColor);
+        }
+
+        /// <summary>
+        /// Set Right borders for table
+        /// </summary>
+        /// <param name="type">- <see cref="XWPFBorderType"/> e.g. single, double, thick</param>
+        /// <param name="size">- Specifies the width of the current border. The width of this border is
+        /// specified in measurements of eighths of a point, with a minimum value of two (onefourth
+        /// of a point) and a maximum value of 96 (twelve points). Any values outside this
+        /// range may be reassigned to a more appropriate value.
+        /// </param>
+        /// <param name="space">- Specifies the spacing offset that shall be used to place this border on the table</param>
+        /// <param name="rgbColor">- This color may either be presented as a hex value (in RRGGBB format),
+        /// or auto to allow a consumer to automatically determine the border color as appropriate.
+        /// </param>
+        public void SetRightBorder(XWPFBorderType type, int size, int space, String rgbColor)
+        {
+            CT_Border b = GetTblRightBorder(true);
+            b.val = xwpfBorderTypeMap[type];
+            b.sz = (ulong)size;
+            b.space = (ulong)space;
+            b.color = (rgbColor);
+        }
+
+        /// <summary>
+        /// Remove inside horizontal borders for table
+        /// </summary>
+        public void RemoveInsideHBorder()
+        {
+            CT_Border b = GetTblInsideHBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetInsideH();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove inside vertical borders for table
+        /// </summary>
+        public void RemoveInsideVBorder()
+        {
+            CT_Border b = GetTblInsideVBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetInsideV();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove top borders for table
+        /// </summary>
+        public void RemoveTopBorder()
+        {
+            CT_Border b = GetTblTopBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetTop();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove bottom borders for table
+        /// </summary>
+        public void RemoveBottomBorder()
+        {
+            CT_Border b = GetTblBottomBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetBottom();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove left borders for table
+        /// </summary>
+        public void RemoveLeftBorder()
+        {
+            CT_Border b = GetTblLeftBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetLeft();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove right borders for table
+        /// </summary>
+        public void RemoveRightBorder()
+        {
+            CT_Border b = GetTblRightBorder(false);
+            if(b != null)
+            {
+                GetTblBorders(false).UnsetRight();
+                CleanupTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// Remove all borders from table
+        /// </summary>
+        public void RemoveBorders()
+        {
+            CT_TblBorders b = GetTblBorders(false);
+            if(b != null)
+            {
+                GetTblPr(false).UnsetTblBorders();
+            }
+        }
+
+        /// <summary>
+        /// removes the Borders node from Table properties if there are
+        /// no border elements
+        /// </summary>
+        private void CleanupTblBorders()
+        {
+            CT_TblBorders b = GetTblBorders(false);
+            if(b != null)
+            {
+                if(b.insideH == null &&
+                        b.insideV == null &&
+                        b.top == null &&
+                        b.bottom == null &&
+                        b.left == null &&
+                        b.right == null)
+                {
+                    GetTblPr(false).UnsetTblBorders();
+                }
+            }
         }
 
         public int CellMarginTop
@@ -642,7 +1108,7 @@ namespace NPOI.XWPF.UserModel
             get
             {
                 int margin = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_TblCellMar tcm = tblPr.tblCellMar;
                 if (tcm != null)
                 {
@@ -661,7 +1127,7 @@ namespace NPOI.XWPF.UserModel
             get
             {
                 int margin = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_TblCellMar tcm = tblPr.tblCellMar;
                 if (tcm != null)
                 {
@@ -680,7 +1146,7 @@ namespace NPOI.XWPF.UserModel
             get
             {
                 int margin = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_TblCellMar tcm = tblPr.tblCellMar;
                 if (tcm != null)
                 {
@@ -699,7 +1165,7 @@ namespace NPOI.XWPF.UserModel
             get
             {
                 int margin = 0;
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 CT_TblCellMar tcm = tblPr.tblCellMar;
                 if (tcm != null)
                 {
@@ -717,7 +1183,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.tblCaption != null)
                     return tblPr.tblCaption.val;
                 else
@@ -725,7 +1191,7 @@ namespace NPOI.XWPF.UserModel
             }
             set
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.tblCaption == null)
                 {
                     CT_String caption = new CT_String();
@@ -743,7 +1209,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.tblDescription != null)
                     return tblPr.tblDescription.val;
                 else
@@ -751,7 +1217,7 @@ namespace NPOI.XWPF.UserModel
             }
             set
             {
-                CT_TblPr tblPr = GetTrPr();
+                CT_TblPr tblPr = GetTblPr();
                 if (tblPr.tblDescription == null)
                 {
                     CT_String desc = new CT_String();
@@ -767,7 +1233,7 @@ namespace NPOI.XWPF.UserModel
 
         public void SetCellMargins(int top, int left, int bottom, int right)
         {
-            CT_TblPr tblPr = GetTrPr();
+            CT_TblPr tblPr = GetTblPr();
             CT_TblCellMar tcm = tblPr.IsSetTblCellMar() ? tblPr.tblCellMar : tblPr.AddNewTblCellMar();
 
             CT_TblWidth tw = tcm.IsSetLeft() ? tcm.left : tcm.AddNewLeft();
