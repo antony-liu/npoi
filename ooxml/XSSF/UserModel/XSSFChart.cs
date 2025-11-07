@@ -31,6 +31,7 @@ namespace NPOI.XSSF.UserModel
     using NPOI.XSSF.UserModel.Charts;
     using System.Xml.Serialization;
     using NPOI.OpenXmlFormats.Dml;
+    using NPOI.Util;
 
     /**
      * Represents a SpreadsheetML Chart
@@ -264,7 +265,16 @@ namespace NPOI.XSSF.UserModel
         /**
          * Returns the title, or null if none is Set
          */
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public XSSFRichTextString Title
+        {
+            get
+            {
+                return TitleText;
+            }
+        }
+        public XSSFRichTextString TitleText
         {
             get
             {
@@ -286,7 +296,13 @@ namespace NPOI.XSSF.UserModel
         /**
          * Sets the title text.
          */
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public void SetTitle(string newTitle)
+        {
+            SetTitleText(newTitle);
+        }
+        public void SetTitleText(string newTitle)
         {
             CT_Title ctTitle;
             if (chart.IsSetTitle())
