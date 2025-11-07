@@ -17,18 +17,20 @@
 namespace TestCases.XWPF.UserModel
 {
     using NPOI.OpenXmlFormats.Wordprocessing;
-    using CT_Blip = NPOI.OpenXmlFormats.Dml.CT_Blip;
-    using CT_BlipFillProperties = NPOI.OpenXmlFormats.Dml.CT_BlipFillProperties;
-    using CT_Picture = NPOI.OpenXmlFormats.Dml.Picture.CT_Picture;
     using NPOI.Util;
     using NPOI.WP.UserModel;
     using NPOI.XWPF.Model;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+using NUnit.Framework.Legacy;
+    using Org.BouncyCastle.Asn1.X500;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using CT_Blip = NPOI.OpenXmlFormats.Dml.CT_Blip;
+    using CT_BlipFillProperties = NPOI.OpenXmlFormats.Dml.CT_BlipFillProperties;
+    using CT_Picture = NPOI.OpenXmlFormats.Dml.Picture.CT_Picture;
 
     /**
      * Tests for XWPF Run
@@ -626,6 +628,31 @@ namespace TestCases.XWPF.UserModel
             ClassicAssert.AreEqual(int.MaxValue, run.TextPosition);
             run.TextPosition = -1;
             ClassicAssert.AreEqual(-1, run.TextPosition);
+        }
+
+        [Test]
+        public void TestSetters()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+
+            // at least trigger some of the setters to ensure classes are included in
+            // the poi-ooxml-schemas
+            run.IsBold = true;
+            run.IsCapitalized = true;
+            run.CharacterSpacing = 2;
+            ClassicAssert.AreEqual(2, run.CharacterSpacing);
+            run.SetColor("000000");
+            run.IsDoubleStrikeThrough = true;
+            run.IsEmbossed = true;
+            run.FontFamily = "Calibri";
+            ClassicAssert.AreEqual("Calibri", run.FontFamily);
+            run.FontSize = 10;
+            ClassicAssert.AreEqual(10, run.FontSize);
+            run.IsImprinted = true;
+            run.IsItalic = true;
+
+            document.Close();
         }
 
         [Test]
