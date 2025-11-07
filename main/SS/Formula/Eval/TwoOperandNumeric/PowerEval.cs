@@ -28,6 +28,10 @@ namespace NPOI.SS.Formula.Eval
 
         public override double Evaluate(double d0, double d1)
         {
+            if(d0 < 0 && Math.Abs(d1) > 0.0 && Math.Abs(d1) < 1.0)
+            {
+                return -1 * Math.Pow(d0 * -1, d1);
+            }
             return Math.Pow(d0, d1);
         }
     }
