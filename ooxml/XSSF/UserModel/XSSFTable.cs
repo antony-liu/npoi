@@ -224,6 +224,7 @@ namespace NPOI.XSSF.UserModel
          * @return List of XSSFXmlColumnPr
          */
         [Obsolete]
+        [Removal(Version = "4.2")]
         public List<XSSFXmlColumnPr> GetXmlColumnPrs()
         {
 
@@ -371,7 +372,7 @@ namespace NPOI.XSSF.UserModel
                 column.name =  "Column " + nextColumnId;
             }
 
-            /*if (ctTable.@ref != null)
+            if (ctTable.@ref != null)
             {
                 // calculate new area
                 int newColumnCount = columnCount + 1;
@@ -383,7 +384,7 @@ namespace NPOI.XSSF.UserModel
                 AreaReference newTableArea = new AreaReference(tableStart, newTableEnd, version);
 
                 SetCellRef(newTableArea);
-            }*/
+            }
 
             UpdateHeaders();
 
@@ -423,7 +424,6 @@ namespace NPOI.XSSF.UserModel
         
         protected void SetCellRef(AreaReference refs)
         {
-
             // Strip the sheet name,
             // CTWorksheet.getTableParts defines in which sheet the table is
             String reference = refs.FormatAsString();
@@ -457,7 +457,91 @@ namespace NPOI.XSSF.UserModel
             UpdateReferences();
             UpdateHeaders();
         }
-        
+
+        /// <summary>
+        /// Get or set the area reference for the cells which this table covers. The area
+        /// includes header rows and totals rows.
+        /// 
+        /// Updating the area with this method will create new column as necessary to
+        /// the right side of the table but will not modify any cell values.
+        /// </summary>
+        public AreaReference Area
+        {
+            get
+            {
+                String ref1 = ctTable.@ref;
+                if(ref1 != null)
+                {
+                    SpreadsheetVersion version = GetXSSFSheet().GetWorkbook().SpreadsheetVersion;
+                    return new AreaReference(ctTable.@ref, version);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                
+                if(value == null)
+                {
+                    throw new ArgumentException("AreaReference must not be null");
+                }
+
+                String areaSheetName = value.FirstCell.SheetName;
+                if(areaSheetName != null && !areaSheetName.Equals(GetXSSFSheet().SheetName))
+                {
+                    // TODO to move a table from one sheet to another
+                    // CTWorksheet.getTableParts needs to be updated on both sheets
+                    throw new ArgumentException(
+                            "The AreaReference must not reference a different sheet");
+                }
+
+                int rowCount = (value.LastCell.Row - value.FirstCell.Row) + 1;
+                int minimumRowCount = 1 + HeaderRowCount + TotalsRowCount;
+                if(rowCount < minimumRowCount)
+                {
+                    throw new ArgumentException("AreaReference needs at least " + minimumRowCount
+                            + " rows, to cover at least one data row and all header rows and totals rows");
+                }
+
+                // Strip the sheet name,
+                // CTWorksheet.getTableParts defines in which sheet the table is
+                String ref1 = value.FormatAsString();
+                if(ref1.Contains('!'))
+                {
+                    ref1 = ref1.Substring(ref1.IndexOf('!') + 1);
+                }
+
+                // Update
+                ctTable.@ref = ref1;
+                if(ctTable.IsSetAutoFilter)
+                {
+                    ctTable.autoFilter.@ref = ref1;
+                }
+                UpdateReferences();
+
+                // add or remove columns on the right side of the table
+                int columnCount = ColumnCount;
+                int newColumnCount = (value.LastCell.Col - value.FirstCell.Col) + 1;
+                if(newColumnCount > columnCount)
+                {
+                    for(int i = columnCount; i < newColumnCount; i++)
+                    {
+                        CreateColumn(null, i);
+                    }
+                }
+                else if(newColumnCount < columnCount)
+                {
+                    for(int i = columnCount; i > newColumnCount; i--)
+                    {
+                        RemoveColumn(i -1);
+                    }
+                }
+
+                UpdateHeaders();
+            }
+        }
         public ITableStyleInfo Style
         {
             get
@@ -486,6 +570,7 @@ namespace NPOI.XSSF.UserModel
          * @return  the number of mapped table columns (see Open Office XML Part 4: chapter 3.5.1.4)
          */
         [Obsolete]
+        [Removal(Version = "4.2")]
         public long NumberOfMappedColumns
         {
             get
@@ -573,8 +658,8 @@ namespace NPOI.XSSF.UserModel
 
 
         /**
-      * @since POI 3.15 beta 3
-      */
+          * @since POI 3.15 beta 3
+          */
         private void SetCellReferences()
         {
             string ref1 = ctTable.@ref;
@@ -626,7 +711,100 @@ namespace NPOI.XSSF.UserModel
                 return rowCount;
             }
         }
+        /**
+         * Set the number of rows in the data area of the table. This does not
+         * affect any header rows or totals rows.
+         * 
+         * If the new row count is less than the current row count, superfluous rows
+         * will be cleared. If the new row count is greater than the current row
+         * count, cells below the table will be overwritten by the table.
+         * 
+         * To resize the table without overwriting cells, use
+         * {@link #setArea(AreaReference)} instead.
+         *
+         * @param newDataRowCount
+         *            new row count for the table
+         * @throws IllegalArgumentException
+         *             if the row count is less than 1
+         * @since 4.0.0
+         */
+        public int DataRowCount
+        {
+            get
+            {
+                CellReference from = StartCellReference;
+                CellReference to = EndCellReference;
 
+                int rowCount = 0;
+                if(from != null && to != null)
+                {
+                    rowCount = (to.Row - from.Row + 1) - HeaderRowCount
+                            - TotalsRowCount;
+                }
+                return rowCount;
+            }
+            set
+            {
+                if(value < 1)
+                {
+                    throw new ArgumentException("Table must have at least one data row");
+                }
+
+                UpdateReferences();
+                int dataRowCount = DataRowCount;
+                if(dataRowCount == value)
+                {
+                    return;
+                }
+
+                CellReference tableStart = StartCellReference;
+                CellReference tableEnd = EndCellReference;
+                SpreadsheetVersion version = GetXSSFSheet().GetWorkbook().SpreadsheetVersion;
+
+                // calculate new area
+                int newTotalRowCount = HeaderRowCount + value + TotalsRowCount;
+                CellReference newTableEnd = new CellReference(tableStart.Row + newTotalRowCount - 1,
+                    tableEnd.Col);
+                AreaReference newTableArea = new AreaReference(tableStart, newTableEnd, version);
+
+                // clear cells
+                CellReference clearAreaStart;
+                CellReference clearAreaEnd;
+                if(value < dataRowCount)
+                {
+                    // table size reduced -
+                    // clear all table cells that are outside of the new area
+                    clearAreaStart = new CellReference(newTableArea.LastCell.Row + 1,
+                            newTableArea.FirstCell.Col);
+                    clearAreaEnd = tableEnd;
+                }
+                else
+                {
+                    // table size increased -
+                    // clear all cells below the table that are inside the new area
+                    clearAreaStart = new CellReference(tableEnd.Row + 1,
+                            newTableArea.FirstCell.Col);
+                    clearAreaEnd = newTableEnd;
+                }
+                AreaReference areaToClear = new AreaReference(clearAreaStart, clearAreaEnd, version);
+                foreach(CellReference cellRef in areaToClear.GetAllReferencedCells())
+                {
+                    XSSFRow row = GetXSSFSheet().GetRow(cellRef.Row) as XSSFRow;
+                    if(row != null)
+                    {
+                        XSSFCell cell = row.GetCell(cellRef.Col) as XSSFCell;
+                        if(cell != null)
+                        {
+                            cell.SetCellType(CellType.Blank);
+                            cell.CellStyle = null;
+                        }
+                    }
+                }
+
+                // update table area
+                SetCellRef(newTableArea);
+            }
+        }
 
         /// <summary>
         /// <para>
@@ -746,6 +924,35 @@ namespace NPOI.XSSF.UserModel
                 UpdateReferences();
                 UpdateHeaders();
             }
+        }
+
+        /**
+         * Remove a column from the table.
+         *
+         * @param columnIndex
+         *            the 0-based position of the column in the table
+         * @throws IllegalArgumentException
+         *             if no column at the index exists or if the table has only a
+         *             single column
+         * @since 4.0.0
+         */
+        public void RemoveColumn(int columnIndex)
+        {
+            if(columnIndex < 0 || columnIndex > ColumnCount - 1)
+            {
+                throw new ArgumentOutOfRangeException("Column index out of bounds");
+            }
+
+            if(ColumnCount == 1)
+            {
+                throw new ArgumentException("Table must have at least one column");
+            }
+
+            CT_TableColumns tableColumns = ctTable.tableColumns;
+            tableColumns.RemoveTableColumn(columnIndex);
+            tableColumns.count = (uint)tableColumns.GetTableColumnList().Count;
+            UpdateReferences();
+            UpdateHeaders();
         }
         public String SheetName
         {

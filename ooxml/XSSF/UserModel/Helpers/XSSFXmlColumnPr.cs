@@ -20,6 +20,7 @@ using NPOI.OpenXmlFormats.Spreadsheet;
 using System;
 using System.Text; 
 using Cysharp.Text;
+using NPOI.Util;
 
 namespace NPOI.XSSF.UserModel.Helpers
 {
@@ -47,11 +48,20 @@ namespace NPOI.XSSF.UserModel.Helpers
             this.ctXmlColumnPr = ctXmlColumnPr;
         }
         [Obsolete]
+        [Removal(Version = "4.2")]
         public XSSFXmlColumnPr(XSSFTable table, CT_TableColumn ctTableColum, CT_XmlColumnPr CT_XmlColumnPr)
         {
             this.table = table;
             this.tableColumn = table.GetColumns()[table.FindColumnIndex(ctTableColum.name)];
             this.ctXmlColumnPr = CT_XmlColumnPr;
+        }
+
+        /// <summary>
+        /// Get the column for which these XML column properties are set.
+        /// </summary>
+        public XSSFTableColumn TableColumn
+        {
+            get { return tableColumn; }
         }
 
         public long MapId
@@ -71,6 +81,8 @@ namespace NPOI.XSSF.UserModel.Helpers
         /// <summary>
         /// (see Open Office XML Part 4: chapter 3.5.1.3) An integer representing the unique identifier of this column. 
         /// </summary>
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public long Id
         {
             get

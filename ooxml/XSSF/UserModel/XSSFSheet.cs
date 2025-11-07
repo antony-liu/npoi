@@ -3794,7 +3794,13 @@ namespace NPOI.XSSF.UserModel
         /// Creates a new Table, and associates it with this Sheet
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public XSSFTable CreateTable()
+        {
+            return CreateTable(null);
+        }
+        public XSSFTable CreateTable(AreaReference tableArea)
         {
             if(!worksheet.IsSetTableParts())
             {
@@ -3838,6 +3844,11 @@ namespace NPOI.XSSF.UserModel
             tbl.id = rp.Relationship.Id;
             table.GetCTTable().id = (uint)tableNumber;
             tables[tbl.id] = table;
+
+            if(tableArea != null)
+            {
+                table.Area = tableArea;
+            }
 
             return table;
         }

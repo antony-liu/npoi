@@ -209,6 +209,15 @@ namespace TestCases.XSSF.UserModel
             wb.Close();
         }
         [Test]
+        public void GetColumnCount()
+        {
+            XSSFWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("StructuredReferences.xlsx");
+            XSSFTable table = wb.GetTable("\\_Prime.1");
+            ClassicAssert.AreEqual(3, table.ColumnCount);
+            wb.Close();
+        }
+
+        [Test]
         public void GetAndSetDisplayName()
         {
             XSSFWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("StructuredReferences.xlsx");
@@ -265,6 +274,138 @@ namespace TestCases.XSSF.UserModel
             table.UpdateReferences();
             ClassicAssert.AreEqual(11, table.RowCount);
             IOUtils.CloseQuietly(wb);
+        }
+
+        [Test]
+        public void TestGetDataRowCount()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sh = wb.CreateSheet() as XSSFSheet;
+            AreaReference tableArea = new AreaReference("B2:B6", wb.SpreadsheetVersion);
+            XSSFTable table = sh.CreateTable(tableArea);
+
+            ClassicAssert.AreEqual(5, table.RowCount); // includes column header
+            ClassicAssert.AreEqual(4, table.DataRowCount);
+
+            table.Area = new AreaReference("B2:B7", wb.SpreadsheetVersion);
+
+            ClassicAssert.AreEqual(6, table.RowCount);
+            ClassicAssert.AreEqual(5, table.DataRowCount);
+
+            IOUtils.CloseQuietly(wb);
+        }
+
+        [Test]
+        public void TestSetDataRowCount()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sh = wb.CreateSheet() as XSSFSheet;
+
+            // 1 header row + 1 data row 
+            AreaReference tableArea = new AreaReference("C10:C11", wb.SpreadsheetVersion);
+            XSSFTable table = sh.CreateTable(tableArea);
+
+            ClassicAssert.AreEqual(2, table.RowCount); // includes all data and header/footer rows
+
+            ClassicAssert.AreEqual(1, table.HeaderRowCount);
+            ClassicAssert.AreEqual(1, table.DataRowCount);
+            ClassicAssert.AreEqual(0, table.TotalsRowCount);
+
+            table.DataRowCount = 5;
+
+            ClassicAssert.AreEqual(6, table.RowCount);
+
+            ClassicAssert.AreEqual(1, table.HeaderRowCount);
+            ClassicAssert.AreEqual(5, table.DataRowCount);
+            ClassicAssert.AreEqual(0, table.TotalsRowCount);
+
+            ClassicAssert.AreEqual("C10:C15", table.Area.FormatAsString());
+
+
+            IOUtils.CloseQuietly(wb);
+        }
+
+        [Test]
+        public void TestSetArea()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sh = wb.CreateSheet() as XSSFSheet;
+
+            AreaReference tableArea = new AreaReference("B10:D12", wb.SpreadsheetVersion);
+            XSSFTable table = sh.CreateTable(tableArea);
+
+            ClassicAssert.AreEqual(3, table.ColumnCount);
+            ClassicAssert.AreEqual(3, table.RowCount);
+
+            // Move table without resizing, shouldn't change row or column count
+            AreaReference tableArea2 = new AreaReference("B11:D13", wb.SpreadsheetVersion);
+            table.Area = tableArea2;
+
+            ClassicAssert.AreEqual(3, table.ColumnCount);
+            ClassicAssert.AreEqual(3, table.RowCount);
+
+            // increase size by 1 row and 1 column
+            AreaReference tableArea3 = new AreaReference("B11:E14", wb.SpreadsheetVersion);
+            table.Area = tableArea3;
+
+            ClassicAssert.AreEqual(4, table.ColumnCount);
+            ClassicAssert.AreEqual(4, table.RowCount);
+
+            // reduce size by 2 rows and 2 columns
+            AreaReference tableArea4 = new AreaReference("C12:D13", wb.SpreadsheetVersion);
+            table.Area = tableArea4;
+
+            ClassicAssert.AreEqual(2, table.ColumnCount);
+            ClassicAssert.AreEqual(2, table.RowCount);
+
+            IOUtils.CloseQuietly(wb);
+        }
+
+        [Test]
+        public void TestCreateColumn()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sh = wb.CreateSheet() as XSSFSheet;
+
+            AreaReference tableArea = new AreaReference("A2:A3", wb.SpreadsheetVersion);
+            XSSFTable table = sh.CreateTable(tableArea);
+
+            ClassicAssert.AreEqual(1, table.ColumnCount);
+            ClassicAssert.AreEqual(2, table.RowCount);
+
+            // add columns
+            table.CreateColumn("Column B");
+            table.CreateColumn("Column D");
+            table.CreateColumn("Column C", 2); // add between B and D
+            table.UpdateReferences();
+            table.UpdateHeaders();
+
+            ClassicAssert.AreEqual(4, table.ColumnCount);
+            ClassicAssert.AreEqual(2, table.RowCount);
+
+            ClassicAssert.AreEqual("Column 1", table.GetColumns()[0].Name); // generated name
+            ClassicAssert.AreEqual("Column B", table.GetColumns()[1].Name);
+            ClassicAssert.AreEqual("Column C", table.GetColumns()[2].Name);
+            ClassicAssert.AreEqual("Column D", table.GetColumns()[3].Name);
+
+            IOUtils.CloseQuietly(wb);
+        }
+
+        [Test]
+        public void TestCreateColumnInvalidIndex()
+        {
+            ClassicAssert.Throws(typeof(ArgumentException),
+                () =>
+                {
+                    XSSFWorkbook wb = new XSSFWorkbook();
+                    XSSFSheet sh = wb.CreateSheet() as XSSFSheet;
+                    AreaReference tableArea = new AreaReference("D2:D3", wb.SpreadsheetVersion);
+                    XSSFTable table = sh.CreateTable(tableArea);
+
+                    // add columns
+                    table.CreateColumn("Column 2", 1);
+                    table.CreateColumn("Column 3", 3); // out of bounds
+                });
         }
 
         [Test]
@@ -358,13 +499,13 @@ namespace TestCases.XSSF.UserModel
             c5.SetCellValue("CD");
             c6.SetCellValue("EF");
 
-            // Setting up the CTTable
-            XSSFTable t = s.CreateTable();
+            // Setting up the table
+            XSSFTable t = s.CreateTable(new AreaReference("A1:C3", wb.SpreadsheetVersion));
             t.Name = "TableTest";
             t.DisplayName = "CT_Table_Test";
-            t.AddColumn();
-            t.AddColumn();
-            t.AddColumn();
+            t.CreateColumn("Column 1");
+            t.CreateColumn("Column 2");
+            t.CreateColumn("Column 3");
             t.CellReferences = (wb.GetCreationHelper().CreateAreaReference(
                     new CellReference(c1), new CellReference(c6)
             ));
