@@ -189,6 +189,26 @@ namespace TestCases.XSSF.UserModel
             workbook.Close();
         }
 
+        [Test]
+        public void TestMultipleEditWriteCycles()
+        {
+            XSSFWorkbook wb1 = new XSSFWorkbook();
+            XSSFSheet sheet1 = wb1.CreateSheet("Sheet1") as XSSFSheet;
+            XSSFRow srcRow = sheet1.CreateRow(0) as XSSFRow;
+            srcRow.CreateCell(0).SetCellValue("hello");
+            srcRow.CreateCell(3).SetCellValue("world");
+
+            // discard result
+            XSSFTestDataSamples.WriteOutAndReadBack(wb1);
+            srcRow.CreateCell(1).SetCellValue("cruel");
+            // discard result
+            XSSFTestDataSamples.WriteOutAndReadBack(wb1);
+
+            srcRow.GetCell(1).SetCellValue((IRichTextString) null);
+
+            XSSFWorkbook wb3 = XSSFTestDataSamples.WriteOutAndReadBack(wb1);
+            ClassicAssert.AreEqual(CellType.Blank, wb3.GetSheet("Sheet1").GetRow(0).GetCell(1).CellType, "Cell not blank");
+        }
     }
 
 }
