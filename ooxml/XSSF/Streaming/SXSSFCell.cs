@@ -471,7 +471,7 @@ namespace NPOI.XSSF.Streaming
             }
             else
             {
-                EnsureType(CellType.Error);
+                EnsureTypeOrFormulaType(CellType.Error);
                 ((ErrorValue) _value).Value = value;
             }
 

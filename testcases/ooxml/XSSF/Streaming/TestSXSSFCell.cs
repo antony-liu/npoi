@@ -22,6 +22,7 @@ namespace TestCases.XSSF.Streaming
     using NPOI.OpenXmlFormats.Spreadsheet;
     using NPOI.SS.UserModel;
     using NPOI.XSSF;
+    using NPOI.XSSF.Streaming;
     using NPOI.XSSF.UserModel;
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using System;
@@ -81,6 +82,25 @@ namespace TestCases.XSSF.Streaming
                         //ClassicAssert.AreEqual("preserve", t, "expected xml:spaces=\"preserve\" \"" + str + "\"");
                     }
                 }
+            }
+        }
+
+        [Test]
+        public void Test62216()
+        {
+            SXSSFWorkbook wb = new SXSSFWorkbook();
+            try
+            {
+                ICell instance = wb.CreateSheet().CreateRow(0).CreateCell(0);
+                String formula = "2";
+                instance.SetCellFormula(formula);
+                instance.SetCellErrorValue(FormulaError.NAME.Code);
+
+                ClassicAssert.AreEqual(formula, instance.CellFormula);
+            }
+            catch(Exception)
+            {
+                wb.Close();
             }
         }
     }
