@@ -1042,6 +1042,11 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
             this.oleObjectsField = new CT_OleObjects();
             return this.oleObjectsField;
         }
+
+        public bool IsSetSheetViews()
+        {
+            return this.sheetViewsField != null;
+        }
     }
 
 }

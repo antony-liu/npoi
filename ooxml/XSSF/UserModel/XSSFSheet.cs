@@ -15,6 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
+using Cysharp.Text;
 using NPOI.HSSF.Util;
 using NPOI.OpenXml4Net.Exceptions;
 using NPOI.OpenXml4Net.OPC;
@@ -32,15 +33,15 @@ using SixLabors.Fonts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
-using Cysharp.Text;
 using System.Xml;
+using System.Xml.Linq;
 using CT_Shape = NPOI.OpenXmlFormats.Vml.CT_Shape;
 using ST_EditAs = NPOI.OpenXmlFormats.Dml.Spreadsheet.ST_EditAs;
-using System.Xml.Linq;
-using System.Diagnostics;
 
 namespace NPOI.XSSF.UserModel
 {
@@ -86,16 +87,13 @@ namespace NPOI.XSSF.UserModel
         private readonly XSSFDataValidationHelper dataValidationHelper;
         private XSSFDrawing drawing = null;
 
+        [Obsolete]
+        [Removal(Version = "4.2")]
         private CT_Pane Pane
         {
             get
             {
-                if(GetDefaultSheetView().pane == null)
-                {
-                    GetDefaultSheetView().AddNewPane();
-                }
-
-                return GetDefaultSheetView().pane;
+                return GetPane(false);
             }
         }
 
@@ -214,13 +212,14 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CT_SheetView view = GetDefaultSheetView();
-                return view != null && view.rightToLeft;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null && dsv.rightToLeft);
             }
             set
             {
-                CT_SheetView view = GetDefaultSheetView();
-                view.rightToLeft = value;
+                CT_SheetView dsv = GetDefaultSheetView(true);
+                //assert(dsv != null);
+                dsv.rightToLeft = value;
             }
         }
 
@@ -252,12 +251,13 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CT_SheetView view = GetDefaultSheetView();
-                return view == null || view.showZeros;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null) ? dsv.showZeros : true;
             }
             set
             {
-                CT_SheetView view = GetSheetTypeSheetView();
+                CT_SheetView view = GetDefaultSheetView(true);
+                //assert(view != null);
                 view.showZeros = value;
             }
         }
@@ -519,24 +519,27 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CT_Pane pane = GetDefaultSheetView().pane;
+                CT_Pane pane = GetPane(false);
                 // no pane configured
                 if(pane == null)
                 {
                     return null;
                 }
 
-                CellReference cellRef = pane.IsSetTopLeftCell() ? new CellReference(pane.topLeftCell) : null;
-                return new PaneInformation((short) pane.xSplit,
-                    (short) pane.ySplit,
-                    cellRef == null
-                        ? (short) 0
-                        : (short) cellRef.Row,
-                    cellRef == null
-                        ? (short) 0
-                        : cellRef.Col,
-                    (byte) pane.activePane,
-                    pane.state == ST_PaneState.frozen);
+                short row = 0, col = 0;
+                if(pane.IsSetTopLeftCell())
+                {
+                    CellReference cellRef = new CellReference(pane.topLeftCell);
+                    row = (short) cellRef.Row;
+                    col = (short) cellRef.Col;
+                }
+
+                short x = (short)pane.xSplit;
+                short y = (short)pane.ySplit;
+                byte active = (byte)pane.activePane;
+                bool frozen = pane.state == ST_PaneState.frozen;
+
+                return new PaneInformation(x, y, row, col, active, frozen);
             }
         }
 
@@ -677,12 +680,11 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                string cellRef = GetPane().topLeftCell;
+                String cellRef = worksheet.sheetViews.GetSheetViewArray(0).topLeftCell;
                 if(cellRef == null)
                 {
                     return 0;
                 }
-
                 CellReference cellReference = new CellReference(cellRef);
                 return cellReference.Col;
             }
@@ -700,18 +702,19 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                string cellRef = GetSheetTypeSheetView().topLeftCell;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                string cellRef = (dsv == null) ? null : dsv.topLeftCell;
                 if(cellRef == null)
                 {
                     return 0;
                 }
 
-                CellReference cellReference = new CellReference(cellRef);
-                return (short) cellReference.Row;
+                return (short) new CellReference(cellRef).Row;
             }
             set
             {
-                GetSheetTypeSheetView().topLeftCell = "A" + value.ToString();
+                CT_SheetView dsv = GetDefaultSheetView(true);
+                dsv.topLeftCell = "A" + value.ToString();
             }
         }
 
@@ -743,11 +746,14 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return GetSheetTypeSheetView().showFormulas;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null) ? dsv.showFormulas : true;
             }
             set
             {
-                GetSheetTypeSheetView().showFormulas = value;
+                CT_SheetView dsv = GetDefaultSheetView(true);
+                //assert(dsv != null);
+                dsv.showFormulas = value;
             }
         }
 
@@ -759,11 +765,14 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return GetSheetTypeSheetView().showGridLines;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null) ? dsv.showGridLines : true;
             }
             set
             {
-                GetSheetTypeSheetView().showGridLines = value;
+                CT_SheetView dsv = GetDefaultSheetView(true);
+                //assert(dsv != null);
+                dsv.showRowColHeaders = value;
             }
         }
 
@@ -777,11 +786,14 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return GetSheetTypeSheetView().showRowColHeaders;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null) ? dsv.showRowColHeaders : true;
             }
             set
             {
-                GetSheetTypeSheetView().showRowColHeaders = value;
+                CT_SheetView dsv = GetDefaultSheetView(true);
+                //assert(dsv != null);
+                dsv.showRowColHeaders = value;
             }
         }
 
@@ -900,12 +912,13 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CT_SheetView view = GetDefaultSheetView();
-                return view != null && view.tabSelected;
+                CT_SheetView dsv = GetDefaultSheetView(false);
+                return (dsv != null) ? dsv.tabSelected : false;
             }
             set
             {
-                CT_SheetViews views = GetSheetTypeSheetViews();
+                CT_SheetViews views = GetSheetTypeSheetViews(true);
+                //assert(views != null);
                 foreach(CT_SheetView view in views.sheetView)
                 {
                     view.tabSelected = value;
@@ -920,18 +933,15 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                string address = GetSheetTypeSelection().activeCell;
-                if(address == null)
-                {
-                    return null;
-                }
-
-                return new CellAddress(address);
+                CT_Selection sts = GetSheetTypeSelection(false);
+                String address = (sts != null) ? sts.activeCell : null;
+                return (address != null) ? new CellAddress(address) : null;
             }
             set
             {
-                string ref1 = value.FormatAsString();
-                CT_Selection ctsel = GetSheetTypeSelection();
+                CT_Selection ctsel = GetSheetTypeSelection(true);
+                //assert(ctsel != null);
+                String ref1 = value.FormatAsString();
                 ctsel.activeCell = ref1;
                 ctsel.SetSqref(new string[] { ref1 });
             }
@@ -1937,73 +1947,61 @@ namespace NPOI.XSSF.UserModel
         /// <param name="topRow">Top row visible in bottom pane</param>
         public void CreateFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow)
         {
-            CT_SheetView ctView = GetDefaultSheetView();
-
-            // If both colSplit and rowSplit are zero then the existing freeze pane is Removed
-            if(colSplit == 0 && rowSplit == 0)
+            bool removeSplit = colSplit == 0 && rowSplit == 0;
+            CT_SheetView ctView = GetDefaultSheetView(!removeSplit);
+            if(ctView != null)
             {
-
-                if(ctView.IsSetPane())
+                ctView.SetSelectionArray(null);
+            }
+            // If both colSplit and rowSplit are zero then the existing freeze pane is Removed
+            if(removeSplit)
+            {
+                if(ctView != null && ctView.IsSetPane())
                 {
                     ctView.UnsetPane();
                 }
-
-                ctView.SetSelectionArray(null);
                 return;
             }
-
-            if(!ctView.IsSetPane())
-            {
-                ctView.AddNewPane();
-            }
-
-            CT_Pane pane = ctView.pane;
+            //assert(ctView != null);
+            CT_Pane pane = (ctView.IsSetPane()) ? ctView.pane : ctView.AddNewPane();
+            //assert(pane != null);
 
             if(colSplit > 0)
             {
                 pane.xSplit = colSplit;
             }
-            else
+            else if(pane.IsSetXSplit())
             {
-
-                if(pane.IsSetXSplit())
-                {
-                    pane.UnsetXSplit();
-                }
+                pane.UnsetXSplit();
             }
 
             if(rowSplit > 0)
             {
                 pane.ySplit = rowSplit;
             }
-            else
+            else if(pane.IsSetYSplit())
             {
-                if(pane.IsSetYSplit())
-                {
-                    pane.UnsetYSplit();
-                }
+                pane.UnsetYSplit();
             }
 
-            pane.state = ST_PaneState.frozen;
+            ST_Pane activePane = ST_Pane.bottomRight;
+            int pRow = topRow, pCol = leftmostColumn;
             if(rowSplit == 0)
             {
-                pane.topLeftCell = new CellReference(0, leftmostColumn).FormatAsString();
-                pane.activePane = ST_Pane.topRight;
+                pRow = 0;
+                activePane = ST_Pane.topRight;
             }
             else if(colSplit == 0)
             {
-                pane.topLeftCell = new CellReference(topRow, 0).FormatAsString();
-                pane.activePane = ST_Pane.bottomLeft;
-            }
-            else
-            {
-                pane.topLeftCell = new CellReference(topRow, leftmostColumn).FormatAsString();
-                pane.activePane = ST_Pane.bottomRight;
+                pCol = 0;
+                activePane = ST_Pane.bottomLeft;
             }
 
-            ctView.selection = null;
-            CT_Selection sel = ctView.AddNewSelection();
-            sel.pane = pane.activePane;
+            pane.state = ST_PaneState.frozen;
+            pane.topLeftCell = new CellReference(pRow, pCol).FormatAsString();
+            pane.activePane = activePane;
+
+            ctView.AddNewSelection().pane = activePane;
         }
 
         /// <summary>
@@ -2127,8 +2125,12 @@ namespace NPOI.XSSF.UserModel
             PanePosition activePane)
         {
             CreateFreezePane(xSplitPos, ySplitPos, leftmostColumn, topRow);
-            GetPane().state = ST_PaneState.split;
-            GetPane().activePane = (ST_Pane) activePane;
+            if(xSplitPos > 0 || ySplitPos > 0)
+            {
+                CT_Pane pane = GetPane(true);
+                pane.state = ST_PaneState.split;
+                pane.activePane = (ST_Pane) activePane;
+            }
         }
 
         /// <summary>
@@ -2963,7 +2965,9 @@ namespace NPOI.XSSF.UserModel
                 throw new ArgumentException("Valid scale values range from 10 to 400");
             }
 
-            GetSheetTypeSheetView().zoomScale = (uint) scale;
+            CT_SheetView dsv = GetDefaultSheetView(true);
+            //assert(dsv != null);
+            dsv.zoomScale = (uint)scale;
         }
 
         /// <summary>
@@ -3979,12 +3983,12 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CT_SheetView view = GetDefaultSheetView();
+                CT_SheetView view = GetDefaultSheetView(false);
                 return view != null && view.rightToLeft;
             }
             set
             {
-                CT_SheetView view = GetDefaultSheetView();
+                CT_SheetView view = GetDefaultSheetView(true);
                 view.rightToLeft = value;
             }
         }
@@ -4157,7 +4161,9 @@ namespace NPOI.XSSF.UserModel
         {
             CellReference cellReference = new CellReference(toprow, leftcol);
             string cellRef = cellReference.FormatAsString();
-            Pane.topLeftCell = cellRef;
+            CT_Pane pane = GetPane(true);
+            //assert(pane != null);
+            pane.topLeftCell = cellRef;
         }
 
         public ISheet CopySheet(string Name)
@@ -4334,10 +4340,10 @@ namespace NPOI.XSSF.UserModel
                 newSheet.worksheet.sheetPr = worksheet.sheetPr.Clone();
             }
 
-            if(GetDefaultSheetView().pane != null)
+            if(GetDefaultSheetView(false).pane != null)
             {
-                CT_Pane oldPane = GetDefaultSheetView().pane;
-                CT_Pane newPane = newSheet.GetPane();
+                CT_Pane oldPane = GetDefaultSheetView(false).pane;
+                CT_Pane newPane = newSheet.GetPane(true);
                 newPane.activePane = oldPane.activePane;
                 newPane.state = oldPane.state;
                 newPane.topLeftCell = oldPane.topLeftCell;
@@ -5128,14 +5134,17 @@ namespace NPOI.XSSF.UserModel
             return group;
         }
 
-        private CT_SheetView GetSheetTypeSheetView()
+        private CT_SheetView GetSheetTypeSheetView(bool create)
         {
-            if(GetDefaultSheetView() == null)
+            CT_SheetViews views = GetSheetTypeSheetViews(create);
+            //assert(views != null || !create);
+            if(views == null)
             {
-                GetSheetTypeSheetViews().SetSheetViewArray(0, new CT_SheetView());
+                return null;
             }
-
-            return GetDefaultSheetView();
+            int sz = views.sizeOfSheetViewArray();
+            //assert(sz > 0 || !create);
+            return (sz == 0) ? null : views.GetSheetViewArray(sz - 1);
         }
 
         /// <summary>
@@ -5731,14 +5740,20 @@ namespace NPOI.XSSF.UserModel
             return index + n;
         }
 
-        private CT_Selection GetSheetTypeSelection()
+        private CT_Selection GetSheetTypeSelection(bool create)
         {
-            if(GetSheetTypeSheetView().SizeOfSelectionArray() == 0)
+            CT_SheetView dsv = GetDefaultSheetView(create);
+            //assert(dsv != null || !create);
+            if(dsv == null)
             {
-                GetSheetTypeSheetView().InsertNewSelection(0);
+                return null;
             }
-
-            return GetSheetTypeSheetView().GetSelectionArray(0);
+            int sz = dsv.SizeOfSelectionArray();
+            if(sz == 0)
+            {
+                return create ? dsv.AddNewSelection() : null;
+            }
+            return dsv.GetSelectionArray(sz - 1);
         }
 
         /// <summary>
@@ -5754,16 +5769,17 @@ namespace NPOI.XSSF.UserModel
         /// (with corresponding workbookView entries) are saved."
         /// </summary>
         /// <returns></returns>
-        private CT_SheetView GetDefaultSheetView()
+        private CT_SheetView GetDefaultSheetView(bool create)
         {
-            CT_SheetViews views = GetSheetTypeSheetViews();
-            int sz = views == null ? 0 : views.sizeOfSheetViewArray();
-            if(sz == 0)
+            CT_SheetViews views = GetSheetTypeSheetViews(create);
+            //assert(views != null || !create);
+            if(views == null)
             {
                 return null;
             }
-
-            return views.GetSheetViewArray(sz - 1);
+            int sz = views.sizeOfSheetViewArray();
+            //assert(sz > 0 || !create);
+            return (sz == 0) ? null : views.GetSheetViewArray(sz - 1);
         }
 
         private CT_PageSetUpPr GetSheetTypePageSetUpPr()
@@ -5789,14 +5805,15 @@ namespace NPOI.XSSF.UserModel
             return false;
         }
 
-        private CT_Pane GetPane()
+        private CT_Pane GetPane(bool create)
         {
-            if(GetDefaultSheetView().pane == null)
+            CT_SheetView dsv = GetDefaultSheetView(create);
+            //assert(dsv != null || !create);
+            if(dsv == null)
             {
-                GetDefaultSheetView().AddNewPane();
+                return null;
             }
-
-            return GetDefaultSheetView().pane;
+            return (dsv.IsSetPane() || !create) ? dsv.pane : dsv.AddNewPane();
         }
 
         private void SetSheetFormatPrOutlineLevelRow()
@@ -5811,15 +5828,20 @@ namespace NPOI.XSSF.UserModel
             GetSheetTypeSheetFormatPr().outlineLevelCol = (byte) maxLevelCol;
         }
 
-        private CT_SheetViews GetSheetTypeSheetViews()
+        private CT_SheetViews GetSheetTypeSheetViews(bool create)
         {
-            if(worksheet.sheetViews == null)
+            CT_SheetViews views = (worksheet.IsSetSheetViews() || !create)
+                ? worksheet.sheetViews : worksheet.AddNewSheetViews();
+            //assert(views != null || !create);
+            if(views == null)
             {
-                worksheet.sheetViews = new CT_SheetViews();
-                worksheet.sheetViews.AddNewSheetView();
+                return null;
             }
-
-            return worksheet.sheetViews;
+            if(views.sizeOfSheetViewArray() == 0 && create)
+            {
+                views.AddNewSheetView();
+            }
+            return views;
         }
 
         private CT_SheetProtection SafeGetProtectionField()

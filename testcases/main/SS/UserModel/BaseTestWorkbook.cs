@@ -342,6 +342,30 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
+        public void TestSetActiveCell()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet("new sheet");
+                CellAddress initialActiveCell = sheet.ActiveCell;
+                ClassicAssert.IsTrue(initialActiveCell == null || new CellAddress("A1").Equals(initialActiveCell));
+                sheet.ActiveCell = new CellAddress("E11");
+                ClassicAssert.AreEqual(new CellAddress("E11"), sheet.ActiveCell);
+
+                IWorkbook wbr = _testDataProvider.WriteOutAndReadBack(wb);
+                sheet = wbr.GetSheet("new sheet");
+                ClassicAssert.AreEqual(new CellAddress("E11"), sheet.ActiveCell);
+
+                //wbr.write(new FileOutputStream("c:/temp/yyy." + _testDataProvider.getStandardFileNameExtension()));
+            }
+            catch(Exception)
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
         public void TestDefaultValues()
         {
             IWorkbook b = _testDataProvider.CreateWorkbook();
