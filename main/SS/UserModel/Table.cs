@@ -17,6 +17,7 @@
 
 namespace NPOI.SS.UserModel
 {
+    using NPOI.SS.Util;
     using System;
     using System.Text.RegularExpressions;
 
@@ -121,6 +122,12 @@ namespace NPOI.SS.UserModel
         /// @since 3.17 beta 1
         /// </remarks>
         bool Contains(ICell cell);
+        /// <summary>
+        /// checks if the given cell is part of the table.  Includes checking that they are on the same sheet.
+        /// </summary>
+        /// <param name="cell">reference to a possibly undefined cell location</param>
+        /// <returns>return true if the table and cell are on the same sheet and the cell is within the table range.</returns>
+        bool Contains(CellReference cell);
     }
 
 }

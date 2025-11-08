@@ -1034,16 +1034,7 @@ namespace NPOI.XSSF.UserModel
         public bool Contains(ICell cell)
         {
             if (cell == null) return false;
-            // check if cell is on the same sheet as the table
-            if (!SheetName.Equals(cell.Sheet.SheetName)) return false;
-            // check if the cell is inside the table
-            if (cell.RowIndex >= StartRowIndex
-                && cell.RowIndex <= EndRowIndex
-                && cell.ColumnIndex >= StartColIndex
-                && cell.ColumnIndex <= EndColIndex) {
-                return true;
-            }
-            return false;
+            return Contains(new CellReference(cell.Sheet.SheetName, cell.RowIndex, cell.ColumnIndex, true, true));
         }
 
         /// <summary>

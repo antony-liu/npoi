@@ -89,6 +89,12 @@ namespace NPOI.SS.UserModel
     {
         public static CellRangeAddressBase GetRange(this TableStyleType styleType, ITable table, ICell cell)
         {
+            if(cell == null)
+                return null;
+            return styleType.GetRange(table, new CellReference(cell.Sheet.SheetName, cell.RowIndex, cell.ColumnIndex, true, true));
+        }
+        public static CellRangeAddressBase GetRange(this TableStyleType styleType, ITable table, CellReference cell)
+        {
             switch(styleType)
             {
                 case TableStyleType.wholeTable:
@@ -130,7 +136,7 @@ namespace NPOI.SS.UserModel
             }
         }
 
-        private static CellRangeAddress GetFirstColumnStripeRange(ITable table, ICell cell)
+        private static CellRangeAddress GetFirstColumnStripeRange(ITable table, CellReference cell)
         {
             ITableStyleInfo info = table.Style;
             if (! info.IsShowColumnStripes) return null;
@@ -141,7 +147,7 @@ namespace NPOI.SS.UserModel
             
             int firstStart = table.StartColIndex;
             int secondStart = firstStart + c1Stripe;
-            int c = cell.ColumnIndex;
+            int c = cell.Col;
             
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
@@ -155,7 +161,7 @@ namespace NPOI.SS.UserModel
             return null;
         }
 
-        private static CellRangeAddress GetSecondColumnStripeRange(ITable table, ICell cell)
+        private static CellRangeAddress GetSecondColumnStripeRange(ITable table, CellReference cell)
         {
             ITableStyleInfo info = table.Style;
             if (! info.IsShowColumnStripes) return null;
@@ -167,7 +173,7 @@ namespace NPOI.SS.UserModel
 
             int firstStart = table.StartColIndex;
             int secondStart = firstStart + c1Stripe;
-            int c = cell.ColumnIndex;
+            int c = cell.Col;
             
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
@@ -181,7 +187,7 @@ namespace NPOI.SS.UserModel
             return null;
         }
 
-        private static CellRangeAddress GetFirstRowStripeRange(ITable table, ICell cell)
+        private static CellRangeAddress GetFirstRowStripeRange(ITable table, CellReference cell)
         {
             ITableStyleInfo info = table.Style;
             if (! info.IsShowRowStripes) return null;
@@ -193,7 +199,7 @@ namespace NPOI.SS.UserModel
 
             int firstStart = table.StartRowIndex + table.HeaderRowCount;
             int secondStart = firstStart + c1Stripe;
-            int c = cell.RowIndex;
+            int c = cell.Row;
             
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
@@ -208,7 +214,7 @@ namespace NPOI.SS.UserModel
             return null;
         }
 
-        private static CellRangeAddress GetSecondRowStripeRange(ITable table, ICell cell)
+        private static CellRangeAddress GetSecondRowStripeRange(ITable table, CellReference cell)
         {
             ITableStyleInfo info = table.Style;
             if(!info.IsShowRowStripes)
@@ -221,7 +227,7 @@ namespace NPOI.SS.UserModel
 
             int firstStart = table.StartRowIndex + table.HeaderRowCount;
             int secondStart = firstStart + c1Stripe;
-            int c = cell.RowIndex;
+            int c = cell.Row;
 
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
@@ -237,7 +243,6 @@ namespace NPOI.SS.UserModel
             }
             return null;
         }
-
         /// <summary>
         /// A range is returned only for the part of the table matching this enum instance and containing the given cell.
         /// Null is returned for all other cases, such as:
@@ -258,12 +263,37 @@ namespace NPOI.SS.UserModel
         /// </returns>
         public static CellRangeAddressBase AppliesTo(this TableStyleType styleType, ITable table, ICell cell)
         {
+            if(cell == null)
+                return null;
+            return styleType.AppliesTo(table, new CellReference(cell.Sheet.SheetName, cell.RowIndex, cell.ColumnIndex, true, true));
+        }
+
+        /// <summary>
+        /// A range is returned only for the part of the table matching this enum instance and containing the given cell.
+        /// Null is returned for all other cases, such as:
+        /// <list type="bullet">
+        /// <item><description>Cell on a different sheet than the table</description></item>
+        /// <item><description>Cell outside the table</description></item>
+        /// <item><description>this Enum part is not included in the table (i.e. no header/totals row)</description></item>
+        /// <item><description>this Enum is for a table part not yet implemented in POI, such as pivot table elements</description></item>
+        /// </list>
+        /// The returned range can be used to determine how style options may or may not apply to this cell.
+        /// For example, <see cref="wholeTable"/> borders only apply to the outer boundary of a table, while the
+        /// rest of the styling, such as font and color, could apply to all the interior cells as well.
+        /// </summary>
+        /// <param name="table">table to evaluate</param>
+        /// <param name="cell">to evaluate</param>
+        /// <returns>range in the table representing this class of cells, if it contains the given cell, or null if not applicable.
+        /// Stripe style types return only the stripe range containing the given cell, or null.
+        /// </returns>
+        public static CellRangeAddressBase AppliesTo(this TableStyleType styleType, ITable table, CellReference cell)
+        {
             if (table == null || cell == null) return null;
-            if ( ! cell.Sheet.SheetName.Equals(table.SheetName)) return null;
+            if ( ! cell.SheetName.Equals(table.SheetName)) return null;
             if ( ! table.Contains(cell)) return null;
         
             CellRangeAddressBase range = styleType.GetRange(table, cell);
-            if (range != null && range.IsInRange(cell.RowIndex, cell.ColumnIndex)) return range;
+            if (range != null && range.IsInRange(cell.Row, cell.Col)) return range;
             // else
             return null;
         }
