@@ -324,7 +324,7 @@ namespace TestCases.XSSF.UserModel
             // Look at the low level xml elements
             ClassicAssert.AreEqual(2, cs.GetCoreXf().fillId);
             ClassicAssert.AreEqual(0, cs.GetCoreXf().xfId);
-            ClassicAssert.AreEqual(true, cs.GetCoreXf().applyFill);
+            ClassicAssert.IsTrue(cs.GetCoreXf().applyFill);
 
             XSSFCellFill fg = wb.GetStylesSource().GetFillAt(2);
             ClassicAssert.IsNotNull(fg.GetFillForegroundColor());
@@ -342,8 +342,8 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.IsNotNull(cs.FillBackgroundColor);
             ClassicAssert.AreEqual(64, cs.FillBackgroundColor);
-            ClassicAssert.AreEqual(null, cs.FillBackgroundXSSFColor.ARGBHex);
-            ClassicAssert.AreEqual(null, (cs.FillBackgroundColorColor as XSSFColor).ARGBHex);
+            ClassicAssert.IsNull(cs.FillBackgroundXSSFColor.ARGBHex);
+            ClassicAssert.IsNull((cs.FillBackgroundColorColor as XSSFColor).ARGBHex);
 
             wb.Close();
         }
@@ -569,7 +569,7 @@ namespace TestCases.XSSF.UserModel
             );
             ClassicAssert.AreEqual(" with spaces ", c.RichStringCellValue.ToString());
             ClassicAssert.AreEqual(0, (c.RichStringCellValue as XSSFRichTextString).GetCTRst().sizeOfRArray());
-            ClassicAssert.AreEqual(true, (c.RichStringCellValue as XSSFRichTextString).GetCTRst().IsSetT());
+            ClassicAssert.IsTrue( (c.RichStringCellValue as XSSFRichTextString).GetCTRst().IsSetT());
             // Should have the preserve Set
             //ClassicAssert.AreEqual(
             //      1,
@@ -588,7 +588,7 @@ namespace TestCases.XSSF.UserModel
             c = r.GetCell(0) as XSSFCell;
             ClassicAssert.AreEqual(" with spaces ", c.RichStringCellValue.ToString());
             ClassicAssert.AreEqual(0, (c.RichStringCellValue as XSSFRichTextString).GetCTRst().sizeOfRArray());
-            ClassicAssert.AreEqual(true, (c.RichStringCellValue as XSSFRichTextString).GetCTRst().IsSetT());
+            ClassicAssert.IsTrue( (c.RichStringCellValue as XSSFRichTextString).GetCTRst().IsSetT());
 
             // Change the string
             c.SetCellValue(
@@ -1197,37 +1197,37 @@ namespace TestCases.XSSF.UserModel
 
             // No print Settings before repeating
             XSSFSheet s1 = wb1.CreateSheet() as XSSFSheet;
-            ClassicAssert.AreEqual(false, s1.GetCTWorksheet().IsSetPageSetup());
-            ClassicAssert.AreEqual(true, s1.GetCTWorksheet().IsSetPageMargins());
+            ClassicAssert.IsFalse( s1.GetCTWorksheet().IsSetPageSetup());
+            ClassicAssert.IsTrue( s1.GetCTWorksheet().IsSetPageMargins());
             s1.RepeatingColumns = (cra);
             s1.RepeatingRows = (cra);
 
-            ClassicAssert.AreEqual(true, s1.GetCTWorksheet().IsSetPageSetup());
-            ClassicAssert.AreEqual(true, s1.GetCTWorksheet().IsSetPageMargins());
+            ClassicAssert.IsTrue( s1.GetCTWorksheet().IsSetPageSetup());
+            ClassicAssert.IsTrue( s1.GetCTWorksheet().IsSetPageMargins());
 
             IPrintSetup ps1 = s1.PrintSetup;
-            ClassicAssert.AreEqual(false, ps1.ValidSettings);
-            ClassicAssert.AreEqual(false, ps1.Landscape);
+            ClassicAssert.IsFalse( ps1.ValidSettings);
+            ClassicAssert.IsFalse( ps1.Landscape);
 
 
             // Had valid print Settings before repeating
             XSSFSheet s2 = wb2.CreateSheet() as XSSFSheet;
             IPrintSetup ps2 = s2.PrintSetup;
-            ClassicAssert.AreEqual(true, s2.GetCTWorksheet().IsSetPageSetup());
-            ClassicAssert.AreEqual(true, s2.GetCTWorksheet().IsSetPageMargins());
+            ClassicAssert.IsTrue( s2.GetCTWorksheet().IsSetPageSetup());
+            ClassicAssert.IsTrue( s2.GetCTWorksheet().IsSetPageMargins());
 
             ps2.Landscape = (false);
-            ClassicAssert.AreEqual(true, ps2.ValidSettings);
-            ClassicAssert.AreEqual(false, ps2.Landscape);
+            ClassicAssert.IsTrue( ps2.ValidSettings);
+            ClassicAssert.IsFalse( ps2.Landscape);
 
             s2.RepeatingColumns = (cra);
             s2.RepeatingRows = (cra);
 
             ps2 = s2.PrintSetup;
-            ClassicAssert.AreEqual(true, s2.GetCTWorksheet().IsSetPageSetup());
-            ClassicAssert.AreEqual(true, s2.GetCTWorksheet().IsSetPageMargins());
-            ClassicAssert.AreEqual(true, ps2.ValidSettings);
-            ClassicAssert.AreEqual(false, ps2.Landscape);
+            ClassicAssert.IsTrue( s2.GetCTWorksheet().IsSetPageSetup());
+            ClassicAssert.IsTrue( s2.GetCTWorksheet().IsSetPageMargins());
+            ClassicAssert.IsTrue( ps2.ValidSettings);
+            ClassicAssert.IsFalse( ps2.Landscape);
 
             wb1.Close();
             wb2.Close();
@@ -2106,9 +2106,9 @@ namespace TestCases.XSSF.UserModel
             // Check the core properties - will be found but empty, due
             //  to the expansion being too much to be considered valid
             POIXMLProperties props = new POIXMLProperties(pkg);
-            ClassicAssert.AreEqual(null, props.CoreProperties.Title);
-            ClassicAssert.AreEqual(null, props.CoreProperties.Subject);
-            ClassicAssert.AreEqual(null, props.CoreProperties.Description);
+            ClassicAssert.IsNull(props.CoreProperties.Title);
+            ClassicAssert.IsNull(props.CoreProperties.Subject);
+            ClassicAssert.IsNull(props.CoreProperties.Description);
 
             // Now check the spreadsheet itself
 
@@ -2847,11 +2847,11 @@ namespace TestCases.XSSF.UserModel
             foreach (CT_CalcCell calc in chain.GetCTCalcChain().c)
             {
                 // A2 to A6 should be gone
-                ClassicAssert.IsFalse(calc.r.Equals("A2"));
-                ClassicAssert.IsFalse(calc.r.Equals("A3"));
-                ClassicAssert.IsFalse(calc.r.Equals("A4"));
-                ClassicAssert.IsFalse(calc.r.Equals("A5"));
-                ClassicAssert.IsFalse(calc.r.Equals("A6"));
+                ClassicAssert.AreNotEqual("A2", calc.r);
+                ClassicAssert.AreNotEqual("A3", calc.r);
+                ClassicAssert.AreNotEqual("A4", calc.r);
+                ClassicAssert.AreNotEqual("A5", calc.r);
+                ClassicAssert.AreNotEqual("A6", calc.r);
             }
 
             /*FileOutputStream out1 = new FileOutputStream(new File("C:\\temp\\56574.xlsx"));
@@ -3201,7 +3201,7 @@ namespace TestCases.XSSF.UserModel
                         ICell cell = row.GetCell(cellNum);
                         String fmtCellValue = formatter.FormatCellValue(cell);
                         ClassicAssert.IsNotNull(fmtCellValue);
-                        ClassicAssert.IsFalse(fmtCellValue.Equals("0"));
+                        ClassicAssert.AreNotEqual("0", fmtCellValue);
                     }
                 }
             }
@@ -3365,7 +3365,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsTrue(sheet.LastRowNum > 20, "Last row num: " + sheet.LastRowNum);
             ClassicAssert.AreEqual("Checked", sheet.GetRow(0).GetCell(0).StringCellValue);
             ClassicAssert.AreEqual("Checked", sheet.GetRow(9).GetCell(2).StringCellValue);
-            ClassicAssert.AreEqual(false, sheet.GetRow(70).GetCell(8).BooleanCellValue);
+            ClassicAssert.IsFalse( sheet.GetRow(70).GetCell(8).BooleanCellValue);
 
             ClassicAssert.AreEqual(71, sheet.PhysicalNumberOfRows);
             ClassicAssert.AreEqual(70, sheet.LastRowNum);

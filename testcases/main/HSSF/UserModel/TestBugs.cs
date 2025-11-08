@@ -688,8 +688,8 @@ namespace TestCases.HSSF.UserModel
             HSSFWorkbook wb = OpenSample("35564.xls");
 
             ISheet sheet = wb.GetSheetAt(0);
-            ClassicAssert.AreEqual(false, sheet.IsPrintGridlines);
-            ClassicAssert.AreEqual(false, sheet.Protect);
+            ClassicAssert.IsFalse(sheet.IsPrintGridlines);
+            ClassicAssert.IsFalse(sheet.Protect);
 
             WriteOutAndReadBack(wb);
         }
@@ -1253,11 +1253,7 @@ namespace TestCases.HSSF.UserModel
                     wb.GetFontAt(2),
                     wb.GetFontAt(2)
             );
-            ClassicAssert.IsTrue(
-                    wb.GetFontAt(0)
-                    !=
-                    wb.GetFontAt(2)
-            );
+            ClassicAssert.AreNotSame(wb.GetFontAt(0), wb.GetFontAt(2));
 
             // Look for a new font we have
             //  yet to Add
@@ -1298,7 +1294,7 @@ namespace TestCases.HSSF.UserModel
                 wb.FindFont(
                        false, (short)123, (short)22,
                        "Thingy", false, true, FontSuperScript.Sub, FontUnderlineType.Double
-                   ).Index
+                   ).IndexAsInt
             );
             ClassicAssert.AreEqual(nf,
                    wb.FindFont(
@@ -2370,10 +2366,10 @@ namespace TestCases.HSSF.UserModel
             NPOI.HSSF.Record.UnicodeString withoutExt = wb.Workbook.GetSSTString(31);
 
             ClassicAssert.AreEqual("O:Alloc:Qty", withExt.String);
-            ClassicAssert.IsTrue((withExt.OptionFlags & 0x0004) == 0x0004);
+            ClassicAssert.AreEqual(0x0004, withExt.OptionFlags & 0x0004);
 
             ClassicAssert.AreEqual("RT", withoutExt.String);
-            ClassicAssert.IsTrue((withoutExt.OptionFlags & 0x0004) == 0x0000);
+            ClassicAssert.AreEqual(0x0000, withoutExt.OptionFlags & 0x0004);
 
             // Something about continues...
 
@@ -2387,10 +2383,10 @@ namespace TestCases.HSSF.UserModel
             withoutExt = wb.Workbook.GetSSTString(31);
 
             ClassicAssert.AreEqual("O:Alloc:Qty", withExt.String);
-            ClassicAssert.IsTrue((withExt.OptionFlags & 0x0004) == 0x0004);
+            ClassicAssert.AreEqual(0x0004, withExt.OptionFlags & 0x0004);
 
             ClassicAssert.AreEqual("RT", withoutExt.String);
-            ClassicAssert.IsTrue((withoutExt.OptionFlags & 0x0004) == 0x0000);
+            ClassicAssert.AreEqual(0x0000, withoutExt.OptionFlags & 0x0004);
         }
         [Test]
         public void Test48026()
@@ -2652,7 +2648,7 @@ namespace TestCases.HSSF.UserModel
             HSSFWorkbook wb = OpenSample("50833.xls");
             ISheet s = wb.GetSheetAt(0);
             ClassicAssert.AreEqual("Sheet1", s.SheetName);
-            ClassicAssert.AreEqual(false, s.Protect);
+            ClassicAssert.IsFalse( s.Protect);
 
             ICell c = s.GetRow(0).GetCell(0);
             ClassicAssert.AreEqual("test cell value", c.RichStringCellValue.String);
