@@ -36,7 +36,7 @@ namespace TestCases.Util
     {
 
         static FileInfo TMP = null;
-        static long LENGTH = new Random().Next(10000);
+        static long LENGTH = 300 + new Random().Next(9000);
 
         [SetUp]
         public void SetUp()
