@@ -17,6 +17,7 @@
 
 namespace TestCases.XWPF.UserModel
 {
+    using NPOI.OpenXmlFormats.Wordprocessing;
     using NPOI.XWPF.UserModel;
     using NUnit.Framework;using NUnit.Framework.Legacy;
 
@@ -136,6 +137,25 @@ namespace TestCases.XWPF.UserModel
             tr = table.GetRow(2);
             isCantSplit = tr.IsCantSplitRow;
             ClassicAssert.IsTrue(isCantSplit);
+        }
+        [Test]
+        public void TestBug62174()
+        {
+            XWPFDocument doc = XWPFTestDataSamples
+                .OpenSampleDocument("Bug60337.docx");
+            try
+            {
+                XWPFTable table = doc.Tables[0];
+                XWPFTableRow tr = table.GetRow(0);
+
+                int twipsPerInch =  1440;
+                tr.Height = (twipsPerInch/10);
+                tr.GetCTRow().trPr.GetTrHeightArray(0).hRule = ST_HeightRule.exact;
+            }
+            catch
+            {
+                doc.Close();
+            }
         }
     }
 }

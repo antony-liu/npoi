@@ -39,6 +39,8 @@ namespace NPOI.POIFS.FileSystem
         MSWRITE,
         RTF,
         PDF,
+        HTML,
+        WORD2,
         UNKNOWN,
     }
     /// <summary>
@@ -92,6 +94,11 @@ namespace NPOI.POIFS.FileSystem
         public static FileMagicContainer RTF = new FileMagicContainer("{\\rtf");
         /** PDF document */
         public static FileMagicContainer PDF = new FileMagicContainer("%PDF");
+        public static FileMagicContainer HTML = new FileMagicContainer(
+            Encoding.UTF8.GetBytes("<!DOCTYP"),
+            Encoding.UTF8.GetBytes("<html"));
+        public static FileMagicContainer WORD2 = new FileMagicContainer(
+            new byte[]{ (byte)0xdb, (byte)0xa5, 0x2d, 0x00});
         // keep UNKNOWN always as last enum!
         /** UNKNOWN magic */
         public static FileMagicContainer UNKNOWN = new FileMagicContainer(Array.Empty<byte>());
@@ -132,6 +139,8 @@ namespace NPOI.POIFS.FileSystem
             { FileMagic.MSWRITE , MSWRITE },
             { FileMagic.RTF , RTF },
             { FileMagic.PDF , PDF },
+            { FileMagic.HTML , HTML },
+            { FileMagic.WORD2 , WORD2 },
             { FileMagic.UNKNOWN , UNKNOWN },
         };
         public static FileMagic ValueOf(byte[] magic)

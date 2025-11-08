@@ -117,6 +117,9 @@ namespace NPOI.POIFS.Storage
 	            case FileMagic.MSWRITE:
                    throw new NotOLE2FileException("The supplied data appears to be in the old MS Write format. "
                        + "Apache POI doesn't currently support this format");
+                case FileMagic.WORD2:
+                    throw new NotOLE2FileException("The supplied data appears to be an old Word version 2 file. "
+                        + "Apache POI doesn't currently support this format");
                 case FileMagic.BIFF2:
                 case FileMagic.BIFF3:
                 case FileMagic.BIFF4:
