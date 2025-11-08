@@ -1798,7 +1798,10 @@ namespace NPOI.HSSF.Model
                 windowTwo.FreezePanes = (false);
                 windowTwo.FreezePanesNoSplit = (false);
                 SelectionRecord sel = (SelectionRecord)FindFirstRecordBySid(SelectionRecord.sid);
-                sel.Pane = (PaneInformation.PANE_UPPER_LEFT);
+                if(sel != null)
+                {
+                    sel.Pane = (PaneInformation.PANE_UPPER_LEFT);
+                }
                 return;
             }
 

@@ -30,12 +30,12 @@ namespace NPOI.XWPF.UserModel
     using System.Data;
 
     /**
-* <p>A Paragraph within a Document, Table, Header etc.</p> 
-* 
-* <p>A paragraph has a lot of styling information, but the
-*  actual text (possibly along with more styling) is held on
-*  the child {@link XWPFRun}s.</p>
-*/
+    * <p>A Paragraph within a Document, Table, Header etc.</p> 
+    * 
+    * <p>A paragraph has a lot of styling information, but the
+    *  actual text (possibly along with more styling) is held on
+    *  the child {@link XWPFRun}s.</p>
+    */
     public class XWPFParagraph : IBodyElement, IRunBody, ISDTContents, IParagraph
     {
         private CT_P paragraph;
@@ -1425,14 +1425,14 @@ namespace NPOI.XWPF.UserModel
                                     }
                                     else if (newList)
                                     {
-                                        TextSegment segement = new TextSegment();
-                                        segement.BeginRun = (beginRunPos);
-                                        segement.BeginText = (beginTextPos);
-                                        segement.BeginChar = (beginCharPos);
-                                        segement.EndRun = (runPos);
-                                        segement.EndText = (textPos);
-                                        segement.EndChar = (charPos);
-                                        return segement;
+                                        TextSegment segment = new TextSegment();
+                                        segment.BeginRun = (beginRunPos);
+                                        segment.BeginText = (beginTextPos);
+                                        segment.BeginChar = (beginCharPos);
+                                        segment.EndRun = (runPos);
+                                        segment.EndText = (textPos);
+                                        segment.EndChar = (charPos);
+                                        return segment;
                                     }
                                 }
                                 else
