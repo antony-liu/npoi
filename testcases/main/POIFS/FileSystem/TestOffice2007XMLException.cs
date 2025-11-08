@@ -89,31 +89,30 @@ namespace TestCases.POIFS.FileSystem
         {
 
             // ooxml file isn't
-            ConfirmIsPOIFS("SampleSS.xlsx", false);
+            ConfirmIsPOIFS("SampleSS.xlsx", FileMagic.OOXML);
 
             // 2003 xml file isn't
-            ConfirmIsPOIFS("SampleSS.xml", false);
+            ConfirmIsPOIFS("SampleSS.xml", FileMagic.XML);
 
             // xls file is
-            ConfirmIsPOIFS("SampleSS.xls", true);
+            ConfirmIsPOIFS("SampleSS.xls", FileMagic.OLE2);
 
             // older biff formats aren't
-            ConfirmIsPOIFS("testEXCEL_3.xls", false);
-            ConfirmIsPOIFS("testEXCEL_4.xls", false);
+            ConfirmIsPOIFS("testEXCEL_3.xls", FileMagic.BIFF3);
+            ConfirmIsPOIFS("testEXCEL_4.xls", FileMagic.BIFF4);
         
             // newer excel formats are
-            ConfirmIsPOIFS("testEXCEL_5.xls", true);
-            ConfirmIsPOIFS("testEXCEL_95.xls", true);
+            ConfirmIsPOIFS("testEXCEL_5.xls", FileMagic.OLE2);
+            ConfirmIsPOIFS("testEXCEL_95.xls", FileMagic.OLE2);
 
             // text file isn't
-            ConfirmIsPOIFS("SampleSS.txt", false);
+            ConfirmIsPOIFS("SampleSS.txt", FileMagic.UNKNOWN);
         }
-        private void ConfirmIsPOIFS(String sampleFileName, bool expectedResult)
+        private void ConfirmIsPOIFS(String sampleFileName, FileMagic expected)
         {
             using(Stream fs = OpenSampleStream(sampleFileName))
             {
-                bool actualResult = POIFSFileSystem.HasPOIFSHeader(fs);
-                ClassicAssert.AreEqual(expectedResult, actualResult);
+                ClassicAssert.AreEqual(expected, FileMagicContainer.ValueOf(fs));
              }
         }
         [Test]
@@ -121,12 +120,12 @@ namespace TestCases.POIFS.FileSystem
         {
 
             // create test InputStream
-            byte[] testData = { (byte)1, (byte)2, (byte)3 };
+            byte[] testData = { 1, 2, 3 };
             InputStream testInput = new ByteArrayInputStream(testData);
 
             // detect header
             InputStream in1 = FileMagicContainer.PrepareToCheckMagic(testInput);
-            ClassicAssert.IsFalse(POIFSFileSystem.HasPOIFSHeader(in1));
+            ClassicAssert.AreNotEqual(FileMagic.OLE2, FileMagicContainer.ValueOf(in1));
 
             // check if InputStream is still intact
             byte[] test = new byte[3];
@@ -135,7 +134,7 @@ namespace TestCases.POIFS.FileSystem
             ClassicAssert.AreEqual(-1, in1.Read());
         }
         [Test]
-        public void testFileCorruptionOPOIFS()
+        public void TestFileCorruptionOPOIFS()
         {
 
             // create test InputStream
@@ -144,7 +143,8 @@ namespace TestCases.POIFS.FileSystem
 
             // detect header
             InputStream in1 = FileMagicContainer.PrepareToCheckMagic(testInput);
-            ClassicAssert.IsFalse(OPOIFSFileSystem.HasPOIFSHeader(in1));
+            ClassicAssert.AreNotEqual(FileMagic.OLE2, FileMagicContainer.ValueOf(in1));
+            ClassicAssert.AreEqual(FileMagic.UNKNOWN, FileMagicContainer.ValueOf(in1));
             // check if InputStream is still intact
             byte[] test = new byte[3];
             in1.Read(test);

@@ -204,6 +204,22 @@ namespace NPOI.POIFS.FileSystem
             return FileMagicContainer.ValueOf(data);
         }
         /**
+         * Get the file magic of the supplied {@link File}<p>
+         *
+         * Even if this method returns {@link FileMagic#UNKNOWN} it could potentially mean,
+         *  that the ZIP stream has leading junk bytes
+         *
+         * @param inp a file to be identified
+         */
+        public static FileMagic ValueOf(FileInfo inp) 
+        {
+            using(FileStream fis = new FileStream(inp.FullName, FileMode.Open, FileAccess.Read))
+            {
+                byte[] data = IOUtils.ToByteArray(fis, 8);
+                return ValueOf(data);
+            }
+        }
+        /**
          * Checks if an {@link InputStream} can be reseted (i.e. used for checking the header magic) and wraps it if not
          *
          * @param stream stream to be checked for wrapping
