@@ -101,7 +101,11 @@ namespace NPOI.HSSF.Record
             {
                 return field_2_row_active_cell;
             }
-            set { field_2_row_active_cell = value; }
+            set 
+            {
+                field_2_row_active_cell = value;
+                resetField6();
+            }
         }
 
         /// <summary>
@@ -114,7 +118,19 @@ namespace NPOI.HSSF.Record
             {
                 return field_3_col_active_cell;
             }
-            set { field_3_col_active_cell = value; }
+            set 
+            { 
+                field_3_col_active_cell = value;
+                resetField6();
+            }
+        }
+
+        private void resetField6()
+        {
+            // this is necessary in Excel to actually make Workbook.setActiveCell() take effect
+            field_6_refs = new CellRangeAddress8Bit[] {
+                new CellRangeAddress8Bit(field_2_row_active_cell, field_2_row_active_cell, field_3_col_active_cell, field_3_col_active_cell),
+            };
         }
 
         /// <summary>

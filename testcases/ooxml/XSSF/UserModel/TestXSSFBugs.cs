@@ -42,6 +42,7 @@ using System.IO;
 using System.Text;
 using TestCases;
 using TestCases.HSSF;
+using TestCases.SS;
 using TestCases.SS.UserModel;
 using TestCases.Util;
 namespace TestCases.XSSF.UserModel
@@ -3626,6 +3627,36 @@ namespace TestCases.XSSF.UserModel
             {
                 sheet.AutoSizeColumn(i);
             }
+        }
+
+        [Test]
+        public void Test61905xlsx()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            CheckActiveSheet(wb, XSSFITestDataProvider.instance);
+            wb.Close();
+        }
+
+        [Test]
+        public void Test61905xls()
+        {
+            IWorkbook wb = new HSSFWorkbook();
+            CheckActiveSheet(wb, HSSFITestDataProvider.Instance);
+            wb.Close();
+        }
+
+        private void CheckActiveSheet(IWorkbook wb, ITestDataProvider instance)
+        {
+            ISheet sheet = wb.CreateSheet("new sheet");
+            sheet.ActiveCell = new CellAddress("E11");
+            ClassicAssert.AreEqual("E11", sheet.ActiveCell.FormatAsString());
+
+            IWorkbook wbBack = instance.WriteOutAndReadBack(wb);
+            sheet = wbBack.GetSheetAt(0);
+            ClassicAssert.AreEqual("E11", sheet.ActiveCell.FormatAsString());
+            wbBack.Close();
+
+            //wb.write(new FileOutputStream("c:/temp/61905." + instance.getStandardFileNameExtension()));
         }
 
         [Test]
