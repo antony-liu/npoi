@@ -66,10 +66,10 @@ namespace TestCases
 
             // Should now hold them
             ClassicAssert.IsNotNull(
-                    outFS.CreateDocumentInputStream("\x0005SummaryInformation")
+                    outFS.CreateDocumentInputStream(SummaryInformation.DEFAULT_STREAM_NAME)
             );
             ClassicAssert.IsNotNull(
-                    outFS.CreateDocumentInputStream("\x0005DocumentSummaryInformation")
+                    outFS.CreateDocumentInputStream(DocumentSummaryInformation.DEFAULT_STREAM_NAME)
             );
         }
         [Test]

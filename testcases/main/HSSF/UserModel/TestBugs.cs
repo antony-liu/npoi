@@ -61,11 +61,6 @@ namespace TestCases.HSSF.UserModel
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
         }
-        [TearDown]
-        public void ResetPassword()
-        {
-            Biff8EncryptionKey.CurrentUserPassword = (null);
-        }
 
         private static HSSFWorkbook OpenSample(String sampleFileName)
         {
@@ -2955,9 +2950,9 @@ namespace TestCases.HSSF.UserModel
         public void Bug35897()
         {
             // password is abc
+            Biff8EncryptionKey.CurrentUserPassword = ("abc");
             try
             {
-                Biff8EncryptionKey.CurrentUserPassword = ("abc");
                 OpenSample("xor-encryption-abc.xls");
             }
             finally

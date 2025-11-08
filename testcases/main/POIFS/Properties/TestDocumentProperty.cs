@@ -30,12 +30,14 @@ using System.Text;
 using System.Collections;
 using System.IO;
 
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 using NPOI.POIFS.Common;
 using NPOI.POIFS.Storage;
 using NPOI.POIFS.Properties;
 using TestCases.POIFS.Storage;
+using NPOI.HPSF;
 
 namespace TestCases.POIFS.Properties
 {
@@ -110,8 +112,8 @@ namespace TestCases.POIFS.Properties
             byte[] input = RawDataUtil.Decode(hexData);
 
             VerifyReadingProperty(1, input, 128, "Workbook");
-            VerifyReadingProperty(2, input, 256, "\x0005SummaryInformation");
-            VerifyReadingProperty(3, input, 384, "\x0005DocumentSummaryInformation");
+            VerifyReadingProperty(2, input, 256, SummaryInformation.DEFAULT_STREAM_NAME);
+            VerifyReadingProperty(3, input, 384, DocumentSummaryInformation.DEFAULT_STREAM_NAME);
         }
 
         private void VerifyReadingProperty(int index, byte[] input, int offset, string name)
@@ -120,7 +122,7 @@ namespace TestCases.POIFS.Properties
             MemoryStream stream = new MemoryStream(128);
             byte[] expected = new byte[128];
 
-            Array.Copy(input, offset, expected, 0, 128);
+            System.Array.Copy(input, offset, expected, 0, 128);
             property.WriteData(stream);
             byte[] output = stream.ToArray();
 

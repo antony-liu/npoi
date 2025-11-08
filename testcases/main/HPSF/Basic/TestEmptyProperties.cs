@@ -47,7 +47,7 @@ using NUnit.Framework.Legacy;
         static String[] POI_FILES = new String[]
         {
             "PerfectOffice_MAIN",
-            "\x0005SummaryInformation",
+            SummaryInformation.DEFAULT_STREAM_NAME,
             "Main"
         };
 

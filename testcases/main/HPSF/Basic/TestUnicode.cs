@@ -41,7 +41,7 @@ namespace TestCases.HPSF.Basic
         private static String POI_FS = "TestUnicode.xls";
         private static String[] POI_FILES = new String[]
         {
-            "\x0005DocumentSummaryInformation",
+            DocumentSummaryInformation.DEFAULT_STREAM_NAME,
         };
 //        FileStream data;
         //POIFile[] poiFiles;

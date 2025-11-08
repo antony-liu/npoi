@@ -30,13 +30,16 @@ using System.Text;
 using System.Collections;
 using System.IO;
 
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 using NPOI.POIFS.Common;
 using NPOI.POIFS.Storage;
 using NPOI.POIFS.Properties;
 using System.Collections.Generic;
 using TestCases.POIFS.Storage;
+using NPOI.HPSF;
+using Property = NPOI.POIFS.Properties.Property;
 
 namespace TestCases.POIFS.Properties
 {
@@ -80,10 +83,10 @@ namespace TestCases.POIFS.Properties
 
             workbook.StartBlock = 0;
 
-            DocumentProperty summary1 = new DocumentProperty("\x0005SummaryInformation", 0x00001000);
+            DocumentProperty summary1 = new DocumentProperty(SummaryInformation.DEFAULT_STREAM_NAME, 0x00001000);
             summary1.StartBlock = 0x00000234;
 
-            DocumentProperty summary2 = new DocumentProperty("\x0005DocumentSummaryInformation", 0x00001000);
+            DocumentProperty summary2 = new DocumentProperty(DocumentSummaryInformation.DEFAULT_STREAM_NAME, 0x00001000);
             summary2.StartBlock = 0x0000023C;
             table.AddProperty(workbook);
             RootProperty root = table.Root;

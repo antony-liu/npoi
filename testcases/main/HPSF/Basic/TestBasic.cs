@@ -44,8 +44,8 @@ namespace TestCases.HPSF.Basic
         private static POIDataSamples samples = POIDataSamples.GetHPSFInstance();
 
         private static String[] POI_FILES = {
-            "\x0005SummaryInformation",
-            "\x0005DocumentSummaryInformation",
+            SummaryInformation.DEFAULT_STREAM_NAME,
+            DocumentSummaryInformation.DEFAULT_STREAM_NAME,
             "WordDocument",
             "\x0001CompObj",
             "1Table"

@@ -23,6 +23,7 @@ namespace TestCases.HSSF.UserModel
     using NPOI.POIFS.FileSystem;
     using TestCases.HSSF;
     using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NPOI.HPSF;
 
     /**
      * Tests for how HSSFWorkbook behaves with XLS files
@@ -49,7 +50,7 @@ namespace TestCases.HSSF.UserModel
             // Ensure that we have a WORKBOOK entry
             fs.Root.GetEntry("WORKBOOK");
             // And a summary
-            fs.Root.GetEntry("\x0005SummaryInformation");
+            fs.Root.GetEntry(SummaryInformation.DEFAULT_STREAM_NAME);
             ClassicAssert.IsTrue(true);
 
             // But not a Workbook one
@@ -90,7 +91,7 @@ namespace TestCases.HSSF.UserModel
             // And not a Summary one
             try
             {
-                fs.Root.GetEntry("\005SummaryInformation");
+                fs.Root.GetEntry(SummaryInformation.DEFAULT_STREAM_NAME);
                 Assert.Fail();
             }
             catch (FileNotFoundException) { }
@@ -171,7 +172,7 @@ namespace TestCases.HSSF.UserModel
             }
 
             // As we preserved, should also have a few other streams
-            fs2.Root.GetEntry("\x0005SummaryInformation");
+            fs2.Root.GetEntry(SummaryInformation.DEFAULT_STREAM_NAME);
 
             // And it can be Opened
             HSSFWorkbook wb2 = new HSSFWorkbook(fs2);
