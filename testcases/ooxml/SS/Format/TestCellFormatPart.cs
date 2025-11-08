@@ -138,7 +138,7 @@ namespace TestCases.SS.Format
             Match m = NUMBER_EXTRACT_FMT.Match(str);
             if (!m.Success)
                 throw new ArgumentException(
-                        "Cannot find numer in \"" + str + "\"");
+                        "Cannot find number in \"" + str + "\"");
 
             StringBuilder sb = new StringBuilder();
             // The groups in the pattern are the parts of the number

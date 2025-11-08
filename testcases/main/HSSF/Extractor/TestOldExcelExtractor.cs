@@ -222,6 +222,30 @@ namespace TestCases.HSSF.Extractor
             }
         }
 
+        [Test]
+        public void TestFromInputStream()
+        {
+            foreach(String ver in new String[] { "4", "5", "95" })
+            {
+                String filename = "testEXCEL_"+ver+".xls";
+                FileInfo f = HSSFTestDataSamples.GetSampleFile(filename);
+                using FileStream fs = new FileStream(f.FullName, FileMode.Open, FileAccess.Read);
+                InputStream stream = new FileInputStream(fs);
+                try
+                {
+                    OldExcelExtractor extractor = new OldExcelExtractor(stream);
+                    String text = extractor.Text;
+                    ClassicAssert.IsNotNull(text);
+                    ClassicAssert.IsTrue(text.Length > 100);
+                    extractor.Close();
+                }
+                catch(Exception ex)
+                {
+                    stream.Close();
+                }
+        }
+    }
+
         [Test]//(expected=OfficeXmlFileException.class)
         public void TestOpenInvalidFile1() => Assert.Throws<OfficeXmlFileException>(() =>
         {

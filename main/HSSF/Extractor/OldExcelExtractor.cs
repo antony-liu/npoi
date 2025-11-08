@@ -115,16 +115,20 @@ namespace NPOI.HSSF.Extractor
             ? stream
             : new BufferedStream(biffStream, 8);
 
-            if (NPOIFSFileSystem.HasPOIFSHeader(bis))
+            if (FileMagicContainer.ValueOf(bis) == FileMagic.OLE2)
             {
                 NPOIFSFileSystem poifs = new NPOIFSFileSystem(bis);
                 try
                 {
                     Open(poifs);
+                    toClose = poifs;
                 }
                 finally
                 {
-                    poifs.Close();
+                    if(toClose == null)
+                    {
+                        poifs.Close();
+                    }
                 }
             }
             else
@@ -335,11 +339,13 @@ namespace NPOI.HSSF.Extractor
             {
                 IOUtils.CloseQuietly(toClose);
                 toClose = null;
+                toCloseStream = null;
             }
             if (toCloseStream != null)
             {
                 IOUtils.CloseQuietly(toCloseStream);
                 toClose = null;
+                toCloseStream = null;
             }
         }
     }
