@@ -159,23 +159,62 @@ namespace NPOI.Util
         /// <returns></returns>
         public static byte[] ToByteArray(Stream stream, int length)
         {
-            using (ByteArrayOutputStream baos = new ByteArrayOutputStream(length == Int32.MaxValue ? 4096 : length))
+            return ToByteArray(stream, length, int.MaxValue);
+        }
+        /// <summary>
+        /// Reads up to {@code length} bytes from the input stream, and returns the bytes read.
+        /// </summary>
+        /// <param name="stream">The byte stream of data to read.</param>
+        /// <param name="length">The maximum length to read, use {@link Integer#MAX_VALUE} to read the stream until EOF</param>
+        /// <param name="maxLength">if the input is equal to/longer than {@code maxLength} bytes,
+        /// then throw an {@link IOException} complaining about the length.
+        /// use {@link Integer#MAX_VALUE} to disable the check</param>
+        /// <returns>A byte array with the read bytes.</returns>
+        /// <exception cref="IOException">If reading data fails or EOF is encountered too early for the given length.</exception>
+        public static byte[] ToByteArray(Stream stream, int length, int maxLength)
+        {
+            if(length < 0L || maxLength < 0L)
+            {
+                throw new RecordFormatException("Can't allocate an array of length < 0");
+            }
+            if(length > (long) int.MaxValue)
+            {
+                throw new RecordFormatException("Can't allocate an array > "+int.MaxValue);
+            }
+            if(BYTE_ARRAY_MAX_OVERRIDE > 0)
+            {
+                if(length > BYTE_ARRAY_MAX_OVERRIDE)
+                {
+                    ThrowRFE(length, BYTE_ARRAY_MAX_OVERRIDE);
+                }
+            }
+            else if(length > maxLength)
+            {
+                ThrowRFE(length, maxLength);
+            }
+            int len = Math.Min((int)length, maxLength);
+            using (ByteArrayOutputStream baos = new ByteArrayOutputStream(len == Int32.MaxValue ? 4096 : len))
             {
                 byte[] buffer = new byte[4096];
                 int totalBytes = 0, readBytes;
                 do
                 {
-                    readBytes = stream.Read(buffer, 0, Math.Min(buffer.Length, length - totalBytes));
+                    readBytes = stream.Read(buffer, 0, Math.Min(buffer.Length, len - totalBytes));
                     totalBytes += Math.Max(readBytes, 0);
                     if(readBytes > 0)
                     {
                         baos.Write(buffer, 0, readBytes);
                     }
-                } while(totalBytes < length && readBytes > 0);
-            
-                if(length != Int32.MaxValue && totalBytes < length)
+                } while(totalBytes < len && readBytes > 0);
+
+                if(maxLength != Int32.MaxValue && totalBytes == maxLength)
                 {
-                    throw new IOException("unexpected EOF");
+                    throw new IOException("MaxLength ("+maxLength+") reached - stream seems to be invalid.");
+                }
+
+                if(len != Int32.MaxValue && totalBytes < len)
+                {
+                    throw new IOException("unexpected EOF - expected len: "+len+" - actual len: "+totalBytes);
                 }
             
                 return baos.ToByteArray();
