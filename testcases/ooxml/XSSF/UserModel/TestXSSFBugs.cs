@@ -1622,18 +1622,16 @@ namespace TestCases.XSSF.UserModel
         public void Bug55692_poifs()
         {
             // Via a POIFSFileSystem
-            ClassicAssert.Throws<EncryptedDocumentException>(()=>{
-                POIFSFileSystem fsP = new POIFSFileSystem(
+            POIFSFileSystem fsP = new POIFSFileSystem(
                         POIDataSamples.GetPOIFSInstance().OpenResourceAsStream("protect.xlsx"));
-                try
-                {
-                    WorkbookFactory.Create(fsP);
-                }
-                finally
-                {
-                    fsP.Close();
-                }
-            });
+            try
+            {
+                WorkbookFactory.Create(fsP);
+            }
+            finally
+            {
+                fsP.Close();
+            }
         }
         [Test]
         public void Bug55692_stream()
@@ -1649,17 +1647,15 @@ namespace TestCases.XSSF.UserModel
         [Test]
         public void bug55692_npoifs() 
         {
-            ClassicAssert.Throws<EncryptedDocumentException>(()=>{
-                // Via a NPOIFSFileSystem, will spot it's actually a .xlsx file
-                //  encrypted with the default password, and open
-                NPOIFSFileSystem fsNP = new NPOIFSFileSystem(
+            // Via a NPOIFSFileSystem, will spot it's actually a .xlsx file
+            //  encrypted with the default password, and open
+            NPOIFSFileSystem fsNP = new NPOIFSFileSystem(
                         POIDataSamples.GetPOIFSInstance().OpenResourceAsStream("protect.xlsx"));
-                IWorkbook wb = WorkbookFactory.Create(fsNP);
-                ClassicAssert.IsNotNull(wb);
-                ClassicAssert.AreEqual(3, wb.NumberOfSheets);
-                wb.Close();
-                fsNP.Close();
-            });
+            IWorkbook wb = WorkbookFactory.Create(fsNP);
+            ClassicAssert.IsNotNull(wb);
+            ClassicAssert.AreEqual(3, wb.NumberOfSheets);
+            wb.Close();
+            fsNP.Close();
         }
         public void Test55692()
         {
@@ -2186,7 +2182,7 @@ namespace TestCases.XSSF.UserModel
             // Workbook Factory gives helpful error on package
             try
             {
-                WorkbookFactory.Create(pkg).Close();
+                XSSFWorkbookFactory.Create(pkg).Close();
                 Assert.Fail(".xlsb files not supported");
             }
             catch (XLSBUnsupportedException)
@@ -2198,7 +2194,7 @@ namespace TestCases.XSSF.UserModel
             FileInfo xlsbFile = HSSFTestDataSamples.GetSampleFile("Simple.xlsb");
             try
             {
-                WorkbookFactory.Create(xlsbFile.FullName).Close();
+                WorkbookFactory.Create(xlsbFile).Close();
                 Assert.Fail(".xlsb files not supported");
             }
             catch (XLSBUnsupportedException)

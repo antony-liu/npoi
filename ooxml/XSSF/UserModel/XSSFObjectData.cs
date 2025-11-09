@@ -140,7 +140,7 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return "binary/octet-stream";
+                return GetObjectPart().ContentType;
             }
         }
 

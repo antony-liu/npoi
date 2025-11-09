@@ -835,7 +835,7 @@ namespace TestCases.XSSF.UserModel
         }
 
         [Test]
-        public void LoadWorkbookWithPivotTable()
+        public void TestLoadWorkbookWithPivotTable()
         {
             String fileName = Path.Combine(TestContext.CurrentContext.TestDirectory, "ooxml-pivottable.xlsx");
 
@@ -846,12 +846,12 @@ namespace TestCases.XSSF.UserModel
             wb.Write(fileOut);
             fileOut.Close();
 
-            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(fileName);
+            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(new FileInfo(fileName));
             ClassicAssert.IsTrue(wb2.PivotTables.Count == 1);
         }
 
         [Test]
-        public void AddPivotTableToWorkbookWithLoadedPivotTable()
+        public void TestAddPivotTableToWorkbookWithLoadedPivotTable()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
             String fileName = "ooxml-pivottable.xlsx";
@@ -863,7 +863,7 @@ namespace TestCases.XSSF.UserModel
             wb.Write(fileOut);
             fileOut.Close();
 
-            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(fileName);
+            XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(new FileInfo(fileName));
             SetPivotData(wb2);
             ClassicAssert.IsTrue(wb2.PivotTables.Count == 2);
         }

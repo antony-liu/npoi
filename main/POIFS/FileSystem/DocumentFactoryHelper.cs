@@ -18,6 +18,7 @@
 using NPOI.POIFS.Common;
 using NPOI.POIFS.Crypt;
 using NPOI.Util;
+using Org.BouncyCastle.Security;
 using System;
 using System.IO;
 using System.Text;
@@ -37,7 +38,6 @@ namespace NPOI.POIFS.FileSystem
         /// <returns>A stream for reading the decrypted data</returns>
         /// <exception cref="System.IO.IOException">If an error occurs while decrypting or if the password does not match</exception>
         public static InputStream GetDecryptedStream(NPOIFSFileSystem fs, String password)
-
         {
             EncryptionInfo info = new EncryptionInfo(fs);
             Decryptor d = Decryptor.GetInstance(info);
@@ -72,12 +72,56 @@ namespace NPOI.POIFS.FileSystem
         }
 
         /// <summary>
+        /// Wrap the OLE2 data of the DirectoryNode into a decrypted stream by using
+        /// the given password.
+        /// </summary>
+        /// <param name="root">The OLE2 directory node for the document</param>
+        /// <param name="password">The password, null if the default password should be used</param>
+        /// <returns>A stream for reading the decrypted data</returns>
+        /// <exception cref="IOException">If an error occurs while decrypting or if the password does not match</exception>
+        public static InputStream GetDecryptedStream(DirectoryNode root, String password)
+        {
+            EncryptionInfo info = new EncryptionInfo(root);
+            Decryptor d = Decryptor.GetInstance(info);
+
+            try
+            {
+                bool passwordCorrect = false;
+                if(password != null && d.VerifyPassword(password))
+                {
+                    passwordCorrect = true;
+                }
+                if(!passwordCorrect && d.VerifyPassword(Decryptor.DEFAULT_PASSWORD))
+                {
+                    passwordCorrect = true;
+                }
+
+                if(passwordCorrect)
+                {
+                    return d.GetDataStream(root);
+                }
+                else if(password != null)
+                {
+                    throw new EncryptedDocumentException("Password incorrect");
+                }
+                else
+                {
+                    throw new EncryptedDocumentException("The supplied spreadsheet is protected, but no password was supplied");
+                }
+            }
+            catch(GeneralSecurityException e)
+            {
+                throw new IOException(e.Message, e);
+            }
+        }
+
+        /// <summary>
         /// Checks that the supplied InputStream (which MUST support mark and reset, or be a PushbackInputStream) has a OOXML (zip) header at the start of it.
         /// If your InputStream does not support mark / reset, then wrap it in a PushBackInputStream, then be sure to always use that, and not the original!
         /// </summary>
         /// <param name="inp">An InputStream which supports either mark/reset, or is a PushbackInputStream</param>
         [Obsolete("deprecated in 3.17-beta2, use FileMagic#valueOf(InputStream) == FileMagic.OOXML instead")]
-        [Removal(Version = "4.0")]
+        [Removal(Version = "4.2")]
         public static bool HasOOXMLHeader(Stream inp)
         {
             return FileMagicContainer.ValueOf(inp) == FileMagic.OOXML;

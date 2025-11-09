@@ -33,6 +33,7 @@ using Cysharp.Text;
     using NPOI.XSSF.UserModel;
     using NPOI.XSSF.Model;
     using NPOI.OOXML;
+    using System.IO;
 
     public class ExcelToHtmlConverter
     {
@@ -115,9 +116,9 @@ using Cysharp.Text;
             get { return useDivsToSpan; }
             set { useDivsToSpan = value; }
         }
-        public static XmlDocument Process(string excelFile)
+        public static XmlDocument Process(FileInfo xlsFile)
         {
-            HSSFWorkbook workbook = (HSSFWorkbook)WorkbookFactory.Create(excelFile, null);
+            HSSFWorkbook workbook = (HSSFWorkbook)WorkbookFactory.Create(xlsFile, null);
             //TODO: HSSFWorkbook workbook = ExcelToHtmlUtils.loadXls(xlsFile);
             try
             {
