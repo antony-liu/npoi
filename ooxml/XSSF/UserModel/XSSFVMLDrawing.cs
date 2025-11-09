@@ -30,6 +30,7 @@ using NPOI.OpenXmlFormats.Vml.Spreadsheet;
 using System.Text;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using NPOI.Util;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

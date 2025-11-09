@@ -14,13 +14,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-using NPOI;
+using NPOI.OOXML;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.Util;
 using NPOI.XSSF;
 using NPOI.XSSF.Model;
 using NPOI.XSSF.UserModel;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System.IO;
 namespace TestCases.XSSF.Model
 {

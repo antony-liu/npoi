@@ -20,14 +20,15 @@ namespace TestCases.OpenXml4Net.OPC
     using System;
     using System.IO;
     using System.Xml;
-    using NPOI;
+    using NPOI.OOXML;
     using NPOI.Openxml4Net.Exceptions;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.SS.UserModel;
     using NPOI.Util;
     using NPOI.XSSF;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using TestCases;
     using TestCases.OpenXml4Net;
 

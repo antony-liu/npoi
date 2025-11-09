@@ -20,6 +20,7 @@ namespace NPOI.XWPF.UserModel
     using System.Collections.Generic;
     using NPOI.OpenXmlFormats.Wordprocessing;
     using System.Xml;
+    using NPOI.OOXML;
 
     public class XWPFFootnote : IEnumerator<XWPFParagraph>, IBody
     {

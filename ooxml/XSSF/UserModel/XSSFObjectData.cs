@@ -18,6 +18,7 @@
 namespace NPOI.XSSF.UserModel
 {
     using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.OpenXmlFormats.Dml;
     using NPOI.OpenXmlFormats.Dml.Spreadsheet;
@@ -135,6 +136,14 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
+        public string ContentType
+        {
+            get
+            {
+                return "binary/octet-stream";
+            }
+        }
+
         /// <summary>
         /// </summary>
         /// <return>package part of the object data/// </return>
@@ -239,7 +248,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
         [Obsolete("PictureData2 is obsolete. Use the PictureData property instead.")]
-        [Removal(Version = "4.0.0")]
+        [Removal(Version = "4.2")]
         public XSSFPictureData PictureData2 => (XSSFPictureData)PictureData;
         
     }

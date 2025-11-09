@@ -25,6 +25,7 @@ namespace NPOI.XSSF.Model
     using NPOI.SS.Util;
     using NPOI.XSSF.UserModel;
     using NPOI.OpenXmlFormats.Spreadsheet;
+    using NPOI.OOXML;
 
     public class CommentsTable : POIXMLDocumentPart
     {

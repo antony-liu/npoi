@@ -25,6 +25,7 @@ namespace NPOI.XWPF.UserModel
     using System.Xml;
     using Org.BouncyCastle.Security;
     using System.Linq;
+    using NPOI.OOXML;
 
     public class XWPFSettings : POIXMLDocumentPart
     {

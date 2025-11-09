@@ -23,6 +23,7 @@ using NPOI.OpenXmlFormats.Spreadsheet;
 using System.Collections.Generic;
 using NPOI.XSSF.UserModel;
 using System;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.Model
 {

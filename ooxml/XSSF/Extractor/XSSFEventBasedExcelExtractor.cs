@@ -23,8 +23,6 @@ using System.Text;
 
 namespace NPOI.XSSF.Extractor
 {
-
-    using NPOI;
     using NPOI.OpenXml4Net.Exceptions;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.SS.UserModel;
@@ -38,6 +36,8 @@ namespace NPOI.XSSF.Extractor
     using NSAX.AElfred;
     using static NPOI.XSSF.EventUserModel.XSSFSheetXMLHandler;
     using NPOI.OpenXml4Net;
+    using NPOI.OOXML;
+    using NPOI.OOXML.Extractor;
 
     /// <summary>
     /// Implementation of a text extractor from OOXML Excel

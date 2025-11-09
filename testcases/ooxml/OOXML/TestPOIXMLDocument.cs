@@ -17,13 +17,15 @@
 
 namespace TestCases.OOXML
 {
-    using NPOI;
+    using NPOI.OOXML;
+    using NPOI.OOXML.Util;
     using NPOI.OpenXml4Net.Exceptions;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.Util;
     using NPOI.XSSF.UserModel;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using System.Collections.Generic;
     using System.IO;

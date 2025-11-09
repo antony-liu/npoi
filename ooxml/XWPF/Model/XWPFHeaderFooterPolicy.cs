@@ -26,6 +26,7 @@ namespace NPOI.XWPF.Model
     using NPOI.OpenXmlFormats.Vml.Office;
     using System.Diagnostics;
     using static System.Net.WebRequestMethods;
+    using NPOI.OOXML;
 
     /**
      * A .docx file can have no headers/footers, the same header/footer

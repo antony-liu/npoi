@@ -22,6 +22,7 @@ using System.Text;
 namespace NPOI.XSSF.Binary
 {
     using NPOI;
+    using NPOI.OOXML;
     using NPOI.Util;
 
     /// <summary>

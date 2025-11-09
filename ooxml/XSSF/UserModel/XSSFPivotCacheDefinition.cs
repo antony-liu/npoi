@@ -24,6 +24,7 @@ namespace NPOI.XSSF.UserModel
     using NPOI.SS.Util;
     using System;
     using NPOI.SS;
+    using NPOI.OOXML;
 
     public class XSSFPivotCacheDefinition : POIXMLDocumentPart
     {

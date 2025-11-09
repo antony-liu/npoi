@@ -15,15 +15,17 @@
    limitations under the License.
 ==================================================================== */
 
-namespace NPOI
+namespace NPOI.OOXML.Extractor
 {
 
-    using System.Text; 
-using Cysharp.Text;
+    using System.Text;
+    using Cysharp.Text;
     using NPOI.OpenXml4Net.OPC.Internal;
     using System;
     using System.Collections.Generic;
     using NPOI.OpenXmlFormats;
+    using NPOI.Extractor;
+    using NPOI.OOXML;
 
     /**
      * A {@link POITextExtractor} for returning the textual
@@ -52,23 +54,23 @@ using Cysharp.Text;
 
         }
 
-        private static void AppendIfPresent(StringBuilder text, String thing, bool value)
+        private static void AppendIfPresent(StringBuilder text, string thing, bool value)
         {
             AppendIfPresent(text, thing, value.ToString());
         }
 
-        private static void AppendIfPresent(StringBuilder text, String thing, int value)
+        private static void AppendIfPresent(StringBuilder text, string thing, int value)
         {
             AppendIfPresent(text, thing, value.ToString());
         }
 
-        private static void AppendIfPresent(StringBuilder text, String thing, DateTime? value)
+        private static void AppendIfPresent(StringBuilder text, string thing, DateTime? value)
         {
             if (value == null) { return; }
             AppendIfPresent(text, thing, value.ToString());
         }
 
-        private static void AppendIfPresent(StringBuilder text, String thing, String value)
+        private static void AppendIfPresent(StringBuilder text, string thing, string value)
         {
             if (value == null) { return; }
             text.Append(thing);
@@ -80,7 +82,7 @@ using Cysharp.Text;
         /**
          * Returns the core document properties, eg author
          */
-        public String GetCorePropertiesText()
+        public string GetCorePropertiesText()
         {
             if (Document == null)
             {  // event based extractor does not have a document
@@ -94,7 +96,7 @@ using Cysharp.Text;
             AppendIfPresent(text, "Category", props.GetCategoryProperty());
             AppendIfPresent(text, "ContentStatus", props.GetContentStatusProperty());
             AppendIfPresent(text, "ContentType", props.GetContentTypeProperty());
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Created", props.GetCreatedProperty().Value);
+            AppendIfPresent(text, "Created", props.GetCreatedProperty().Value);
             AppendIfPresent(text, "CreatedString", props.GetCreatedPropertyString());
             AppendIfPresent(text, "Creator", props.GetCreatorProperty());
             AppendIfPresent(text, "Description", props.GetDescriptionProperty());
@@ -102,9 +104,9 @@ using Cysharp.Text;
             AppendIfPresent(text, "Keywords", props.GetKeywordsProperty());
             AppendIfPresent(text, "Language", props.GetLanguageProperty());
             AppendIfPresent(text, "LastModifiedBy", props.GetLastModifiedByProperty());
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "LastPrinted", props.GetLastPrintedProperty());
+            AppendIfPresent(text, "LastPrinted", props.GetLastPrintedProperty());
             AppendIfPresent(text, "LastPrintedString", props.GetLastPrintedPropertyString());
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Modified", props.GetModifiedProperty());
+            AppendIfPresent(text, "Modified", props.GetModifiedProperty());
             AppendIfPresent(text, "ModifiedString", props.GetModifiedPropertyString());
             AppendIfPresent(text, "Revision", props.GetRevisionProperty());
             AppendIfPresent(text, "Subject", props.GetSubjectProperty());
@@ -117,7 +119,7 @@ using Cysharp.Text;
          * Returns the extended document properties, eg
          *  application
          */
-        public String GetExtendedPropertiesText()
+        public string GetExtendedPropertiesText()
         {
             if (Document == null)
             {  // event based extractor does not have a document
@@ -129,19 +131,19 @@ using Cysharp.Text;
 
             AppendIfPresent(text, "Application", props.Application);
             AppendIfPresent(text, "AppVersion", props.AppVersion);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Characters", props.Characters);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "CharactersWithSpaces", props.CharactersWithSpaces);
+            AppendIfPresent(text, "Characters", props.Characters);
+            AppendIfPresent(text, "CharactersWithSpaces", props.CharactersWithSpaces);
             AppendIfPresent(text, "Company", props.Company);
             AppendIfPresent(text, "HyperlinkBase", props.HyperlinkBase);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "HyperlinksChanged", props.HyperlinksChanged);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Lines", props.Lines);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "LinksUpToDate", props.LinksUpToDate);
+            AppendIfPresent(text, "HyperlinksChanged", props.HyperlinksChanged);
+            AppendIfPresent(text, "Lines", props.Lines);
+            AppendIfPresent(text, "LinksUpToDate", props.LinksUpToDate);
             AppendIfPresent(text, "Manager", props.Manager);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Pages", props.Pages);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "Paragraphs", props.Paragraphs);
+            AppendIfPresent(text, "Pages", props.Pages);
+            AppendIfPresent(text, "Paragraphs", props.Paragraphs);
             AppendIfPresent(text, "PresentationFormat", props.PresentationFormat);
             AppendIfPresent(text, "Template", props.Template);
-            POIXMLPropertiesTextExtractor.AppendIfPresent(text, "TotalTime", props.TotalTime);
+            AppendIfPresent(text, "TotalTime", props.TotalTime);
 
             return text.ToString();
         }
@@ -149,7 +151,7 @@ using Cysharp.Text;
         * Returns the custom document properties, if
         *  there are any
         */
-        public String GetCustomPropertiesText()
+        public string GetCustomPropertiesText()
         {
             if (Document == null)
             {  // event based extractor does not have a document
@@ -161,7 +163,7 @@ using Cysharp.Text;
             List<CT_Property> properties = props.GetPropertyList();
             foreach (CT_Property property in properties)
             {
-                String val = "(not implemented!)";
+                string val = "(not implemented!)";
                 //val = property.Item.ToString();
                 if (property.IsSetLpwstr())
                 {
@@ -239,7 +241,7 @@ using Cysharp.Text;
                 }
                 else if (property.IsSetDecimal())
                 {
-                    Decimal? d = property.GetDecimal();
+                    decimal? d = property.GetDecimal();
                     if (d == null)
                     {
                         val = null;
@@ -282,7 +284,7 @@ using Cysharp.Text;
             return text.ToString();
         }
 
-        public override String Text
+        public override string Text
         {
             get
             {

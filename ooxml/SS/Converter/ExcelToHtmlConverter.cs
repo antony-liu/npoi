@@ -32,6 +32,7 @@ using Cysharp.Text;
     using NPOI.HPSF;
     using NPOI.XSSF.UserModel;
     using NPOI.XSSF.Model;
+    using NPOI.OOXML;
 
     public class ExcelToHtmlConverter
     {

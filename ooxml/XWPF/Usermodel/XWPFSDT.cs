@@ -17,6 +17,7 @@
 using System;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using System.Collections.Generic;
+using NPOI.OOXML;
 namespace NPOI.XWPF.UserModel
 {
 

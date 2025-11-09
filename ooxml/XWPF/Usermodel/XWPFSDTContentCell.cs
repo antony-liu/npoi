@@ -23,6 +23,7 @@ namespace NPOI.XWPF.UserModel
 using Cysharp.Text;
     using System.IO;
     using System.Xml;
+    using NPOI.OOXML;
 
     /**
      * Experimental class to offer rudimentary Read-only Processing of

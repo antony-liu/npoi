@@ -15,10 +15,12 @@
    limitations under the License.
 ==================================================================== */
 
-namespace NPOI
+namespace NPOI.OOXML.Extractor
 {
     using System;
     using System.Text;
+    using NPOI.Extractor;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.OpenXml4Net.Util;
 
@@ -105,7 +107,7 @@ namespace NPOI
             base.Close();
         }
 
-        protected void CheckMaxTextSize(StringBuilder text, String string1)
+        protected void CheckMaxTextSize(StringBuilder text, string string1)
         {
             if(string1 == null)
             {

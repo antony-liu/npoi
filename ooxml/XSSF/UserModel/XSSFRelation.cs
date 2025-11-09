@@ -20,6 +20,7 @@ using System;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.XSSF.Model;
 using System.IO;
+using NPOI.OOXML;
 namespace NPOI.XSSF.UserModel
 {
 

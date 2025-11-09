@@ -20,7 +20,7 @@ using NPOI.OpenXml4Net.Exceptions;
 using System;
 using System.IO;
 using NPOI.Util;
-namespace NPOI.Util
+namespace NPOI.OOXML.Util
 {
 
     /**

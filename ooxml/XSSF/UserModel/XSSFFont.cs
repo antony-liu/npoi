@@ -24,6 +24,7 @@ using Dml = NPOI.OpenXmlFormats.Dml;
 using NPOI.XSSF.Model;
 using NPOI.Util;
 using NPOI.OOXML.XSSF.UserModel;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

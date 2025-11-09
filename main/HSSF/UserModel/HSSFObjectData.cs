@@ -99,6 +99,14 @@ namespace NPOI.HSSF.UserModel
             }
         }
 
+        public string ContentType
+        {
+            get
+            {
+                return "binary/octet-stream";
+            }
+        }
+
         /**
          * Does this ObjectData have an associated POIFS 
          *  Directory Entry?

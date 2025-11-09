@@ -22,6 +22,7 @@ namespace NPOI.XWPF.UserModel
     using NPOI.OpenXml4Net.OPC;
     using NPOI.Util;
     using System.Reflection;
+    using NPOI.OOXML;
 
     /**
      * @author Yegor Kozlov

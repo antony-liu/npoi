@@ -26,6 +26,7 @@ using NPOI.Util;
 using System.Xml;
 using NPOI.SS.Util;
 using SixLabors.ImageSharp;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

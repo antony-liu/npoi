@@ -27,6 +27,7 @@ namespace NPOI.XSSF.UserModel
     using NPOI.SS;
     using NPOI.OOXML.XSSF.UserModel;
     using NPOI.XSSF.Model;
+    using NPOI.OOXML;
 
     public class XSSFPivotTable : POIXMLDocumentPart
     {

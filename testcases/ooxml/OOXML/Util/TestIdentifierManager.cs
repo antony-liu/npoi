@@ -14,10 +14,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-using NPOI.Util;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NPOI.OOXML.Util;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
-namespace TestCases.Util
+namespace TestCases.OOXML.Util
 {
     [TestFixture]
     public class TestIdentifierManager

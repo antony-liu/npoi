@@ -17,6 +17,7 @@
 
 namespace NPOI.XWPF.UserModel
 {
+    using NPOI.OOXML;
     using System;
 
     /**

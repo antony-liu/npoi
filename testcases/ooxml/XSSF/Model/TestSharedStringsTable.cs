@@ -15,7 +15,8 @@
    limitations under the License.
 ==================================================================== */
 
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ using TestCases;
 using System.IO;
 using NPOI.XSSF.Model;
 using NPOI.XSSF;
-using NPOI;
+using NPOI.OOXML;
 
 namespace TestCases.XSSF.Model
 {

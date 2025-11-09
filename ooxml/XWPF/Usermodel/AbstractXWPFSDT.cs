@@ -17,6 +17,7 @@
 namespace NPOI.XWPF.UserModel
 {
     using System;
+    using NPOI.OOXML;
     using NPOI.OpenXmlFormats.Wordprocessing;
 
     /**

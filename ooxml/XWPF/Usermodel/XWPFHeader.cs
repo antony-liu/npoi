@@ -24,6 +24,7 @@ namespace NPOI.XWPF.UserModel
     using System.Xml;
     using NPOI.Util;
     using System.Xml.XPath;
+    using NPOI.OOXML;
 
     /**
      * Sketch of XWPF header class

@@ -26,6 +26,7 @@ namespace NPOI.XSSF.Model
     using System.Collections.Generic;
     using System.IO;
     using NPOI.OOXML.XSSF.UserModel;
+    using NPOI.OOXML;
 
     /**
      * Class that represents theme of XLSX document. The theme includes specific

@@ -15,14 +15,15 @@
    limitations under the License.
 ==================================================================== */
 
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using NPOI.HSSF.Extractor;
 using TestCases.HSSF;
 using System.Text.RegularExpressions;
 using NPOI.XSSF.Extractor;
 using NPOI.XSSF;
-using NPOI;
 using System;
+using NPOI.Extractor;
 
 namespace TestCases.XSSF.Extractor
 {

@@ -19,6 +19,7 @@ using System;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.OpenXmlFormats.Dml.Picture;
 using NPOI.OpenXmlFormats.Dml;
+using NPOI.OOXML;
 
 namespace NPOI.XWPF.UserModel
 {

@@ -25,6 +25,7 @@ namespace NPOI.XSSF.EventUserModel
 {
 
     using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.Exceptions;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.Util;

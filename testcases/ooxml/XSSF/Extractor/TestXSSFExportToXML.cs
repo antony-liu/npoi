@@ -15,14 +15,15 @@
    limitations under the License.
 ==================================================================== */
 
-using NPOI;
+using NPOI.OOXML;
 using NPOI.SS.UserModel;
 using NPOI.Util;
 using NPOI.XSSF;
 using NPOI.XSSF.Extractor;
 using NPOI.XSSF.Model;
 using NPOI.XSSF.UserModel;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.IO;

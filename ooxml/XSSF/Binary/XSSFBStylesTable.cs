@@ -26,6 +26,7 @@ namespace NPOI.XSSF.Binary
 {
 
     using NPOI;
+    using NPOI.OOXML;
     using NPOI.SS.UserModel;
     using NPOI.Util;
 

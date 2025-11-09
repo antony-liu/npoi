@@ -21,6 +21,7 @@ using NPOI.XSSF.UserModel.Helpers;
 using System.Collections.Generic;
 using NPOI.XSSF.Model;
 using NPOI.SS.UserModel;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

@@ -15,7 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
-using NPOI;
+using NPOI.OOXML;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.POIFS.Crypt;
 using NPOI.SS;

@@ -27,6 +27,7 @@ using Cysharp.Text;
     using NPOI.POIFS.FileSystem;
     using NPOI.Util;
     using System.Globalization;
+    using NPOI.Extractor;
 
     /// <summary>
     /// Extracts all of the HPSF properties, both

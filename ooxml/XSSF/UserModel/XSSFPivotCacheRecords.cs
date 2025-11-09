@@ -21,7 +21,7 @@ namespace NPOI.XSSF.UserModel
     using System.IO;
     using System.Xml;
     using NPOI.OpenXmlFormats.Spreadsheet;
-
+    using NPOI.OOXML;
 
     public class XSSFPivotCacheRecords : POIXMLDocumentPart
     {

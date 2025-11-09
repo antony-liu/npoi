@@ -17,14 +17,15 @@
 namespace TestCases.XWPF
 {
     using ICSharpCode.SharpZipLib.Zip;
-    using NPOI;
     using NPOI.HSSF.Record.Crypto;
+    using NPOI.OOXML;
     using NPOI.OpenXmlFormats.Wordprocessing;
     using NPOI.POIFS.FileSystem;
     using NPOI.Util;
     using NPOI.XWPF;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using System.IO;
     using System.Xml;

@@ -17,11 +17,13 @@
 namespace NPOI
 {
     using System;
+    using NPOI.OOXML.Extractor;
+    using NPOI.OOXML.Util;
     using NPOI.OpenXml4Net.OPC;
-    using NPOI.Util;
     using NPOI.XSSF.Extractor;
     using NPOI.XSSF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using TestCases;
 
     [TestFixture]

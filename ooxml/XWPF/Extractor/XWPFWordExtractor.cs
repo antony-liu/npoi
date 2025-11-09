@@ -25,6 +25,8 @@ namespace NPOI.XWPF.Extractor
     using NPOI.OpenXmlFormats.Wordprocessing;
     using System.IO;
     using System.Xml;
+    using NPOI.OOXML.Extractor;
+    using NPOI.OOXML;
 
     /**
      * Helper class to extract text from an OOXML Word file

@@ -19,12 +19,13 @@
 
 namespace TestCases
 {
-    using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.Util;
     using NPOI.XSSF.UserModel;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
 
     /**
      * Class to Test that we handle embeded bits in

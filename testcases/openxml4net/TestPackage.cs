@@ -16,6 +16,7 @@
 ==================================================================== */
 
 using NPOI;
+using NPOI.OOXML;
 using NPOI.Openxml4Net.Exceptions;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.OpenXml4Net.OPC.Internal;

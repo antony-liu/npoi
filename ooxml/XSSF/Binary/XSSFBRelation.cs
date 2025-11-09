@@ -20,7 +20,7 @@ using System;
 
 namespace NPOI.XSSF.Binary
 {
-    using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.OPC;
 
     /// <summary>

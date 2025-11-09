@@ -22,6 +22,7 @@ using NPOI.SS.UserModel;
 using System.Globalization;
 using System.Collections.Generic;
 using NPOI.Util;
+using NPOI.OOXML.Extractor;
 
 namespace NPOI.XSSF.Extractor
 {

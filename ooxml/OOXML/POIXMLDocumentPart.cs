@@ -15,7 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
-namespace NPOI
+namespace NPOI.OOXML
 {
     using NPOI.Util;
     using NPOI.OpenXml4Net.OPC;
@@ -25,7 +25,6 @@ namespace NPOI
     using NPOI.OpenXml4Net.Exceptions;
     using System.Xml;
     using NPOI.OpenXml4Net.OPC.Internal;
-    using System.Diagnostics;
 
     /**
      * Represents an entry of a OOXML namespace.
@@ -41,10 +40,10 @@ namespace NPOI
     {
         private static POILogger logger = POILogFactory.GetLogger(typeof(POIXMLDocumentPart));
 
-        private readonly String coreDocumentRel = PackageRelationshipTypes.CORE_DOCUMENT;
+        private readonly string coreDocumentRel = PackageRelationshipTypes.CORE_DOCUMENT;
         private PackagePart packagePart;
         private POIXMLDocumentPart parent;
-        private readonly Dictionary<String, RelationPart> relations = new Dictionary<String, RelationPart>();
+        private readonly Dictionary<string, RelationPart> relations = new Dictionary<string, RelationPart>();
 
         /**
          * The RelationPart is a cached relationship between the document, which contains the RelationPart,
@@ -130,7 +129,7 @@ namespace NPOI
          * Construct POIXMLDocumentPart representing a custom "core document" package part.
          */
 
-        public POIXMLDocumentPart(OPCPackage pkg, String coreDocumentRel)
+        public POIXMLDocumentPart(OPCPackage pkg, string coreDocumentRel)
             : this(GetPartFromOPCPackage(pkg, coreDocumentRel))
         {
             this.coreDocumentRel = coreDocumentRel;
@@ -174,7 +173,7 @@ namespace NPOI
 
         public POIXMLDocumentPart(POIXMLDocumentPart parent, PackagePart part)
         {
-            this.packagePart = part;
+            packagePart = part;
             this.parent = parent;
         }
 
@@ -294,7 +293,7 @@ namespace NPOI
         public static XmlDocument ConvertStreamToXml(Stream xmlStream)
         {
             XmlDocument xmlDoc = new XmlDocument();
-            NPOI.OpenXml4Net.Util.XmlHelper.LoadXmlSafe(xmlDoc, xmlStream);
+            OpenXml4Net.Util.XmlHelper.LoadXmlSafe(xmlDoc, xmlStream);
             return xmlDoc;
         }
 
@@ -307,7 +306,7 @@ namespace NPOI
         [Obsolete("deprecated in POI 3.14, scheduled for removal in POI 3.16")]
         public PackageRelationship GetPackageRelationship()
         {
-            if (this.parent != null)
+            if (parent != null)
             {
                 foreach (RelationPart rp in parent.RelationParts)
                 {
@@ -320,7 +319,7 @@ namespace NPOI
             else
             {
                 OPCPackage pkg = GetPackagePart().Package;
-                String partName = GetPackagePart().PartName.Name;
+                string partName = GetPackagePart().PartName.Name;
                 foreach (PackageRelationship rel in pkg.Relationships)
                 {
                     if (rel.TargetUri.OriginalString.Equals(partName))
@@ -375,12 +374,12 @@ namespace NPOI
          * @return the target part of the relation, or null, if none exists
          */
 
-        public POIXMLDocumentPart GetRelationById(String id)
+        public POIXMLDocumentPart GetRelationById(string id)
         {
             if (string.IsNullOrEmpty(id) || !relations.TryGetValue(id, out RelationPart rp))
                 return null;
 
-            return (rp == null) ? null : rp.DocumentPart;
+            return rp == null ? null : rp.DocumentPart;
         }
 
         /**
@@ -396,7 +395,7 @@ namespace NPOI
          *         parts are not related.
          */
 
-        public String GetRelationId(POIXMLDocumentPart part)
+        public string GetRelationId(POIXMLDocumentPart part)
         {
             foreach (RelationPart rp in relations.Values)
             {
@@ -414,7 +413,7 @@ namespace NPOI
         /// <param name="id"></param>
         /// <param name="part">the child to add</param>
         [Obsolete("deprecated in POI 3.14, scheduled for removal in POI 3.16")]
-        public void AddRelation(String id, POIXMLDocumentPart part)
+        public void AddRelation(string id, POIXMLDocumentPart part)
         {
             PackageRelationship pr = part.GetPackagePart().GetRelationship(id);
             AddRelation(pr, part);
@@ -427,13 +426,13 @@ namespace NPOI
         /// <param name="relationshipType">the package relationship type</param>
         /// <param name="part">the child to add</param>
         /// <returns></returns>
-        public RelationPart AddRelation(String relId, POIXMLRelation relationshipType, POIXMLDocumentPart part)
+        public RelationPart AddRelation(string relId, POIXMLRelation relationshipType, POIXMLDocumentPart part)
         {
-            PackageRelationship pr = this.packagePart.FindExistingRelation(part.GetPackagePart());
+            PackageRelationship pr = packagePart.FindExistingRelation(part.GetPackagePart());
             if (pr == null)
             {
                 PackagePartName ppn = part.GetPackagePart().PartName;
-                String relType = relationshipType.Relation;
+                string relType = relationshipType.Relation;
                 pr = packagePart.AddRelationship(ppn, TargetMode.Internal, relType, relId);
             }
             AddRelation(pr, part);
@@ -477,7 +476,7 @@ namespace NPOI
 
         protected internal bool RemoveRelation(POIXMLDocumentPart part, bool RemoveUnusedParts)
         {
-            String id = GetRelationId(part);
+            string id = GetRelationId(part);
             if (id == null)
             {
                 // part is not related with this POIXMLDocumentPart
@@ -520,7 +519,7 @@ namespace NPOI
             return parent;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return packagePart == null ? string.Empty : packagePart.ToString();
         }
@@ -561,7 +560,7 @@ namespace NPOI
             PrepareForCommit();
 
             Commit();
-            alreadySaved.Add(this.GetPackagePart());
+            alreadySaved.Add(GetPackagePart());
             foreach (RelationPart rp in relations.Values)
             {
                 POIXMLDocumentPart p = rp.DocumentPart;
@@ -582,7 +581,7 @@ namespace NPOI
 
         protected internal virtual void PrepareForCommit()
         {
-            PackagePart part = this.GetPackagePart();
+            PackagePart part = GetPackagePart();
             if (part != null)
             {
                 part.Clear();
@@ -734,7 +733,7 @@ namespace NPOI
             {
                 return dictionary;
             }
-            return default(TValue);
+            return default;
         }
 
         /**
@@ -858,7 +857,7 @@ namespace NPOI
          * @since POI 3.14-Beta1
          */
 
-        private static PackagePart GetPartFromOPCPackage(OPCPackage pkg, String coreDocumentRel)
+        private static PackagePart GetPartFromOPCPackage(OPCPackage pkg, string coreDocumentRel)
         {
             PackageRelationship coreRel = pkg.GetRelationshipsByType(coreDocumentRel).GetRelationship(0);
 

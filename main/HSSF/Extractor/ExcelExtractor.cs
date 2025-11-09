@@ -18,15 +18,15 @@
 namespace NPOI.HSSF.Extractor
 {
     using System;
-    using System.Text; 
-using Cysharp.Text;
+    using System.Text;
+    using Cysharp.Text;
 
     using NPOI.HSSF.UserModel;
     using NPOI.POIFS.FileSystem;
-    using NPOI;
     using NPOI.SS.Formula.Eval;
     using NPOI.SS.UserModel;
     using NPOI.SS.Extractor;
+    using NPOI.Extractor;
 
     /// <summary>
     /// A text extractor for Excel files.

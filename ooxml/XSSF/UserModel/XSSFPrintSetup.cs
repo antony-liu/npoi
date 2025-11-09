@@ -17,6 +17,7 @@
 
 using NPOI.SS.UserModel;
 using NPOI.OpenXmlFormats.Spreadsheet;
+using NPOI.OOXML;
 namespace NPOI.XSSF.UserModel
 {
 

@@ -22,6 +22,7 @@ using NPOI.Util;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using NPOI.OOXML;
 namespace NPOI.XSSF.UserModel
 {
 

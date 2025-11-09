@@ -23,6 +23,7 @@ namespace NPOI.XWPF.UserModel
     using System.Text; 
 using Cysharp.Text;
     using System.Xml;
+    using NPOI.OOXML;
 
     /**
      * Sketch of XWPF comment class

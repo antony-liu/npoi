@@ -31,6 +31,8 @@ namespace NPOI.XWPF.UserModel
     using NPOI.XWPF.Model;
     using NPOI.OOXML.XWPF.Util;
     using NPOI.POIFS.Crypt;
+    using NPOI.OOXML;
+    using NPOI.OOXML.Util;
 
     /**
      * <p>High(ish) level class for working with .docx files.</p>

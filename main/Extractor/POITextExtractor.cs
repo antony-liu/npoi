@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-namespace NPOI
+namespace NPOI.Extractor
 {
     using NPOI.Util;
     using System;
@@ -39,7 +39,7 @@ namespace NPOI
         /// a specific project for details.
         /// </summary>
         /// <value>All the text from the document.</value>
-        public abstract String Text { get; }
+        public abstract string Text { get; }
 
         /// <summary>
         /// Returns another text extractor, which is able to

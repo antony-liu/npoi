@@ -24,6 +24,7 @@ namespace NPOI.XSSF.Model
     using System.Xml;
     using System.Collections.Generic;
     using NPOI.OpenXmlFormats.Spreadsheet.Document;
+    using NPOI.OOXML;
 
 
     /**

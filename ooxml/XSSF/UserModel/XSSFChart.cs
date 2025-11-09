@@ -32,6 +32,7 @@ namespace NPOI.XSSF.UserModel
     using System.Xml.Serialization;
     using NPOI.OpenXmlFormats.Dml;
     using NPOI.Util;
+    using NPOI.OOXML;
 
     /**
      * Represents a SpreadsheetML Chart

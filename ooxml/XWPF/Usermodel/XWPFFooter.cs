@@ -23,6 +23,7 @@ namespace NPOI.XWPF.UserModel
     using System.Xml;
     using System.Xml.Serialization;
     using System.Collections.Generic;
+    using NPOI.OOXML;
 
     /**
      * Sketch of XWPF footer class

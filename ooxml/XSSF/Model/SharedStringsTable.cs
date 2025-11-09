@@ -30,6 +30,7 @@ namespace NPOI.XSSF.Model
     using NPOI.Util;
     using NPOI.XSSF.UserModel;
     using NPOI.SS.UserModel;
+    using NPOI.OOXML;
 
     /**
      * Table of strings shared across all sheets in a workbook.

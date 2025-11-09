@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-namespace NPOI
+namespace NPOI.OOXML
 {
     using System;
     using NPOI.POIFS.Common;
@@ -29,13 +29,13 @@ namespace NPOI
 
     public abstract class POIXMLDocument : POIXMLDocumentPart, ICloseable
     {
-        public static String DOCUMENT_CREATOR = "NPOI";
+        public static string DOCUMENT_CREATOR = "NPOI";
 
         // OLE embeddings relation name
-        public static String OLE_OBJECT_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+        public static string OLE_OBJECT_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
 
         // Embedded OPC documents relation name
-        public static String PACK_OBJECT_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+        public static string PACK_OBJECT_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
 
         /** The OPC Package */
         private OPCPackage pkg;
@@ -51,7 +51,7 @@ namespace NPOI
             init(pkg);
         }
 
-        protected POIXMLDocument(OPCPackage pkg, String coreDocumentRel)
+        protected POIXMLDocument(OPCPackage pkg, string coreDocumentRel)
             : base(pkg, coreDocumentRel)
         {
             init(pkg);
@@ -68,7 +68,7 @@ namespace NPOI
          *  in the event of a problem.
          * Works around shortcomings in java's this() constructor calls
          */
-        public static OPCPackage OpenPackage(String path, bool readOnly = false)
+        public static OPCPackage OpenPackage(string path, bool readOnly = false)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace NPOI
         {
             get
             {
-                return this.pkg;
+                return pkg;
             }
         }
 
@@ -101,7 +101,7 @@ namespace NPOI
          *  relationships of the base document with the
          *  specified content type.
          */
-        protected PackagePart[] GetRelatedByType(String contentType)
+        protected PackagePart[] GetRelatedByType(string contentType)
         {
             PackageRelationshipCollection partsC =
                 GetPackagePart().GetRelationshipsByType(contentType);
@@ -197,10 +197,10 @@ namespace NPOI
             {
                 throw new IOException("Cannot write data, document seems to have been closed already");
             }
-            if (!this.GetProperties().CustomProperties.Contains("Generator"))
-                this.GetProperties().CustomProperties.AddProperty("Generator", "NPOI");
-            if (!this.GetProperties().CustomProperties.Contains("Generator Version"))
-                this.GetProperties().CustomProperties.AddProperty("Generator Version", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
+            if (!GetProperties().CustomProperties.Contains("Generator"))
+                GetProperties().CustomProperties.AddProperty("Generator", "NPOI");
+            if (!GetProperties().CustomProperties.Contains("Generator Version"))
+                GetProperties().CustomProperties.AddProperty("Generator Version", Assembly.GetExecutingAssembly().GetName().Version.ToString(3));
             //force all children to commit their Changes into the underlying OOXML Package
             List<PackagePart> context = new List<PackagePart>();
             OnSave(context);

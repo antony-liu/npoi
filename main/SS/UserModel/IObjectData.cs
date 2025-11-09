@@ -67,5 +67,7 @@ namespace NPOI.SS.UserModel
         /// <return>the preview picture
         /// </return>
         IPictureData PictureData { get; }
+
+        string ContentType { get; }
     }
 }

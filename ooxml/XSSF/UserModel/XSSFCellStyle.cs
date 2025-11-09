@@ -22,6 +22,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel.Extensions;
 using NPOI.XSSF.Model;
 using NPOI.Util;
+using NPOI.OOXML;
 namespace NPOI.XSSF.UserModel
 {
 

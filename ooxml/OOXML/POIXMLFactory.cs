@@ -19,7 +19,7 @@ using NPOI.OpenXml4Net.OPC;
 using NPOI.Util;
 using System;
 
-namespace NPOI
+namespace NPOI.OOXML
 {
 
 
@@ -61,11 +61,11 @@ namespace NPOI
             {
                 try
                 {
-                    return CreateDocumentPart(cls, PARENT_PART, new Object[] { parent, part });
+                    return CreateDocumentPart(cls, PARENT_PART, new object[] { parent, part });
                 }
                 catch (MissingMethodException)
                 {
-                    return CreateDocumentPart(cls, ORPHAN_PART, new Object[] { part });
+                    return CreateDocumentPart(cls, ORPHAN_PART, new object[] { part });
                 }
             }
             catch (Exception e)
@@ -78,7 +78,7 @@ namespace NPOI
          * Need to delegate instantiation to sub class because of constructor visibility
          * @since POI 3.14-Beta1
          */
-        protected abstract POIXMLDocumentPart CreateDocumentPart(Type cls, Type[] classes, Object[] values);
+        protected abstract POIXMLDocumentPart CreateDocumentPart(Type cls, Type[] classes, object[] values);
 
         /**
          * returns the descriptor for the given relationship type 
@@ -87,7 +87,7 @@ namespace NPOI
          * 
          * @since POI 3.14-Beta1
          */
-        protected abstract POIXMLRelation GetDescriptor(String relationshipType);
+        protected abstract POIXMLRelation GetDescriptor(string relationshipType);
 
         /**
          * Create a POIXMLDocumentPart from existing package part and relation. This method is called
@@ -135,10 +135,10 @@ namespace NPOI
         {
             try
             {
-                String partName = part.PartName.Name;
+                string partName = part.PartName.Name;
                 foreach (PackageRelationship pr in parent.GetPackagePart().Relationships)
                 {
-                    String packName = pr.TargetUri.OriginalString;// toASCIIString();
+                    string packName = pr.TargetUri.OriginalString;// toASCIIString();
                     if (packName.Equals(partName, StringComparison.CurrentCultureIgnoreCase))
                     {
                         return pr;

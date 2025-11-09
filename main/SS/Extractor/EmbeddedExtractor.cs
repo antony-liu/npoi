@@ -21,13 +21,11 @@ namespace NPOI.SS.Extractor
     using NPOI.POIFS.FileSystem;
     using NPOI.SS.UserModel;
     using NPOI.Util;
-    using NPOI.HSSF.UserModel;
     using System.Collections.Generic;
     using System;
     using System.IO;
     using System.Text;
     using System.Collections;
-    using NPOI.XSSF.UserModel;
 
     /// <summary>
     /// This extractor class tries to identify various embedded documents within Excel files
@@ -114,12 +112,7 @@ namespace NPOI.SS.Extractor
                         }
                         else
                         {
-                            String contentType = CONTENT_TYPE_BYTES;
-                            if (od is XSSFObjectData)
-                            {
-                                contentType = ((XSSFObjectData)od).GetObjectPart().ContentType;
-                            }
-                            data = new EmbeddedData(od.FileName, od.ObjectData, contentType);
+                            data = new EmbeddedData(od.FileName, od.ObjectData, od.ContentType);
                         }
                     }
                     catch (Exception e)

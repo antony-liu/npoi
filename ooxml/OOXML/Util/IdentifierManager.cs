@@ -16,7 +16,7 @@
 ==================================================================== */
 using System;
 using System.Collections.Generic;
-namespace NPOI.Util
+namespace NPOI.OOXML.Util
 {
     /// <summary>
     /// 24.08.2009 @author Stefan Stern
@@ -55,7 +55,7 @@ namespace NPOI.Util
             }
             else if (lowerbound < MIN_ID)
             {
-                String message = "lowerbound must be greater than or equal to " + MIN_ID;
+                string message = "lowerbound must be greater than or equal to " + MIN_ID;
                 throw new ArgumentException(message);
             }
             else if (upperbound > MAX_ID)
@@ -68,7 +68,7 @@ namespace NPOI.Util
             }
             this.lowerbound = lowerbound;
             this.upperbound = upperbound;
-            this.segments = new List<Segment>();
+            segments = new List<Segment>();
             segments.Add(new Segment(lowerbound, upperbound));
         }
 
@@ -305,7 +305,7 @@ namespace NPOI.Util
              * 
              * @see java.lang.Object#ToString()
              */
-            public override String ToString()
+            public override string ToString()
             {
                 return "[" + start + "; " + end + "]";
             }

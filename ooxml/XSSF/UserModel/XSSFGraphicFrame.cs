@@ -22,6 +22,7 @@ using NPOI.OpenXmlFormats;
 using NPOI.OpenXmlFormats.Dml;
 using NPOI.OpenXmlFormats.Dml.Spreadsheet;
 using System.Xml;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

@@ -24,10 +24,10 @@ using System.Text;
 
 namespace TestCases.XSSF.Extractor
 {
-
-    using NPOI;
+    using NPOI.Extractor;
     using NPOI.HSSF;
     using NPOI.HSSF.Extractor;
+    using NPOI.OOXML.Extractor;
     using NPOI.XSSF;
     using NPOI.XSSF.Extractor;
     using NUnit.Framework;

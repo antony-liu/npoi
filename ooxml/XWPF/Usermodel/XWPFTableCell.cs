@@ -22,10 +22,12 @@ namespace NPOI.XWPF.UserModel
     using System.Text; 
 using Cysharp.Text;
     using System.Xml;
+    using NPOI.OOXML;
+
     /**
-     * Represents a Cell within a {@link XWPFTable}. The
-     *  Cell is the thing that holds the actual content (paragraphs etc)
-     */
+* Represents a Cell within a {@link XWPFTable}. The
+*  Cell is the thing that holds the actual content (paragraphs etc)
+*/
     public class XWPFTableCell : IBody, ICell
     {
         private CT_Tc ctTc;

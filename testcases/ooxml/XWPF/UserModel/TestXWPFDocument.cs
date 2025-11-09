@@ -17,14 +17,15 @@
 
 namespace TestCases.XWPF.UserModel
 {
-    using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXml4Net.OPC;
     using NPOI.OpenXmlFormats.Wordprocessing;
     using NPOI.Util;
     using NPOI.XWPF;
     using NPOI.XWPF.Extractor;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using System.Collections.Generic;
     using System.IO;

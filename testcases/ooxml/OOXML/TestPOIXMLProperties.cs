@@ -15,16 +15,16 @@
   limitations under the License.
 ==================================================================== */
 
-namespace TestCases
+namespace TestCases.OOXML
 {
-
-    using NPOI;
+    using NPOI.OOXML;
     using NPOI.OpenXmlFormats;
     using NPOI.Util;
     using NPOI.XSSF;
     using NPOI.XSSF.UserModel;
     using NPOI.XWPF.UserModel;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using TestCases.XWPF;
 
@@ -73,14 +73,14 @@ namespace TestCases
                     ctProps = properties.GetUnderlyingProperties();
 
 
-            String appVersion = "3.5 beta";
-            String application = "POI";
+            string appVersion = "3.5 beta";
+            string application = "POI";
 
-            ctProps.Application = (application);
-            ctProps.AppVersion = (appVersion);
+            ctProps.Application = application;
+            ctProps.AppVersion = appVersion;
 
             XSSFWorkbook newWorkbook =
-                    (XSSFWorkbook)XSSFTestDataSamples.WriteOutAndReadBack(workbook);
+                    XSSFTestDataSamples.WriteOutAndReadBack(workbook);
             workbook.Close();
             ClassicAssert.IsTrue(workbook != newWorkbook);
 
@@ -128,7 +128,7 @@ namespace TestCases
             }
             customProps.AddProperty("test-4", true);
 
-            POIXMLDocument wb2 = (XSSFWorkbook)XSSFTestDataSamples.WriteOutAndReadBack((XSSFWorkbook)wb1);
+            POIXMLDocument wb2 = XSSFTestDataSamples.WriteOutAndReadBack((XSSFWorkbook)wb1);
             wb1.Close();
 
             CT_CustomProperties ctProps =
@@ -175,19 +175,19 @@ namespace TestCases
         [Ignore("test")]
         public void TestDocumentProperties()
         {
-            String category = _coreProperties.Category;
+            string category = _coreProperties.Category;
             ClassicAssert.AreEqual("test", category);
-            String contentStatus = "Draft";
+            string contentStatus = "Draft";
             _coreProperties.ContentStatus = contentStatus;
             ClassicAssert.AreEqual("Draft", contentStatus);
             DateTime? Created = _coreProperties.Created;
             // the original file Contains a following value: 2009-07-20T13:12:00Z
             ClassicAssert.IsTrue(DateTimeEqualToUTCString(Created, "2009-07-20T13:12:00Z"));
-            String creator = _coreProperties.Creator;
+            string creator = _coreProperties.Creator;
             ClassicAssert.AreEqual("Paolo Mottadelli", creator);
-            String subject = _coreProperties.Subject;
+            string subject = _coreProperties.Subject;
             ClassicAssert.AreEqual("Greetings", subject);
-            String title = _coreProperties.Title;
+            string title = _coreProperties.Title;
             ClassicAssert.AreEqual("Hello World", title);
         }
 
@@ -211,8 +211,8 @@ namespace TestCases
         [Test]
         public void TestGetSetRevision()
         {
-            String revision = _coreProperties.Revision;
-            ClassicAssert.IsTrue(Int32.Parse(revision) > 1, "Revision number is 1");
+            string revision = _coreProperties.Revision;
+            ClassicAssert.IsTrue(int.Parse(revision) > 1, "Revision number is 1");
             _coreProperties.Revision = "20";
             ClassicAssert.AreEqual("20", _coreProperties.Revision);
             _coreProperties.Revision = "20xx";
@@ -222,14 +222,14 @@ namespace TestCases
         [Test]
         public void TestLastModifiedByProperty()
         {
-            String lastModifiedBy = _coreProperties.LastModifiedByUser;
+            string lastModifiedBy = _coreProperties.LastModifiedByUser;
             ClassicAssert.AreEqual("Paolo Mottadelli", lastModifiedBy);
             _coreProperties.LastModifiedByUser = "Test User";
             ClassicAssert.AreEqual("Test User", _coreProperties.LastModifiedByUser);
         }
 
 
-        public static bool DateTimeEqualToUTCString(DateTime? dateTime, String utcString)
+        public static bool DateTimeEqualToUTCString(DateTime? dateTime, string utcString)
         {
             DateTime utcDt = DateTime.SpecifyKind((DateTime)dateTime, DateTimeKind.Utc);
             string dateTimeUtcString = utcDt.ToString("yyyy-MM-ddThh:mm:ssZ");
@@ -270,7 +270,7 @@ namespace TestCases
         }
 
 
-        private static String ZeroPad(long i)
+        private static string ZeroPad(long i)
         {
             if (i >= 0 && i <= 9)
             {

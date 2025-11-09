@@ -39,6 +39,8 @@ using System.Globalization;
 using System.Linq;
 using NPOI.POIFS.FileSystem;
 using NPOI.HPSF;
+using NPOI.OOXML;
+using NPOI.OOXML.Util;
 
 namespace NPOI.XSSF.UserModel
 {

@@ -25,6 +25,7 @@ namespace NPOI.XWPF.UserModel
     using System.Text; 
 using Cysharp.Text;
     using NPOI.OpenXmlFormats.Wordprocessing;
+    using NPOI.OOXML;
 
     /**
      * Parent of XWPF headers and footers

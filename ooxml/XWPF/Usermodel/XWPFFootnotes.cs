@@ -22,6 +22,7 @@ using System.Xml;
 
 using NPOI.OpenXmlFormats.Wordprocessing;
 using NPOI.OpenXml4Net.OPC;
+using NPOI.OOXML;
 
 namespace NPOI.XWPF.UserModel
 {

@@ -16,6 +16,7 @@
 ==================================================================== */
 using NPOI;
 using NPOI.HSSF.UserModel;
+using NPOI.OOXML;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.POIFS.FileSystem;

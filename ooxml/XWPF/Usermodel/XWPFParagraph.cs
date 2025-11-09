@@ -28,6 +28,7 @@ namespace NPOI.XWPF.UserModel
     using S=NPOI.OpenXmlFormats.Shared;
     using NPOI.POIFS.Properties;
     using System.Data;
+    using NPOI.OOXML;
 
     /**
     * <p>A Paragraph within a Document, Table, Header etc.</p> 

@@ -24,6 +24,7 @@ namespace NPOI.XWPF.UserModel
     using System.IO;
     using System.Xml;
     using System.Xml.Serialization;
+    using NPOI.OOXML;
 
     /**
      * Holds details of built-in, default and user styles, which

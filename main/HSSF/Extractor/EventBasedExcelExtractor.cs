@@ -31,6 +31,7 @@ namespace NPOI.HSSF.Extractor
     //using NPOI.HSSF.Util;
     using NPOI.SS.Util;
     using System.Globalization;
+    using NPOI.Extractor;
 
     /// <summary>
     /// A text extractor for Excel files, that is based

@@ -14,8 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-namespace NPOI
+namespace NPOI.Extractor
 {
+    using NPOI;
     using NPOI.HPSF;
     using NPOI.HPSF.Extractor;
     using NPOI.POIFS.FileSystem;
@@ -56,7 +57,7 @@ namespace NPOI
         /// <param name="otherExtractor"></param>
         protected POIOLE2TextExtractor(POIOLE2TextExtractor otherExtractor)
         {
-            this.document = otherExtractor.document;
+            document = otherExtractor.document;
         }
         /// <summary>
         /// Returns the document information metadata for the document

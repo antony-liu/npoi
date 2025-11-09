@@ -30,6 +30,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections;
 using NPOI.OpenXml4Net.Exceptions;
+using NPOI.OOXML;
 
 namespace NPOI.XSSF.UserModel
 {

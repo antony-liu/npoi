@@ -20,6 +20,7 @@ namespace NPOI.XWPF.UserModel
     using System.Text;
     using NPOI.OpenXmlFormats.Wordprocessing;
     using System.Collections.Generic;
+    using NPOI.OOXML;
 
     /**
      * <p>Sketch of XWPFTable class. Only table's text is being hold.</p>
