@@ -772,7 +772,7 @@ namespace NPOI.XSSF.UserModel
             {
                 CT_SheetView dsv = GetDefaultSheetView(true);
                 //assert(dsv != null);
-                dsv.showRowColHeaders = value;
+                dsv.showGridLines = value;
             }
         }
 
