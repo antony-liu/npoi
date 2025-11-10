@@ -209,7 +209,11 @@ namespace NPOI.XSSF.UserModel
             IClientAnchor anchor = (XSSFClientAnchor)GetAnchor();
 
             IClientAnchor pref = GetPreferredSize(scaleX, scaleY);
-
+            if(anchor == null || pref == null)
+            {
+                logger.Log(POILogger.WARN, "picture is not anchored via client anchor - ignoring resize call");
+                return;
+            }
             int row2 = anchor.Row1 + (pref.Row2 - pref.Row1);
             int col2 = anchor.Col1 + (pref.Col2 - pref.Col1);
 

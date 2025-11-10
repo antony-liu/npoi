@@ -967,6 +967,10 @@ namespace NPOI.SS.UserModel
          */
         private String GetFormattedDateString(ICell cell, ConditionalFormattingEvaluator cfEvaluator)
         {
+            if(cell == null)
+            {
+                return null;
+            }
             FormatBase dateFormat = GetFormat(cell, cfEvaluator);
             if (dateFormat is ExcelStyleDateFormatter formatter) {
                 // Hint about the raw excel value
@@ -995,7 +999,10 @@ namespace NPOI.SS.UserModel
          */
         private String GetFormattedNumberString(ICell cell, ConditionalFormattingEvaluator cfEvaluator)
         {
-
+            if(cell == null)
+            {
+                return null;
+            }
             FormatBase numberFormat = GetFormat(cell, cfEvaluator);
             double d = cell.NumericCellValue;
             if (numberFormat == null)

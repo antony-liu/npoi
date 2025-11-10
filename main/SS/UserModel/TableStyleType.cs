@@ -152,9 +152,9 @@ namespace NPOI.SS.UserModel
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
-            while (true) {
-                if (firstStart > c) break;
-                if (c >= firstStart && c <= secondStart -1) return new CellRangeAddress(table.StartRowIndex, table.EndRowIndex, firstStart, secondStart - 1);
+            while (firstStart <= c) {
+                if (c >= firstStart && c <= secondStart -1) 
+                    return new CellRangeAddress(table.StartRowIndex, table.EndRowIndex, firstStart, secondStart - 1);
                 firstStart = secondStart + c2Stripe;
                 secondStart = firstStart + c1Stripe;
             }
@@ -178,9 +178,9 @@ namespace NPOI.SS.UserModel
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
-            while (true) {
-                if (firstStart > c) break;
-                if (c >= secondStart && c <= secondStart + c2Stripe -1) return new CellRangeAddress(table.StartRowIndex, table.EndRowIndex, secondStart, secondStart + c2Stripe - 1);
+            while (firstStart <= c) {
+                if (c >= secondStart && c <= secondStart + c2Stripe -1) 
+                    return new CellRangeAddress(table.StartRowIndex, table.EndRowIndex, secondStart, secondStart + c2Stripe - 1);
                 firstStart = secondStart + c2Stripe;
                 secondStart = firstStart + c1Stripe;
             }
@@ -204,8 +204,7 @@ namespace NPOI.SS.UserModel
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
-            while (true) {
-                if (firstStart > c) break;
+            while (firstStart <= c) {
                 if (c >= firstStart && c <= secondStart -1)
                     return new CellRangeAddress(firstStart, secondStart - 1, table.StartColIndex, table.EndColIndex);
                 firstStart = secondStart + c2Stripe;
@@ -232,10 +231,8 @@ namespace NPOI.SS.UserModel
             // look for the stripe containing c, accounting for the style element stripe size
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
-            while(true)
+            while(firstStart <= c)
             {
-                if(firstStart > c)
-                    break;
                 if(c >= secondStart && c <= secondStart +c2Stripe -1)
                     return new CellRangeAddress(secondStart, secondStart + c2Stripe - 1, table.StartColIndex, table.EndColIndex);
                 firstStart = secondStart + c2Stripe;

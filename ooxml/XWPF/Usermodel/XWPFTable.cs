@@ -44,6 +44,9 @@ namespace NPOI.XWPF.UserModel
             WAVE, DOUBLE_WAVE, DASH_SMALL_GAP, DASH_DOT_STROKED, THREE_D_EMBOSS, THREE_D_ENGRAVE,
             OUTSET, INSET
         };
+
+        private enum Border { INSIDE_V, INSIDE_H, LEFT, TOP, BOTTOM, RIGHT }
+
         internal static Dictionary<XWPFBorderType, ST_Border> xwpfBorderTypeMap;
         // Create a map from the STBorder.Enum values to the XWPF-level enums
         internal static Dictionary<ST_Border, XWPFBorderType> stBorderTypeMap;
@@ -342,95 +345,60 @@ namespace NPOI.XWPF.UserModel
                    : force ? tblPr.AddNewTblBorders()
                    : null;
         }
-
-        /// <summary>
-        /// Return CTBorder object for Inside Vertical border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Inside Vertical border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Inside Vertical border if necessary.</param>
-        private CT_Border GetTblInsideVBorder(bool force)
+        /**
+         * Return CTBorder object for given border. If force parameter is true,
+         * will create the element if necessary. If force parameter is false, returns
+         * null when the border element is missing.
+         *
+         * @param force - force creation of border if necessary.
+         */
+        private CT_Border GetTblBorder(bool force, Border border)
         {
+            Func<CT_TblBorders, Boolean> isSet;
+            Func<CT_TblBorders, CT_Border> get;
+            Func<CT_TblBorders, CT_Border> addNew;
+            
+            switch(border)
+            {
+                case Border.INSIDE_V:
+                    isSet = (ctb) => { return ctb.IsSetInsideV(); };
+                    get = (ctb) => ctb.insideV;
+                    addNew = (ctb) => { return ctb.AddNewInsideV(); };
+                    break;
+                case Border.INSIDE_H:
+                    isSet = (ctb) => { return ctb.IsSetInsideH(); };
+                    get = (ctb) => ctb.insideH;
+                    addNew = (ctb) => { return ctb.AddNewInsideH(); };
+                    break;
+                case Border.LEFT:
+                    isSet = (ctb) => { return ctb.IsSetLeft(); };
+                    get = (ctb) => ctb.left;
+                    addNew = (ctb) => { return ctb.AddNewLeft(); };
+                    break;
+                case Border.TOP:
+                    isSet = (ctb) => { return ctb.IsSetTop(); };
+                    get = (ctb) => ctb.top;
+                    addNew = (ctb) => { return ctb.AddNewTop(); };
+                    break;
+                case Border.RIGHT:
+                    isSet = (ctb) => { return ctb.IsSetRight(); };
+                    get = (ctb) => ctb.right;
+                    addNew = (ctb) => { return ctb.AddNewRight(); };
+                    break;
+                case Border.BOTTOM:
+                    isSet = (ctb) => { return ctb.IsSetBottom(); };
+                    get = (ctb) => ctb.bottom;
+                    addNew = (ctb) => { return ctb.AddNewBottom(); };
+                    break;
+                default:
+                    return null;
+            }
+
             CT_TblBorders ctb = GetTblBorders(force);
             return ctb == null ? null
-                   : ctb.IsSetInsideV() ? ctb.insideV
-                   : force ? ctb.AddNewInsideV()
-                   : null;
-        }
-
-        /// <summary>
-        /// Return CTBorder object for Inside Horizontal border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Inside Horizontal border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Inside Horizontal border if necessary.</param>
-        private CT_Border GetTblInsideHBorder(bool force)
-        {
-            CT_TblBorders ctb = GetTblBorders(force);
-            return ctb == null ? null
-                   : ctb.IsSetInsideH() ? ctb.insideH
-                   : force ? ctb.AddNewInsideH()
-                   : null;
-        }
-
-        /// <summary>
-        /// Return CTBorder object for Top border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Top border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Top border if necessary.</param>
-        private CT_Border GetTblTopBorder(bool force)
-        {
-            CT_TblBorders ctb = GetTblBorders(force);
-            return ctb == null ? null
-                   : ctb.IsSetTop() ? ctb.top
-                   : force ? ctb.AddNewTop()
-                   : null;
-        }
-
-        /// <summary>
-        /// Return CTBorder object for Bottom border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Bottom border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Bottom border if necessary.</param>
-        private CT_Border GetTblBottomBorder(bool force)
-        {
-            CT_TblBorders ctb = GetTblBorders(force);
-            return ctb == null ? null
-                   : ctb.IsSetBottom() ? ctb.bottom
-                   : force ? ctb.AddNewBottom()
-                   : null;
-        }
-
-        /// <summary>
-        /// Return CTBorder object for Left border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Left border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Left border if necessary.</param>
-        private CT_Border GetTblLeftBorder(bool force)
-        {
-            CT_TblBorders ctb = GetTblBorders(force);
-            return ctb == null ? null
-                   : ctb.IsSetLeft() ? ctb.left
-                   : force ? ctb.AddNewLeft()
-                   : null;
-        }
-
-        /// <summary>
-        /// Return CTBorder object for Right border. If force parameter is true,
-        /// will create the element if necessary. If force parameter is false, returns
-        /// null when Right border is missing.
-        /// </summary>
-        /// <param name="force">- force creation of Right border if necessary.</param>
-        private CT_Border GetTblRightBorder(bool force)
-        {
-            CT_TblBorders ctb = GetTblBorders(force);
-            return ctb == null ? null
-                   : ctb.IsSetRight() ? ctb.right
-                   : force ? ctb.AddNewRight()
-                   : null;
+                    : isSet.Invoke(ctb) ? get.Invoke(ctb)
+                    : force ? addNew.Invoke(ctb)
+                    : null;
         }
 
         public int NumberOfColumns
@@ -525,8 +493,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideHBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.INSIDE_H);
             }
         }
 
@@ -534,10 +501,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideHBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int)b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.INSIDE_H);
             }
         }
 
@@ -545,10 +509,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideHBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int)b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.INSIDE_H);
             }
         }
 
@@ -556,11 +517,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideHBorder(false);
-                //return (b != null)
-                //        ? (b.IsSetColor() ? b.color : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.INSIDE_H);
             }
         }
 
@@ -568,8 +525,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideVBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.INSIDE_V);
             }
         }
 
@@ -577,10 +533,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideVBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int)b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.INSIDE_V);
             }
         }
 
@@ -588,10 +541,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideVBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int)b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.INSIDE_V);
             }
         }
 
@@ -599,11 +549,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblInsideVBorder(false);
-                //return (b != null)
-                //        ? (b.color ? b.xgetColor().getStringValue() : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.INSIDE_V);
             }
         }
 
@@ -616,8 +562,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblTopBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.TOP);
             }
         }
 
@@ -631,10 +576,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblTopBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.TOP);
             }
         }
 
@@ -648,10 +590,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblTopBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int) b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.TOP);
             }
         }
 
@@ -664,11 +603,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblTopBorder(false);
-                //return (b != null)
-                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.TOP);
             }
         }
 
@@ -681,8 +616,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblBottomBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.BOTTOM);
             }
         }
 
@@ -696,10 +630,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblBottomBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.BOTTOM);
             }
         }
 
@@ -713,10 +644,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblBottomBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int) b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.BOTTOM);
             }
         }
 
@@ -729,11 +657,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblBottomBorder(false);
-                //return (b != null)
-                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.BOTTOM);
             }
         }
 
@@ -746,8 +670,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblLeftBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.LEFT);
             }
         }
 
@@ -761,10 +684,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblLeftBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.LEFT);
             }
         }
 
@@ -778,10 +698,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblLeftBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int) b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.LEFT);
             }
         }
 
@@ -794,11 +711,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblLeftBorder(false);
-                //return (b != null)
-                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.LEFT);
             }
         }
 
@@ -811,8 +724,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblRightBorder(false);
-                return (b != null) ? stBorderTypeMap[b.val] : null;
+                return GetBorderType(Border.RIGHT);
             }
         }
 
@@ -826,10 +738,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblRightBorder(false);
-                return (b != null)
-                        ? (b.sz.HasValue ? (int) b.sz.Value : -1)
-                                : -1;
+                return GetBorderSize(Border.RIGHT);
             }
         }
 
@@ -843,10 +752,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblRightBorder(false);
-                return (b != null)
-                        ? (b.space.HasValue ? (int) b.space.Value : -1)
-                                : -1;
+                return GetBorderSpace(Border.RIGHT);
             }
         }
 
@@ -859,13 +765,40 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                CT_Border b = GetTblRightBorder(false);
-                //return (b != null)
-                //        ? (b.isSetColor() ? b.xgetColor().getStringValue() : null)
-                //                : null;
-                return b?.color;
+                return GetBorderColor(Border.RIGHT);
             }
         }
+
+        private XWPFBorderType? GetBorderType(Border border)
+        {
+            CT_Border b = GetTblBorder(false, border);
+            return (b != null) ? stBorderTypeMap[b.val] : null;
+        }
+
+        private int GetBorderSize(Border border)
+        {
+            CT_Border b = GetTblBorder(false, border);
+            return (b != null)
+                    ? (b.sz.HasValue ? (int)b.sz.Value : -1)
+                    : -1;
+        }
+
+        private int GetBorderSpace(Border border)
+        {
+            CT_Border b = GetTblBorder(false, border);
+            return (b != null)
+                    ? (b.space.HasValue ? (int)b.space.Value : -1)
+                    : -1;
+        }
+
+        private String GetBorderColor(Border border)
+        {
+            CT_Border b = GetTblBorder(false, border);
+            return (b != null)
+                    ? (string.IsNullOrEmpty(b.color) ? null : b.color)
+                    : null;
+        }
+
         public int RowBandSize
         {
             get
@@ -923,11 +856,7 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetInsideHBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblInsideHBorder(true);
-            b.val = (xwpfBorderTypeMap[(type)]);
-            b.sz = (ulong) size;
-            b.space = (ulong) space;
-            b.color = (rgbColor);
+            SetBorder(Border.INSIDE_H, type, size, space, rgbColor);
         }
 
         /// <summary>
@@ -945,11 +874,7 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetInsideVBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblInsideVBorder(true);
-            b.val = (xwpfBorderTypeMap[type]);
-            b.sz = (ulong) size;
-            b.space = (ulong) space;
-            b.color = (rgbColor);
+            SetBorder(Border.INSIDE_V, type, size, space, rgbColor);
         }
 
         /// <summary>
@@ -967,11 +892,7 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetTopBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblTopBorder(true);
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
+            SetBorder(Border.TOP, type, size, space, rgbColor);
         }
 
         /// <summary>
@@ -989,11 +910,7 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetBottomBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblBottomBorder(true);
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
+            SetBorder(Border.BOTTOM, type, size, space, rgbColor);
         }
 
         /// <summary>
@@ -1011,11 +928,7 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetLeftBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblLeftBorder(true);
-            b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
-            b.color = (rgbColor);
+            SetBorder(Border.LEFT, type, size, space, rgbColor);
         }
 
         /// <summary>
@@ -1033,10 +946,16 @@ namespace NPOI.XWPF.UserModel
         /// </param>
         public void SetRightBorder(XWPFBorderType type, int size, int space, String rgbColor)
         {
-            CT_Border b = GetTblRightBorder(true);
+            SetBorder(Border.RIGHT, type, size, space, rgbColor);
+        }
+
+        private void SetBorder(Border border, XWPFBorderType type, int size, int space, String rgbColor)
+        {
+            CT_Border b = GetTblBorder(true, border);
+            //assert(b != null);
             b.val = xwpfBorderTypeMap[type];
-            b.sz = (ulong)size;
-            b.space = (ulong)space;
+            b.sz = (ulong) size;
+            b.space = (ulong) space;
             b.color = (rgbColor);
         }
 
@@ -1045,12 +964,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveInsideHBorder()
         {
-            CT_Border b = GetTblInsideHBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetInsideH();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.INSIDE_H);
         }
 
         /// <summary>
@@ -1058,12 +972,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveInsideVBorder()
         {
-            CT_Border b = GetTblInsideVBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetInsideV();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.INSIDE_V);
         }
 
         /// <summary>
@@ -1071,12 +980,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveTopBorder()
         {
-            CT_Border b = GetTblTopBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetTop();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.TOP);
         }
 
         /// <summary>
@@ -1084,12 +988,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveBottomBorder()
         {
-            CT_Border b = GetTblBottomBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetBottom();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.BOTTOM);
         }
 
         /// <summary>
@@ -1097,12 +996,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveLeftBorder()
         {
-            CT_Border b = GetTblLeftBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetLeft();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.LEFT);
         }
 
         /// <summary>
@@ -1110,12 +1004,7 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveRightBorder()
         {
-            CT_Border b = GetTblRightBorder(false);
-            if(b != null)
-            {
-                GetTblBorders(false).UnsetRight();
-                CleanupTblBorders();
-            }
+            RemoveBorder(Border.RIGHT);
         }
 
         /// <summary>
@@ -1123,11 +1012,54 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         public void RemoveBorders()
         {
-            CT_TblBorders b = GetTblBorders(false);
-            if(b != null)
+            CT_TblPr pr = GetTblPr(false);
+            if(pr != null && pr.IsSetTblBorders())
             {
-                GetTblPr(false).UnsetTblBorders();
+                pr.UnsetTblBorders();
             }
+        }
+
+        private void RemoveBorder(Border border)
+        {
+            Func<CT_TblBorders, Boolean> isSet;
+            Action<CT_TblBorders> unSet;
+            switch(border)
+            {
+                case Border.INSIDE_H:
+                    isSet = (tbl) => tbl.IsSetInsideH();
+                    unSet = (tbl) => tbl.UnsetInsideH();
+                    break;
+                case Border.INSIDE_V:
+                    isSet = (tbl) => tbl.IsSetInsideV();
+                    unSet = (tbl) => tbl.UnsetInsideV();
+                    break;
+                case Border.LEFT:
+                    isSet = (tbl) => tbl.IsSetLeft();
+                    unSet = (tbl) => tbl.UnsetLeft();
+                    break;
+                case Border.TOP:
+                    isSet = (tbl) => tbl.IsSetTop();
+                    unSet = (tbl) => tbl.UnsetTop();
+                    break;
+                case Border.RIGHT:
+                    isSet = (tbl) => tbl.IsSetRight();
+                    unSet = (tbl) => tbl.UnsetRight();
+                    break;
+                case Border.BOTTOM:
+                    isSet = (tbl) => tbl.IsSetBottom();
+                    unSet = (tbl) => tbl.UnsetBottom();
+                    break;
+                default:
+                    return;
+            }
+
+            CT_TblBorders tbl = GetTblBorders(false);
+            if(tbl != null && isSet.Invoke(tbl))
+            {
+                unSet.Invoke(tbl);
+                CleanupTblBorders();
+            }
+
         }
 
         /// <summary>
@@ -1136,17 +1068,18 @@ namespace NPOI.XWPF.UserModel
         /// </summary>
         private void CleanupTblBorders()
         {
-            CT_TblBorders b = GetTblBorders(false);
-            if(b != null)
+            CT_TblPr pr = GetTblPr(false);
+            if(pr != null && pr.IsSetTblBorders())
             {
-                if(b.insideH == null &&
-                        b.insideV == null &&
-                        b.top == null &&
-                        b.bottom == null &&
-                        b.left == null &&
-                        b.right == null)
+                CT_TblBorders b = pr.tblBorders;
+                if(!(b.insideH != null ||
+                    b.insideV != null ||
+                    b.top != null ||
+                    b.bottom != null ||
+                    b.left != null ||
+                    b.right != null))
                 {
-                    GetTblPr(false).UnsetTblBorders();
+                    pr.UnsetTblBorders();
                 }
             }
         }
@@ -1155,18 +1088,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int margin = 0;
-                CT_TblPr tblPr = GetTblPr();
-                CT_TblCellMar tcm = tblPr.tblCellMar;
-                if (tcm != null)
-                {
-                    CT_TblWidth tw = tcm.top;
-                    if (tw != null)
-                    {
-                        int.TryParse(tw.w, out margin);
-                    }
-                }
-                return margin;
+                return GetCellMargin((tcm) => { return tcm.top; });
             }
         }
 
@@ -1174,18 +1096,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int margin = 0;
-                CT_TblPr tblPr = GetTblPr();
-                CT_TblCellMar tcm = tblPr.tblCellMar;
-                if (tcm != null)
-                {
-                    CT_TblWidth tw = tcm.left;
-                    if (tw != null)
-                    {
-                        int.TryParse(tw.w, out margin);
-                    }
-                }
-                return margin;
+                return GetCellMargin((tcm) => { return tcm.left; });
             }
         }
 
@@ -1193,18 +1104,7 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int margin = 0;
-                CT_TblPr tblPr = GetTblPr();
-                CT_TblCellMar tcm = tblPr.tblCellMar;
-                if (tcm != null)
-                {
-                    CT_TblWidth tw = tcm.bottom;
-                    if (tw != null)
-                    {
-                        int.TryParse(tw.w, out margin);
-                    }
-                }
-                return margin;
+                return GetCellMargin((tcm) => { return tcm.bottom; });
             }
         }
 
@@ -1212,18 +1112,55 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                int margin = 0;
-                CT_TblPr tblPr = GetTblPr();
-                CT_TblCellMar tcm = tblPr.tblCellMar;
-                if (tcm != null)
+                return GetCellMargin((tcm) => { return tcm.right; });
+            }
+        }
+
+        private int GetCellMargin(Func<CT_TblCellMar, CT_TblWidth> margin)
+        {
+            CT_TblPr tblPr = GetTblPr();
+            CT_TblCellMar tcm = tblPr.tblCellMar;
+            int v = 0;
+            if(tcm != null)
+            {
+                CT_TblWidth tw = margin.Invoke(tcm);
+                if(tw != null)
                 {
-                    CT_TblWidth tw = tcm.right;
-                    if (tw != null)
-                    {
-                        int.TryParse(tw.w, out margin);
-                    }
+                    int.TryParse(tw.w, out v);
                 }
-                return margin;
+            }
+            return v;
+        }
+
+        public void setCellMargins(int top, int left, int bottom, int right)
+        {
+            CT_TblPr tblPr = GetTblPr();
+            CT_TblCellMar tcm = tblPr.IsSetTblCellMar() ? tblPr.tblCellMar : tblPr.AddNewTblCellMar();
+
+            SetCellMargin(tcm, tcm => tcm.IsSetTop(), tcm => tcm.top, tcm => tcm.AddNewTop(), tcm => tcm.top = null, top);
+            SetCellMargin(tcm, tcm => tcm.IsSetLeft(), tcm => tcm.left, tcm => tcm.AddNewLeft(), tcm => tcm.left = null, left);
+            SetCellMargin(tcm, tcm => tcm.IsSetBottom(), tcm => tcm.bottom, tcm => tcm.AddNewBottom(), tcm => tcm.bottom = null, bottom);
+            SetCellMargin(tcm, tcm => tcm.IsSetRight(), tcm => tcm.right, tcm => tcm.AddNewRight(), tcm => tcm.right = null, right);
+        }
+
+        private static void SetCellMargin(CT_TblCellMar tcm, 
+            Func<CT_TblCellMar, Boolean> isSet, 
+            Func<CT_TblCellMar, CT_TblWidth> get, 
+            Func<CT_TblCellMar, CT_TblWidth> addNew, 
+            Action<CT_TblCellMar> unSet, int margin)
+        {
+            if(margin == 0)
+            {
+                if(isSet.Invoke(tcm))
+                {
+                    unSet.Invoke(tcm);
+                }
+            }
+            else
+            {
+                CT_TblWidth tw = (isSet.Invoke(tcm) ? get : addNew).Invoke(tcm);
+                tw.type = ST_TblWidth.dxa;
+                tw.w = margin.ToString();
             }
         }
 

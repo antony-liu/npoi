@@ -113,7 +113,7 @@ namespace TestCases.HSSF.UserModel
             // on some environments in CI we see strange Assert.Failures, let's verify that the size is exactly right
             // this can be removed again After the problem is identified
             // 5120
-            ClassicAssert.AreEqual(9216, bytes.Length, "Had: " + HexDump.ToHex(bytes));
+            ClassicAssert.AreEqual(5120, bytes.Length, "Had: " + HexDump.ToHex(bytes));
 
             POIFSFileSystem fs2 = new POIFSFileSystem(new MemoryStream(bytes));
             SummaryInformation summary2 = (SummaryInformation) PropertySetFactory.Create(fs2.CreateDocumentInputStream(SummaryInformation.DEFAULT_STREAM_NAME));

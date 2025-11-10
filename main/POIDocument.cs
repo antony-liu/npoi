@@ -297,26 +297,24 @@ namespace NPOI
         /// </summary>
         /// <param name="outFS">the POIFSFileSystem to Write the properties into.</param>
         /// <param name="writtenEntries">a list of POIFS entries to Add the property names too.</param>
-        protected internal void WriteProperties(NPOIFSFileSystem outFS, IList writtenEntries)
+        protected internal void WriteProperties(NPOIFSFileSystem outFS, List<String> writtenEntries)
         {
-            if (sInf != null)
-            {
-                WritePropertySet(SummaryInformation.DEFAULT_STREAM_NAME, sInf, outFS);
-                if (writtenEntries != null)
-                {
-                    writtenEntries.Add(SummaryInformation.DEFAULT_STREAM_NAME);
-                }
-            }
-            if (dsInf != null)
-            {
-                WritePropertySet(DocumentSummaryInformation.DEFAULT_STREAM_NAME, dsInf, outFS);
-                if (writtenEntries != null)
-                {
-                    writtenEntries.Add(DocumentSummaryInformation.DEFAULT_STREAM_NAME);
-                }
-            }
+            //TODO: EncryptionInfo ei = getEncryptionInfo();
+            NPOIFSFileSystem fs = outFS; //(encryptProps) ? tmpFS : outFS;
+            WritePropertySet(SummaryInformation.DEFAULT_STREAM_NAME, SummaryInformation, fs, writtenEntries);
+            WritePropertySet(DocumentSummaryInformation.DEFAULT_STREAM_NAME, DocumentSummaryInformation, fs, writtenEntries);
         }
 
+        private void WritePropertySet(String name, PropertySet ps, NPOIFSFileSystem outFS, List<String> writtenEntries)
+        {
+            if (ps == null) {
+                return;
+            }
+            WritePropertySet(name, ps, outFS);
+            if (writtenEntries != null) {
+                writtenEntries.Add(name);
+            }
+        }
         /// <summary>
         /// Writes out a given ProperySet
         /// </summary>
@@ -327,7 +325,7 @@ namespace NPOI
         {
             try
             {
-                MutablePropertySet mSet = new MutablePropertySet(Set);
+                PropertySet mSet = new PropertySet(Set);
                 using (MemoryStream bOut = new MemoryStream())
                 {
                     mSet.Write(bOut);
