@@ -1958,7 +1958,7 @@ namespace NPOI.XSSF.UserModel
         /**
          * Get the document's embedded files.
          */
-        public override List<PackagePart> GetAllEmbedds()
+        public override List<PackagePart> GetAllEmbeddedParts()
         {
             List<PackagePart> embedds = new List<PackagePart>();
 

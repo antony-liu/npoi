@@ -139,8 +139,18 @@ namespace NPOI.OOXML
         /**
          * Get the document's embedded files.
          */
-        public abstract List<PackagePart> GetAllEmbedds();
+        [Obsolete]
+        [Removal(Version = "4.2")]
+        public List<PackagePart> GetAllEmbedds()
+        {
+            return GetAllEmbeddedParts();
+        }
 
+        /// <summary>
+        /// Get the document's embedded files.
+        /// </summary>
+        /// <returns></returns>
+        public abstract List<PackagePart> GetAllEmbeddedParts();
         protected void Load(POIXMLFactory factory)
         {
             Dictionary<PackagePart, POIXMLDocumentPart> context = new Dictionary<PackagePart, POIXMLDocumentPart>();

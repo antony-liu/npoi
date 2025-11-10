@@ -49,7 +49,7 @@ namespace TestCases.OOXML
 
             }
 
-            public override List<PackagePart> GetAllEmbedds()
+            public override List<PackagePart> GetAllEmbeddedParts()
             {
                 throw new NotSupportedException();
             }

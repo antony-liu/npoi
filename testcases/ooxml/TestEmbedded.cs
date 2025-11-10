@@ -32,7 +32,7 @@ namespace TestCases
      *  OOXML files properly
      */
     [TestFixture]
-    public class TestEmbeded
+    public class TestEmbedded
     {
         [Test]
         public void TestExcel()
@@ -62,12 +62,12 @@ namespace TestCases
 
         private void Test(POIXMLDocument doc, int expectedCount)
         {
-            ClassicAssert.IsNotNull(doc.GetAllEmbedds());
-            ClassicAssert.AreEqual(expectedCount, doc.GetAllEmbedds().Count);
+            ClassicAssert.IsNotNull(doc.GetAllEmbeddedParts());
+            ClassicAssert.AreEqual(expectedCount, doc.GetAllEmbeddedParts().Count);
 
-            for (int i = 0; i < doc.GetAllEmbedds().Count; i++)
+            for (int i = 0; i < doc.GetAllEmbeddedParts().Count; i++)
             {
-                PackagePart pp = doc.GetAllEmbedds()[i];
+                PackagePart pp = doc.GetAllEmbeddedParts()[i];
                 ClassicAssert.IsNotNull(pp);
 
                 byte[] b = IOUtils.ToByteArray(pp.GetStream(System.IO.FileMode.Open));
