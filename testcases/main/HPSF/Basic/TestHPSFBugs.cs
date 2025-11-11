@@ -25,6 +25,7 @@ namespace TestCases.HPSF.Basic
     using NPOI.POIFS.FileSystem;
     using NPOI.HPSF;
     using NPOI;
+    using TestCases.HSSF;
 
     /**
      * Tests various bugs have been fixed
@@ -161,6 +162,32 @@ namespace TestCases.HPSF.Basic
             ClassicAssert.AreEqual("", dsi.Company);
             ClassicAssert.AreEqual(2, dsi.SectionCount);
         }
+        [Test]
+        public void Bug62451()
+        {
+            long millis = 92035531418386L;
+            //long millis = 920355314183864L;  Max value is 9999-12-31 23:59:59.9999999 UTC
+            var epoch = DateTime.Parse("1970-01-01 00:00:00");
+            HSSFWorkbook wb = new HSSFWorkbook();
+            try
+            {
+                wb.CreateSheet().CreateRow(0).CreateCell(0).SetCellValue("foo");
+                wb.CreateInformationProperties();
+                SummaryInformation si = wb.SummaryInformation;
+                si.LastPrinted = epoch.AddMilliseconds(millis);
+                HSSFWorkbook wb2 = HSSFTestDataSamples.WriteOutAndReadBack(wb);
+                try
+                {
+                    SummaryInformation si2 = wb2.SummaryInformation;
+                    DateTime d = si2.LastPrinted.Value;
+                    ClassicAssert.IsNotNull(d);
+                    ClassicAssert.AreEqual(millis, (d - epoch).TotalMilliseconds);
+                }
+                finally {
+                }
+            }
+            finally { 
+            }
+        }
     }
-
 }
