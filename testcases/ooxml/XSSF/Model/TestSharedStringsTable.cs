@@ -200,6 +200,13 @@ namespace TestCases.XSSF.Model
                 CT_Rst st1 = items1[i];
                 CT_Rst st2 = items2[i];
                 ClassicAssert.AreEqual(st1.ToString(), st2.ToString());
+                // ensure that CTPhoneticRun is loaded by the ooxml test suite so that it is included in poi-ooxml-schemas
+                List<CT_PhoneticRun> phList = st1.rPh;
+                ClassicAssert.AreEqual(phList, st2.rPh);
+                // this code is required to make sure all the necessary classes are loaded
+                CT_PhoneticRun run = new CT_PhoneticRun();
+                run.eb = 12;
+                ClassicAssert.AreEqual(12, run.eb);
             }
 
             ClassicAssert.IsNotNull(XSSFTestDataSamples.WriteOutAndReadBack(wb));
