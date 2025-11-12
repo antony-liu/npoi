@@ -232,6 +232,10 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
+                if(_vmlShape == null)
+                {
+                    return null;
+                }
                 String position = _vmlShape.GetClientDataArray(0).GetAnchorArray(0);
                 int[] pos = new int[8];
                 int i = 0;
