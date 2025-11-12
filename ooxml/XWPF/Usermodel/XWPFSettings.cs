@@ -432,6 +432,41 @@ namespace NPOI.XWPF.UserModel
                 throw new Exception("SettingsDocument parse failed", e);
             }
         }
+
+        /**
+         * Check if separate even and odd headings is turned on.
+         *
+         * @param enable <code>true</code> to turn on separate even and odd headings, 
+         * <code>false</code> to turn off even and odd headings.
+         */
+        public bool EvenAndOddHeadings
+        {
+            get
+            {
+                return ctSettings.evenAndOddHeaders.val;
+            }
+            set
+            {
+                ctSettings.evenAndOddHeaders.val = value;
+            }
+        }
+
+        /**
+         * Check if mirrored margins is turned on
+         *
+         * @return True if mirrored margins is turned on.
+         */
+        public bool MirrorMargins
+        {
+            get
+            {
+                return ctSettings.mirrorMargins.val;
+            }
+            set
+            {
+                ctSettings.mirrorMargins.val = value;
+            }
+        }
     }
 
 }

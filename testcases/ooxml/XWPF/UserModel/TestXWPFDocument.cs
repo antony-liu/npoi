@@ -484,6 +484,37 @@ namespace TestCases.XWPF.UserModel
             XWPFSettings settings = new XWPFSettings();
             settings.SetZoomPercent(50);
             ClassicAssert.AreEqual(50, settings.GetZoomPercent());
+
+            ClassicAssert.AreEqual(false, settings.EvenAndOddHeadings);
+            settings.EvenAndOddHeadings = true;
+            ClassicAssert.AreEqual(true, settings.EvenAndOddHeadings);
+
+            ClassicAssert.AreEqual(false, settings.MirrorMargins);
+            settings.MirrorMargins = true;
+            ClassicAssert.AreEqual(true, settings.MirrorMargins);
+
+            XWPFDocument doc = new XWPFDocument();
+            ClassicAssert.AreEqual(100, doc.ZoomPercent);
+
+            doc.ZoomPercent = 50;
+            ClassicAssert.AreEqual(50, doc.ZoomPercent);
+
+            doc.ZoomPercent = 200;
+            ClassicAssert.AreEqual(200, doc.ZoomPercent);
+
+            ClassicAssert.AreEqual(false, doc.EvenAndOddHeadings);
+            doc.EvenAndOddHeadings = true;
+            ClassicAssert.AreEqual(true, doc.EvenAndOddHeadings);
+
+            ClassicAssert.AreEqual(false, doc.MirrorMargins);
+            doc.MirrorMargins = true;
+            ClassicAssert.AreEqual(true, doc.MirrorMargins);
+
+            XWPFDocument back = XWPFTestDataSamples.WriteOutAndReadBack(doc);
+            ClassicAssert.AreEqual(200, back.ZoomPercent);
+            back.Close();
+
+            doc.Close();
         }
 
         [Test]

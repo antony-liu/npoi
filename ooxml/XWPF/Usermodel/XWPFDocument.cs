@@ -1526,6 +1526,57 @@ namespace NPOI.XWPF.UserModel
         }
 
         /**
+         * Get or set the current zoom factor in percent values, i.e. 100 is normal zoom.
+         *
+         * @return A percent value denoting the current zoom setting of this document.
+         */
+        public long ZoomPercent
+        {
+            get
+            {
+                return settings.GetZoomPercent();
+            }
+            set
+            {
+                settings.SetZoomPercent(value);
+            }
+        }
+
+        /**
+         * get or set the even-and-odd-headings setting
+         *
+         * @return True or false indicating whether or not separate even and odd headings is turned on.
+         */
+        public bool EvenAndOddHeadings
+        {
+            get
+            {
+                return settings.EvenAndOddHeadings;
+            }
+            set
+            {
+                settings.EvenAndOddHeadings = value;
+            }
+        }
+
+        /**
+         * get or set the mirror margins setting
+         *
+         * @return True or false indicating whether or not mirror margins is turned on.
+         */
+        public bool MirrorMargins
+        {
+            get
+            {
+                return settings.MirrorMargins;
+            }
+            set
+            {
+                settings.MirrorMargins = value;
+            }
+        }
+
+        /**
          * inserts an existing XWPFTable to the arrays bodyElements and tables
          * @param pos
          * @param table
