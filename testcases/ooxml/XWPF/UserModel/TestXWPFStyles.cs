@@ -17,12 +17,12 @@
 
 namespace TestCases.XWPF.UserModel
 {
-    using System;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
-    using System.Collections.Generic;
     using NPOI.OpenXmlFormats.Wordprocessing;
-    using TestCases.XWPF;
     using NPOI.XWPF.UserModel;
+    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using System;
+    using System.Collections.Generic;
+    using TestCases.XWPF;
 
     [TestFixture]
     public class TestXWPFStyles
@@ -235,6 +235,19 @@ namespace TestCases.XWPF.UserModel
             }
 
             doc.Close();
+        }
+
+        [Test]
+        public void TestGetStyleByName()
+        {
+            XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("SampleDoc.docx");
+            XWPFStyles styles = doc.GetStyles();
+            ClassicAssert.IsNotNull(styles);
+
+            String styleName = "Normal Table";
+            XWPFStyle style = styles.GetStyleWithName(styleName);
+            ClassicAssert.IsNotNull(style, "Expected to find style \"" + styleName + "\"");
+            ClassicAssert.AreEqual(styleName, style.Name);
         }
     }
 }

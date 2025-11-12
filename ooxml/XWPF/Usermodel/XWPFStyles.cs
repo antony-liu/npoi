@@ -210,20 +210,6 @@ namespace NPOI.XWPF.UserModel
             }
             return null;
         }
-        /**
-         *get the style with the specified name, if any.
-         * @param styleName The name of the style to get, e.g., "Heading 1"
-         * @return style
-         */
-        public XWPFStyle GetStyleWithName(string styleName)
-        {
-            foreach (XWPFStyle style in listStyle)
-            {
-                if (style.Name == styleName)
-                    return style;
-            }
-            return null;
-        }
 
         public int NumberOfStyles
         {
@@ -379,6 +365,26 @@ namespace NPOI.XWPF.UserModel
             {
                 return latentStyles;
             }
+        }
+
+        /**
+         * Get the style with the specified name, if any.
+         *
+         * @param styleName The name of the style to get, e.g., "Heading 1"
+         * @return {@link XWPFStyle} with the specified name, or null if not found.
+         */
+        public XWPFStyle GetStyleWithName(String styleName)
+        {
+            XWPFStyle style = null;
+            foreach(XWPFStyle cand in listStyle)
+            {
+                if(styleName.Equals(cand.Name))
+                {
+                    style = cand;
+                    break;
+                }
+            }
+            return style;
         }
     }
 

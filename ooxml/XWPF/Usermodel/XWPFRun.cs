@@ -1368,6 +1368,11 @@ using Cysharp.Text;
         {
             return pictures;
         }
+        /**
+         * Set the style ID for the run.
+         *
+         * @param styleId ID (not name) of the style to set for the run, e.g. "BoldItalic" (not "Bold Italic").
+         */
         public void SetStyle(string styleId)
         {
             CT_RPr pr = GetCTR().rPr;
