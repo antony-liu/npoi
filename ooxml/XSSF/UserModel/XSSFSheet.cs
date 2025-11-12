@@ -2173,7 +2173,13 @@ namespace NPOI.XSSF.UserModel
                 return new Dictionary<CellAddress, IComment>();
             }
 
-            return sheetComments.GetCellComments();
+            // the cell comments in sheetComments.getCellComments() do not have the client anchors set
+            Dictionary<CellAddress, IComment> map = new ();
+            foreach(CellAddress address in sheetComments.GetCellComments().Keys)
+            {
+                map.Add(address, GetCellComment(address));
+            }
+            return map;
         }
 
         /// <summary>
