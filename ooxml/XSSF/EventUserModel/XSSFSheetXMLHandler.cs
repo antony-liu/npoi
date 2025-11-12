@@ -63,7 +63,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <summary>
         /// Table with cell comments
         /// </summary>
-        private CommentsTable comments;
+        private IComments comments;
 
         /// <summary>
         /// Read only access to the shared strings table, for looking
@@ -112,7 +112,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
                 IStyles styles,
-                CommentsTable comments,
+                IComments comments,
                 ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 DataFormatter dataFormatter,
@@ -159,12 +159,12 @@ namespace NPOI.XSSF.EventUserModel
 
         }
 
-        private void Init(CommentsTable commentsTable)
+        private void Init(IComments commentsTable)
         {
             if(commentsTable != null)
             {
                 commentCellRefs = new Queue<CellAddress>();
-                foreach(CellAddress cellAddress in commentsTable.GetCellComments().Keys)
+                foreach(CellAddress cellAddress in commentsTable.GetCellAddresses())
                 {
                     commentCellRefs.Enqueue(cellAddress);
                 }

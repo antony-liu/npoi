@@ -2175,7 +2175,7 @@ namespace NPOI.XSSF.UserModel
 
             // the cell comments in sheetComments.getCellComments() do not have the client anchors set
             Dictionary<CellAddress, IComment> map = new ();
-            foreach(CellAddress address in sheetComments.GetCellComments().Keys)
+            foreach(CellAddress address in sheetComments.GetCellAddresses())
             {
                 map.Add(address, GetCellComment(address));
             }

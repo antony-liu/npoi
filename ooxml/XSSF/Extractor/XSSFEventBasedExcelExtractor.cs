@@ -201,7 +201,7 @@ namespace NPOI.XSSF.Extractor
         public void ProcessSheet(
                 ISheetContentsHandler sheetContentsExtractor,
                 IStyles styles,
-                CommentsTable comments,
+                IComments comments,
                 ISharedStrings strings,
                 Stream sheetInputStream)
 
@@ -261,7 +261,7 @@ namespace NPOI.XSSF.Extractor
                             text.Append(iter.SheetName);
                             text.Append('\n');
                         }
-                        CommentsTable comments = includeCellComments ? iter.SheetComments : null;
+                        IComments comments = includeCellComments ? iter.SheetComments : null;
                         ProcessSheet(sheetExtractor, styles, comments, strings, stream);
                         if(includeHeadersFooters)
                         {

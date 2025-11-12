@@ -16,17 +16,18 @@
 ==================================================================== */
 namespace NPOI.XSSF.Model
 {
+    using MathNet.Numerics.LinearAlgebra.Solvers;
+    using NPOI.OOXML;
+    using NPOI.OpenXml4Net.OPC;
+    using NPOI.OpenXmlFormats.Spreadsheet;
+    using NPOI.SS.UserModel;
+    using NPOI.SS.Util;
+    using NPOI.Util;
+    using NPOI.XSSF.UserModel;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml;
-    using NPOI.OpenXml4Net.OPC;
-    using NPOI.SS.UserModel;
-    using NPOI.SS.Util;
-    using NPOI.XSSF.UserModel;
-    using NPOI.OpenXmlFormats.Spreadsheet;
-    using NPOI.OOXML;
-    using NPOI.Util;
 
     public class CommentsTable : POIXMLDocumentPart, IComments
     {
@@ -215,6 +216,8 @@ namespace NPOI.XSSF.Model
          * @return A map of each Comment in this sheet, keyed on the cell address where
          * the comment is located.
          */
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public Dictionary<CellAddress, IComment> GetCellComments()
         {
             PrepareCTCommentCache();

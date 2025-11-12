@@ -58,7 +58,7 @@ namespace NPOI.XSSF.Model
         /// <remarks>
         /// @since 4.0.0
         /// </remarks>
-        //IEnumerator<CellAddress> GetCellAddresses();
+        List<CellAddress> GetCellAddresses();
     }
 }
 
