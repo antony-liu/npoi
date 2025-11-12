@@ -19,68 +19,26 @@ namespace NPOI.SS.Formula.Functions
 {
     using NPOI.SS.Formula.Eval;
     using NPOI.SS.Formula;
+    using NPOI.Util;
+
     /**
-     * Implementation of the VLOOKUP() function.<p/>
-     * 
-     * VLOOKUP Finds a row in a lookup table by the first column value and returns the value from another column.<br/>
-     * 
-     * <b>Syntax</b>:<br/>
-     * <b>VLOOKUP</b>(<b>lookup_value</b>, <b>table_array</b>, <b>col_index_num</b>, range_lookup)<p/>
-     * 
-     * <b>lookup_value</b>  The value to be found in the first column of the table array.<br/>
-     * <b>table_array</b> An area reference for the lookup data. <br/>
-     * <b>col_index_num</b> a 1 based index specifying which column value of the lookup data will be returned.<br/>
-     * <b>range_lookup</b> If TRUE (default), VLOOKUP Finds the largest value less than or equal to 
-     * the lookup_value.  If FALSE, only exact Matches will be considered<br/>   
-     * 
-     * @author Josh Micich
-     */
+* Implementation of the VLOOKUP() function.<p/>
+* 
+* VLOOKUP Finds a row in a lookup table by the first column value and returns the value from another column.<br/>
+* 
+* <b>Syntax</b>:<br/>
+* <b>VLOOKUP</b>(<b>lookup_value</b>, <b>table_array</b>, <b>col_index_num</b>, range_lookup)<p/>
+* 
+* <b>lookup_value</b>  The value to be found in the first column of the table array.<br/>
+* <b>table_array</b> An area reference for the lookup data. <br/>
+* <b>col_index_num</b> a 1 based index specifying which column value of the lookup data will be returned.<br/>
+* <b>range_lookup</b> If TRUE (default), VLOOKUP Finds the largest value less than or equal to 
+* the lookup_value.  If FALSE, only exact Matches will be considered<br/>   
+* 
+* @author Josh Micich
+*/
     public class Vlookup : Var3or4ArgFunction
     {
-
-        //private class ColumnVector : ValueVector
-        //{
-
-        //    private AreaEval _tableArray;
-        //    private int _size;
-        //    private int _columnAbsoluteIndex;
-        //    private int _firstRowAbsoluteIndex;
-
-        //    public ColumnVector(AreaEval tableArray, int columnIndex)
-        //    {
-        //        _columnAbsoluteIndex = tableArray.FirstColumn + columnIndex;
-        //        if (!tableArray.ContainsColumn((short)_columnAbsoluteIndex))
-        //        {
-        //            int lastColIx = tableArray.LastColumn - tableArray.FirstColumn;
-        //            throw new ArgumentException("Specified column index (" + columnIndex
-        //                    + ") Is outside the allowed range (0.." + lastColIx + ")");
-        //        }
-        //        _tableArray = tableArray;
-        //        _size = tableArray.LastRow - tableArray.FirstRow + 1;
-        //        if (_size < 1)
-        //        {
-        //            throw new Exception("bad table array size zero");
-        //        }
-        //        _firstRowAbsoluteIndex = tableArray.FirstRow;
-        //    }
-
-        //    public ValueEval GetItem(int index)
-        //    {
-        //        if (index > _size)
-        //        {
-        //            throw new IndexOutOfRangeException("Specified index (" + index
-        //                    + ") Is outside the allowed range (0.." + (_size - 1) + ")");
-        //        }
-        //        return _tableArray.GetValueAt(_firstRowAbsoluteIndex + index, (short)_columnAbsoluteIndex);
-        //    }
-        //    public int Size
-        //    {
-        //        get
-        //        {
-        //            return _size;
-        //        }
-        //    }
-        //}
 
         private static ValueEval DEFAULT_ARG3 = BoolEval.TRUE;
 
@@ -99,7 +57,15 @@ namespace NPOI.SS.Formula.Functions
                 // arg0 lookup_value, arg1 table_array, arg3 range_lookup, find lookup value, arg2 col_index, fetch result
                 ValueEval lookupValue = OperandResolver.GetSingleValue(lookup_value, srcRowIndex, srcColumnIndex);
                 TwoDEval tableArray = LookupUtils.ResolveTableArrayArg(table_array);
-                bool isRangeLookup = LookupUtils.ResolveRangeLookupArg(range_lookup, srcRowIndex, srcColumnIndex);
+                bool isRangeLookup;
+                try
+                {
+                    isRangeLookup = LookupUtils.ResolveRangeLookupArg(range_lookup, srcRowIndex, srcColumnIndex);
+                }
+                catch(RuntimeException e)
+                {
+                    isRangeLookup = true;
+                }
                 int rowIndex = LookupUtils.LookupFirstIndexOfValue(lookupValue, LookupUtils.CreateColumnVector(tableArray, 0), isRangeLookup);
                 int colIndex = LookupUtils.ResolveRowOrColIndexArg(col_index, srcRowIndex, srcColumnIndex);
                 LookupUtils.ColumnVector resultCol = CreateResultColumnVector(tableArray, colIndex);
