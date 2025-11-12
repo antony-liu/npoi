@@ -568,10 +568,17 @@ namespace NPOI.OOXML
             if (extRel.Size == 1)
             {
                 extPart = pkg.GetPart(extRel.GetRelationship(0));
-                ExtendedPropertiesDocument props = ExtendedPropertiesDocument.Parse(
-                     extPart.GetInputStream()
-                );
-                ext = new ExtendedProperties(props);
+                if(extPart == null)
+                {
+                    ext = new ExtendedProperties(NEW_EXT_INSTANCE.Copy());
+                }
+                else
+                {
+                    ExtendedPropertiesDocument props = ExtendedPropertiesDocument.Parse(
+                        extPart.GetInputStream()
+                    );
+                    ext = new ExtendedProperties(props);
+                }
             }
             else
             {
@@ -585,10 +592,17 @@ namespace NPOI.OOXML
             if (custRel.Size == 1)
             {
                 custPart = pkg.GetPart(custRel.GetRelationship(0));
-                CustomPropertiesDocument props = CustomPropertiesDocument.Parse(
+                if(custPart == null)
+                {
+                    cust = new CustomProperties(NEW_CUST_INSTANCE.Copy());
+                }
+                else
+                {
+                    CustomPropertiesDocument props = CustomPropertiesDocument.Parse(
                         custPart.GetInputStream()
-                );
-                cust = new CustomProperties(props);
+                    );
+                    cust = new CustomProperties(props);
+                }
             }
             else
             {
@@ -714,7 +728,7 @@ namespace NPOI.OOXML
         public virtual void Commit()
         {
 
-            if (extPart == null && !NEW_EXT_INSTANCE.ToString().Equals(ext.props.ToString()))
+            if (extPart == null && ext != null && ext.props != null && !NEW_EXT_INSTANCE.ToString().Equals(ext.props.ToString()))
             {
                 try
                 {
@@ -727,7 +741,7 @@ namespace NPOI.OOXML
                     throw new POIXMLException(e);
                 }
             }
-            if (custPart == null && !NEW_CUST_INSTANCE.ToString().Equals(cust.props.ToString()))
+            if (custPart == null && ext != null && ext.props != null && !NEW_CUST_INSTANCE.ToString().Equals(cust.props.ToString()))
             {
                 try
                 {
@@ -742,18 +756,15 @@ namespace NPOI.OOXML
             }
             if (extPart != null)
             {
-                Stream out1 = extPart.GetOutputStream();
-
-                if (extPart.Size > 0)
+                using Stream out1 = extPart.GetOutputStream();
+                if(extPart.Size > 0)
                     extPart.Clear();
                 ext.props.Save(out1);
-                out1.Close();
             }
             if (custPart != null)
             {
-                Stream out1 = custPart.GetOutputStream();
+                using Stream out1 = custPart.GetOutputStream();
                 cust.props.Save(out1);
-                out1.Close();
             }
 
 
