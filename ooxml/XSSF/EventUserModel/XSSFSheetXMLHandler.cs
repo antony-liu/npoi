@@ -58,7 +58,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <summary>
         /// Table with the styles used for formatting
         /// </summary>
-        private StylesTable stylesTable;
+        private IStyles stylesTable;
 
         /// <summary>
         /// Table with cell comments
@@ -111,7 +111,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="styles"> Table of styles</param>
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
-                StylesTable styles,
+                IStyles styles,
                 CommentsTable comments,
                 ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
@@ -134,7 +134,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="styles"> Table of styles</param>
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
-                StylesTable styles,
+                IStyles styles,
                 ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 DataFormatter dataFormatter,
@@ -150,7 +150,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="styles"> Table of styles</param>
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
-                StylesTable styles,
+                IStyles styles,
                 ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 bool formulasNotResults)

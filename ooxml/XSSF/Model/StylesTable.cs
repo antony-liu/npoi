@@ -39,7 +39,7 @@ namespace NPOI.XSSF.Model
      *
      * @author ugo
      */
-    public class StylesTable : POIXMLDocumentPart
+    public class StylesTable : POIXMLDocumentPart, IStyles
     {
         private readonly SortedDictionary<short, String> numberFormats = new SortedDictionary<short, String>();
         private readonly List<XSSFFont> fonts = new List<XSSFFont>();

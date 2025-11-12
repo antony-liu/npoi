@@ -49,16 +49,16 @@ namespace NPOI.XSSF.Extractor
 
         //private static  POILogger LOGGER = POILogFactory.GetLogger(XSSFEventBasedExcelExtractor.class);
 
-        private OPCPackage container;
-        private POIXMLProperties properties;
+        protected OPCPackage container;
+        protected POIXMLProperties properties;
 
-        private CultureInfo locale;
-        private bool includeTextBoxes = true;
-        private bool includeSheetNames = true;
-        private bool includeCellComments = false;
-        private bool includeHeadersFooters = true;
-        private bool formulasNotResults = false;
-        private bool concatenatePhoneticRuns = true;
+        protected CultureInfo locale;
+        protected bool includeTextBoxes = true;
+        protected bool includeSheetNames = true;
+        protected bool includeCellComments = false;
+        protected bool includeHeadersFooters = true;
+        protected bool formulasNotResults = false;
+        protected bool concatenatePhoneticRuns = true;
 
         public XSSFEventBasedExcelExtractor(String path)
             : this(OPCPackage.Open(path))
@@ -200,7 +200,7 @@ namespace NPOI.XSSF.Extractor
         /// </summary>
         public void ProcessSheet(
                 ISheetContentsHandler sheetContentsExtractor,
-                StylesTable styles,
+                IStyles styles,
                 CommentsTable comments,
                 ISharedStrings strings,
                 Stream sheetInputStream)

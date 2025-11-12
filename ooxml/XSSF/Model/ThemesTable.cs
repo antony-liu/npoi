@@ -32,7 +32,7 @@ namespace NPOI.XSSF.Model
      * Class that represents theme of XLSX document. The theme includes specific
      * colors and fonts.
      */
-    public class ThemesTable : POIXMLDocumentPart
+    public class ThemesTable : POIXMLDocumentPart, IThemes
     {
         public const int THEME_LT1 = 0;
         public const int THEME_DK1 = 1;
