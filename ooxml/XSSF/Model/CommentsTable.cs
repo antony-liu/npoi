@@ -26,8 +26,9 @@ namespace NPOI.XSSF.Model
     using NPOI.XSSF.UserModel;
     using NPOI.OpenXmlFormats.Spreadsheet;
     using NPOI.OOXML;
+    using NPOI.Util;
 
-    public class CommentsTable : POIXMLDocumentPart
+    public class CommentsTable : POIXMLDocumentPart, IComments
     {
         public static String DEFAULT_AUTHOR = "";
         public static int DEFAULT_AUTHOR_ID = 0;
@@ -96,6 +97,7 @@ namespace NPOI.XSSF.Model
          *  we can reflect that in our cache
          */
         [Obsolete("2015-11-23 (circa POI 3.14beta1). Use {@link #referenceUpdated(CellAddress, CTComment)} instead")]
+        [Removal(Version = "4.0")]
         public void ReferenceUpdated(String oldReference, CT_Comment comment)
         {
             ReferenceUpdated(new CellAddress(oldReference), comment);
@@ -151,6 +153,7 @@ namespace NPOI.XSSF.Model
          * @
          */
         [Obsolete("deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link #findCellComment(CellAddress)} instead")]
+        [Removal(Version = "4.0")]
         public XSSFComment FindCellComment(String cellRef)
         {
             return FindCellComment(new CellAddress(cellRef));
@@ -176,7 +179,8 @@ namespace NPOI.XSSF.Model
          * @return CTComment xmlbean if comment exists, otherwise return null.
          * @
          */
-         [Obsolete("deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link CommentsTable#getCTComment(CellAddress)} instead")]
+        [Obsolete("deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link CommentsTable#getCTComment(CellAddress)} instead")]
+        [Removal(Version = "4.0")]
         public CT_Comment GetCTComment(String ref1)
         {
             prepareCTCommentCache();
@@ -249,6 +253,7 @@ namespace NPOI.XSSF.Model
          * @return a new CTComment located at ref with default author
          */
         [Obsolete("deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link #newComment(CellAddress)} instead")]
+        [Removal(Version = "4.0")]
         public CT_Comment NewComment(String ref1)
         {
             return NewComment(new CellAddress(ref1));
@@ -281,6 +286,7 @@ namespace NPOI.XSSF.Model
          * @deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link #removeComment(CellAddress)} instead
          */
         [Obsolete("deprecated 2015-11-23 (circa POI 3.14beta1). Use {@link #removeComment(CellAddress)} instead")]
+        [Removal(Version = "4.0")]
         public bool RemoveComment(String cellRef)
         {
             return RemoveComment(new CellAddress(cellRef));

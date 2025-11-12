@@ -24,15 +24,11 @@ using System.Text;
 namespace NPOI.XSSF.EventUserModel
 {
     using static NPOI.XSSF.UserModel.XSSFRelation;
-
-
     using NPOI.SS.UserModel;
     using NPOI.SS.Util;
-    using NPOI.Util;
     using NPOI.XSSF.Model;
     using NPOI.XSSF.UserModel;
     using NSAX.Helpers;
-    using NPOI.OpenXmlFormats.Spreadsheet;
     using NSAX;
 
     /// <summary>
@@ -67,7 +63,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <summary>
         /// Table with cell comments
         /// </summary>
-        private CommentsTable commentsTable;
+        private CommentsTable comments;
 
         /// <summary>
         /// Read only access to the shared strings table, for looking
@@ -123,13 +119,13 @@ namespace NPOI.XSSF.EventUserModel
                 bool formulasNotResults)
         {
             this.stylesTable = styles;
-            this.commentsTable = comments;
+            this.comments = comments;
             this.sharedStringsTable = strings;
             this.output = sheetContentsHandler;
             this.formulasNotResults = formulasNotResults;
             this.nextDataType = XSSFDataType.Number;
             this.formatter = dataFormatter;
-            Init();
+            Init(comments);
         }
 
         /// <summary>
@@ -163,15 +159,14 @@ namespace NPOI.XSSF.EventUserModel
 
         }
 
-        private void Init()
+        private void Init(CommentsTable commentsTable)
         {
             if(commentsTable != null)
             {
                 commentCellRefs = new Queue<CellAddress>();
-                //noinspection deprecation
-                foreach(CT_Comment comment in commentsTable.GetCTComments().commentList.GetCommentArray())
+                foreach(CellAddress cellAddress in commentsTable.GetCellComments().Keys)
                 {
-                    commentCellRefs.Enqueue(new CellAddress(comment.@ref));
+                    commentCellRefs.Enqueue(cellAddress);
                 }
             }
         }
@@ -421,7 +416,7 @@ namespace NPOI.XSSF.EventUserModel
 
                 // Do we have a comment for this cell?
                 CheckForEmptyCellComments(EmptyCellCommentsCheckType.Cell);
-                XSSFComment comment = commentsTable != null ? commentsTable.FindCellComment(new CellAddress(cellRef)) : null;
+                XSSFComment comment = comments != null ? comments.FindCellComment(new CellAddress(cellRef)) : null;
 
                 // Output
                 output.Cell(cellRef, thisStr, comment);
@@ -568,7 +563,7 @@ namespace NPOI.XSSF.EventUserModel
         /// </summary>
         private void OutputEmptyCellComment(CellAddress cellRef)
         {
-            XSSFComment comment = commentsTable.FindCellComment(cellRef);
+            XSSFComment comment = comments.FindCellComment(cellRef);
             output.Cell(cellRef.FormatAsString(), null, comment);
         }
 
