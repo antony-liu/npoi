@@ -24,12 +24,15 @@ using System.Text;
 namespace NPOI.XSSF.Binary
 {
     using NPOI.OpenXml4Net.OPC;
+    using NPOI.SS.UserModel;
     using NPOI.Util;
+    using NPOI.XSSF.Model;
+    using NPOI.XSSF.UserModel;
 
     /// <summary>
     /// </summary>
     /// @since 3.16-beta3
-    public class XSSFBSharedStringsTable
+    public class XSSFBSharedStringsTable : ISharedStrings
     {
 
         /// <summary>
@@ -88,27 +91,31 @@ namespace NPOI.XSSF.Binary
         /// <summary>
         /// </summary>
         /// <return>a defensive copy of strings</return>
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public List<String> GetItems()
         {
             List<String> ret = new List<String>(strings.Count);
             ret.AddRange(strings);
             return ret;
         }
-
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public String GetEntryAt(int i)
         {
             return strings[i];
         }
 
+        public IRichTextString GetItemAt(int idx)
+        {
+            return new XSSFRichTextString(GetEntryAt(idx));
+        }
         /// <summary>
         /// Return an integer representing the total count of strings in the workbook. This count does not
         /// include any numbers, it counts only the total of text strings in the workbook.
         /// </summary>
         /// <return>the total count of strings in the workbook</return>
-        public int GetCount()
-        {
-            return this.count;
-        }
+        public int Count => this.count;
 
         /// <summary>
         /// Returns an integer representing the total count of unique strings in the Shared String Table.
@@ -116,10 +123,7 @@ namespace NPOI.XSSF.Binary
         /// at the character level.
         /// </summary>
         /// <return>the total count of unique strings in the workbook</return>
-        public int GetUniqueCount()
-        {
-            return this.uniqueCount;
-        }
+        public int UniqueCount => this.uniqueCount;
 
         private class SSTBinaryReader : XSSFBParser
         {

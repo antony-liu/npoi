@@ -27,6 +27,7 @@ namespace NPOI.XSSF.Binary
     using NPOI.SS.Util;
     using NPOI.Util;
     using NPOI.XSSF.EventUserModel;
+    using NPOI.XSSF.Model;
     using NPOI.XSSF.UserModel;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace NPOI.XSSF.Binary
     {
         private static  int CHECK_ALL_ROWS = -1;
 
-        private  XSSFBSharedStringsTable _stringsTable;
+        private  ISharedStrings _stringsTable;
         private  XSSFSheetXMLHandler.ISheetContentsHandler _handler;
         private  XSSFBStylesTable _styles;
         private  XSSFBCommentsTable _comments;
@@ -54,7 +55,7 @@ namespace NPOI.XSSF.Binary
         public XSSFBSheetHandler(Stream is1,
                                  XSSFBStylesTable styles,
                                  XSSFBCommentsTable comments,
-                                 XSSFBSharedStringsTable strings,
+                                 ISharedStrings strings,
                                  XSSFSheetXMLHandler.ISheetContentsHandler sheetContentsHandler,
                                  DataFormatter dataFormatter,
                                  bool formulasNotResults)
@@ -222,7 +223,7 @@ namespace NPOI.XSSF.Binary
         {
             BeforeCellValue(data);
             int idx = XSSFBUtils.CastToInt(LittleEndian.GetUInt(data, XSSFBCellHeader.Length));
-            XSSFRichTextString rtss = new XSSFRichTextString(_stringsTable.GetEntryAt(idx));
+            IRichTextString rtss = _stringsTable.GetItemAt(idx);
             HandleCellValue(rtss.String);
         }
 

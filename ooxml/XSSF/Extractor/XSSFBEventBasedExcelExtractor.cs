@@ -33,6 +33,7 @@ namespace NPOI.XSSF.Extractor
     using NPOI.Util;
     using NPOI.XSSF.Binary;
     using NPOI.XSSF.EventUserModel;
+    using NPOI.XSSF.Model;
     using NPOI.XSSF.UserModel;
 
     /// <summary>
@@ -104,7 +105,7 @@ namespace NPOI.XSSF.Extractor
                 XSSFSheetXMLHandler.ISheetContentsHandler sheetContentsExtractor,
                 XSSFBStylesTable styles,
                 XSSFBCommentsTable comments,
-                XSSFBSharedStringsTable strings,
+                ISharedStrings strings,
                 Stream sheetInputStream)
         {
             DataFormatter formatter;

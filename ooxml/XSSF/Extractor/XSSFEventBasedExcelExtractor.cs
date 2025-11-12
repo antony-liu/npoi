@@ -23,21 +23,22 @@ using System.Text;
 
 namespace NPOI.XSSF.Extractor
 {
+    using NPOI.OOXML;
+    using NPOI.OOXML.Extractor;
+    using NPOI.OpenXml4Net;
     using NPOI.OpenXml4Net.Exceptions;
     using NPOI.OpenXml4Net.OPC;
-    using NPOI.SS.UserModel;
     using NPOI.SS.Extractor;
+    using NPOI.SS.UserModel;
     using NPOI.Util;
     using NPOI.XSSF.EventUserModel;
     using NPOI.XSSF.Model;
     using NPOI.XSSF.UserModel;
-    using System.Globalization;
     using NSAX;
     using NSAX.AElfred;
+    using System.ComponentModel;
+    using System.Globalization;
     using static NPOI.XSSF.EventUserModel.XSSFSheetXMLHandler;
-    using NPOI.OpenXml4Net;
-    using NPOI.OOXML;
-    using NPOI.OOXML.Extractor;
 
     /// <summary>
     /// Implementation of a text extractor from OOXML Excel
@@ -201,12 +202,10 @@ namespace NPOI.XSSF.Extractor
                 ISheetContentsHandler sheetContentsExtractor,
                 StylesTable styles,
                 CommentsTable comments,
-                ReadOnlySharedStringsTable strings,
+                ISharedStrings strings,
                 Stream sheetInputStream)
 
         {
-
-
             DataFormatter formatter;
             if(locale == null)
             {
@@ -232,6 +231,11 @@ namespace NPOI.XSSF.Extractor
             }
         }
 
+        protected ISharedStrings createSharedStringsTable(OPCPackage container, bool concatenatePhoneticRuns) 
+        {
+            return new ReadOnlySharedStringsTable(container, concatenatePhoneticRuns);
+        }
+
         /// <summary>
         /// Processes the file and returns the text
         /// </summary>
@@ -241,7 +245,7 @@ namespace NPOI.XSSF.Extractor
             {
                 try
                 {
-                    ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(container, concatenatePhoneticRuns);
+                    ISharedStrings strings = createSharedStringsTable(container, concatenatePhoneticRuns);
                     XSSFReader xssfReader = new XSSFReader(container);
                     StylesTable styles = xssfReader.StylesTable;
                     XSSFReader.SheetIterator iter = (XSSFReader.SheetIterator) xssfReader.GetSheetsData();

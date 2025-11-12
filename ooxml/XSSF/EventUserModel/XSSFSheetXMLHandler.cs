@@ -73,7 +73,7 @@ namespace NPOI.XSSF.EventUserModel
         /// Read only access to the shared strings table, for looking
         ///  up (most) string cell's contents
         /// </summary>
-        private ReadOnlySharedStringsTable sharedStringsTable;
+        private ISharedStrings sharedStringsTable;
 
         /// <summary>
         /// Where our text is going
@@ -117,7 +117,7 @@ namespace NPOI.XSSF.EventUserModel
         public XSSFSheetXMLHandler(
                 StylesTable styles,
                 CommentsTable comments,
-                ReadOnlySharedStringsTable strings,
+                ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 DataFormatter dataFormatter,
                 bool formulasNotResults)
@@ -139,7 +139,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
                 StylesTable styles,
-                ReadOnlySharedStringsTable strings,
+                ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 DataFormatter dataFormatter,
                 bool formulasNotResults)
@@ -155,7 +155,7 @@ namespace NPOI.XSSF.EventUserModel
         /// <param name="strings">Table of shared strings</param>
         public XSSFSheetXMLHandler(
                 StylesTable styles,
-                ReadOnlySharedStringsTable strings,
+                ISharedStrings strings,
                 ISheetContentsHandler sheetContentsHandler,
                 bool formulasNotResults)
                  : this(styles, strings, sheetContentsHandler, new DataFormatter(), formulasNotResults)
@@ -330,10 +330,7 @@ namespace NPOI.XSSF.EventUserModel
             }
         }
         public override void EndElement(String uri, String localName, String qName)
-
         {
-
-
             if(uri != null && !uri.Equals(NS_SPREADSHEETML))
             {
                 return;
@@ -400,7 +397,7 @@ namespace NPOI.XSSF.EventUserModel
                         try
                         {
                             int idx = int.Parse(sstIndex);
-                            XSSFRichTextString rtss = new XSSFRichTextString(sharedStringsTable.GetEntryAt(idx));
+                            IRichTextString rtss = sharedStringsTable.GetItemAt(idx);
                             thisStr = rtss.ToString();
                         }
                         catch(FormatException)

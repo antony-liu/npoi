@@ -24,6 +24,9 @@ namespace NPOI.XSSF.EventUserModel
     using System.Text;
     using NSAX;
     using NSAX.Helpers;
+    using NPOI.XSSF.Model;
+    using NPOI.SS.UserModel;
+    using NPOI.Util;
 
     /// <summary>
     /// <para>
@@ -72,33 +75,27 @@ namespace NPOI.XSSF.EventUserModel
     /// </code>
     /// </para>
     /// </summary>
-    public class ReadOnlySharedStringsTable : DefaultHandler
+    public class ReadOnlySharedStringsTable : DefaultHandler, ISharedStrings
     {
 
-        private bool includePhoneticRuns;
+        protected bool includePhoneticRuns;
         /// <summary>
         /// An integer representing the total count of strings in the workbook. This count does not
         /// include any numbers, it counts only the total of text strings in the workbook.
         /// </summary>
-        private int count;
+        protected int count;
 
         /// <summary>
         /// An integer representing the total count of unique strings in the Shared String Table.
         /// A string is unique even if it is a copy of another string, but has different formatting applied
         /// at the character level.
         /// </summary>
-        private int uniqueCount;
+        protected int uniqueCount;
 
         /// <summary>
         /// The shared strings table.
         /// </summary>
         private List<String> strings;
-
-        /// <summary>
-        /// Map of phonetic strings (if they exist) indexed
-        /// with the integer matching the index in strings
-        /// </summary>
-        private Dictionary<int, String> phoneticStrings;
 
         /// <summary>
         /// Calls <see cref="ReadOnlySharedStringsTable(OPCPackage, bool)" /> with
@@ -210,14 +207,21 @@ namespace NPOI.XSSF.EventUserModel
         /// </summary>
         /// <param name="idx">index of item to return.</param>
         /// <return>the item at the specified position in this Shared String table.</return>
+        [Obsolete]
+        [Removal( Version = "4.2")]
         public String GetEntryAt(int idx)
         {
             return strings[idx];
         }
 
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public List<String> Items => strings;
 
-
+        public IRichTextString GetItemAt(int idx)
+        {
+            return new XSSFRichTextString(GetEntryAt(idx));
+        }
         //// ContentHandler methods ////
 
         private StringBuilder characters;
@@ -241,7 +245,6 @@ namespace NPOI.XSSF.EventUserModel
                 if (uniqueCount != null) this.uniqueCount = Int32.Parse(uniqueCount);
 
                 this.strings = new List<String>(this.uniqueCount);
-                this.phoneticStrings = new Dictionary<int, String>();
                 characters = new StringBuilder();
             }
             else if ("si".Equals(localName))

@@ -48,8 +48,8 @@ namespace TestCases.XSSF.Binary
 
             ClassicAssert.AreEqual("\u30B3\u30E1\u30F3\u30C8", rtbl.GetEntryAt(0));
             ClassicAssert.AreEqual("\u65E5\u672C\u30AA\u30E9\u30AF\u30EB", rtbl.GetEntryAt(3));
-            ClassicAssert.AreEqual(55, rtbl.GetCount());
-            ClassicAssert.AreEqual(49, rtbl.GetUniqueCount());
+            ClassicAssert.AreEqual(55, rtbl.Count);
+            ClassicAssert.AreEqual(49, rtbl.UniqueCount);
 
             //TODO: add in tests for phonetic runs
 

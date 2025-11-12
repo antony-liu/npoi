@@ -24,9 +24,6 @@ namespace NPOI.XSSF.Model
     using System.IO;
     using NPOI.OpenXml4Net.OPC;
     using System.Xml;
-    using System.Security;
-    using System.Text.RegularExpressions;
-    using System.Text;
     using NPOI.Util;
     using NPOI.XSSF.UserModel;
     using NPOI.SS.UserModel;
@@ -56,7 +53,7 @@ namespace NPOI.XSSF.Model
      * @author Nick Birch
      * @author Yegor Kozlov
      */
-    public class SharedStringsTable : POIXMLDocumentPart, IDisposable
+    public class SharedStringsTable : POIXMLDocumentPart, ISharedStrings, IDisposable
     {
 
         /**
