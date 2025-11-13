@@ -131,10 +131,10 @@ namespace NPOI.XWPF.UserModel
                typeof(XWPFFootnotes)
         );
         public static XWPFRelation ENDNOTE = new XWPFRelation(
-                null,
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml",
                 "http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes",
-                null,
-                null
+                "/word/endnotes.xml",
+                typeof(XWPFEndnotes)
         );
         /**
          * Supported image formats

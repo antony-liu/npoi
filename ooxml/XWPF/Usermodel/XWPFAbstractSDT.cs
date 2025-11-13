@@ -27,13 +27,13 @@ namespace NPOI.XWPF.UserModel
      * <p/>
      * These classes have so far been built only for Read-only Processing.
      */
-    public abstract class AbstractXWPFSDT : ISDTContents
+    public abstract class XWPFAbstractSDT : ISDTContents
     {
         private String title;
         private String tag;
         private IBody part;
 
-        public AbstractXWPFSDT(CT_SdtPr pr, IBody part)
+        public XWPFAbstractSDT(CT_SdtPr pr, IBody part)
         {
             if (pr == null)
             {

@@ -25,13 +25,22 @@ namespace NPOI.XWPF.UserModel
 {
     using NPOI.OpenXmlFormats.Wordprocessing;
     using NPOI.Util;
+
+
+
+
+
     /// <summary>
     /// <para>
-    /// Represents a bottom-of-the-page footnote.
+    /// Represents an end note footnote.
     /// </para>
     /// <para>
-    /// Create a new footnote using <see cref="XWPFDocument.CreateFootnote()" /> or
-    /// <see cref="XWPFFootnotes.CreateFootnote()" />.
+    /// End notes are collected at the end of a document or section rather than
+    /// at the bottom of a page.
+    /// </para>
+    /// <para>
+    /// Create a new footnote using <see cref="XWPFDocument.CreateEndnote()" /> or
+    /// <see cref="XWPFEndnotes.CreateFootnote()" />.
     /// </para>
     /// <para>
     /// The first body element of a footnote should (or possibly must) be a paragraph
@@ -45,19 +54,23 @@ namespace NPOI.XWPF.UserModel
     /// <para>
     /// To create a reference to a footnote within a paragraph you create a run
     /// with a CTFtnEdnRef that specifies the ID of the target paragraph.
-    /// The <see cref="XWPFParagraph.AddFootnoteReference(XWPFAbstractFootnoteEndnote)" />
+    /// The <see cref="XWPFParagraph.addFootnoteReference(XWPFAbstractFootnoteEndnote)" />
     /// method does this for you.
     /// </para>
     /// </summary>
-    public class XWPFFootnote : XWPFAbstractFootnoteEndnote
+    /// <remarks>
+    /// @since 4.0.0
+    /// </remarks>
+    public class XWPFEndnote : XWPFAbstractFootnoteEndnote
     {
-        public XWPFFootnote(CT_FtnEdn note, XWPFAbstractFootnotesEndnotes xFootnotes)
-                : base(note, xFootnotes)
+
+        public XWPFEndnote() { }
+        public XWPFEndnote(XWPFDocument document, CT_FtnEdn body)
+                : base(document, body)
         {
 
         }
-        public XWPFFootnote(XWPFDocument document, CT_FtnEdn body)
-                : base(document, body)
+        public XWPFEndnote(CT_FtnEdn note, XWPFAbstractFootnotesEndnotes footnotes) : base(note, footnotes)
         {
 
         }
@@ -65,16 +78,16 @@ namespace NPOI.XWPF.UserModel
         /// <summary>
         /// <para>
         /// Ensure that the specified paragraph has a reference marker for this
-        /// footnote by adding a footnote reference if one is not found.
+        /// end note by adding a footnote reference if one is not found.
         /// </para>
         /// <para>
         /// This method is for the first paragraph in the footnote, not
         /// paragraphs that will refer to the footnote. For references to
-        /// the footnote, use <see cref="XWPFParagraph.AddFootnoteReference(XWPFFootnote)" />.
+        /// the footnote, use <see cref="XWPFParagraph.addFootnoteReference(XWPFAbstractFootnoteEndnote))" />.
         /// </para>
         /// <para>
         /// The first run of the first paragraph in a footnote should
-        /// contain a <see cref="CT_FtnEdnRef"/> object.
+        /// contain a <see cref="CTFtnEdnRef"/> object.
         /// </para>
         /// </summary>
         /// <param name="p">The <see cref="XWPFParagraph"/> to ensure</param>
@@ -94,7 +107,7 @@ namespace NPOI.XWPF.UserModel
             }
             CT_R ctr = r.GetCTR();
             bool foundRef = false;
-            foreach(CT_FtnEdnRef ref1 in ctr.GetFootnoteReferenceList())
+            foreach(CT_FtnEdnRef ref1 in ctr.GetEndnoteReferenceList())
             {
                 if(Id.Equals(ref1.id))
                 {
@@ -105,8 +118,9 @@ namespace NPOI.XWPF.UserModel
             if(!foundRef)
             {
                 ctr.AddNewRPr().AddNewRStyle().val = "FootnoteReference";
-                ctr.AddNewFootnoteRef();
+                ctr.AddNewEndnoteRef();
             }
+
         }
     }
 }

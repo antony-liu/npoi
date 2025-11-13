@@ -53,11 +53,11 @@ namespace TestCases.XWPF.UserModel
             XWPFFootnote testFootnote = docIn.GetFootnoteByID(footnoteId);
             ClassicAssert.IsNotNull(testFootnote);
 
-            ClassicAssert.AreEqual(2, testFootnote.GetParagraphs().Count);
-            XWPFParagraph testP1 = testFootnote.GetParagraphs()[0];
+            ClassicAssert.AreEqual(2, testFootnote.Paragraphs.Count);
+            XWPFParagraph testP1 = testFootnote.Paragraphs[0];
             ClassicAssert.AreEqual(p1Text, testP1.Text);
 
-            XWPFParagraph testP2 = testFootnote.GetParagraphs()[1];
+            XWPFParagraph testP2 = testFootnote.Paragraphs[1];
             ClassicAssert.AreEqual(p2Text, testP2.Text);
 
             // The first paragraph added using CreateParagraph() should

@@ -12,7 +12,7 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         CT_Endnotes endnotes = null;
         public EndnotesDocument()
         {
-
+            this.endnotes = new CT_Endnotes();
         }
         public static EndnotesDocument Parse(XmlDocument doc, XmlNamespaceManager namespaceMgr)
         {

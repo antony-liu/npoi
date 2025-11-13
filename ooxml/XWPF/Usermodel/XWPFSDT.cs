@@ -30,7 +30,7 @@ namespace NPOI.XWPF.UserModel
      * WARNING - APIs expected to change rapidly
      * 
      */
-    public class XWPFSDT : AbstractXWPFSDT, IBodyElement, IRunBody, ISDTContents, IRunElement
+    public class XWPFSDT : XWPFAbstractSDT, IBodyElement, IRunBody, ISDTContents, IRunElement
     {
         private ISDTContent content;
 

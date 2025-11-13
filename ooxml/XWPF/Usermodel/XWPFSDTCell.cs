@@ -28,7 +28,7 @@ namespace NPOI.XWPF.UserModel
      * <p/>
      * WARNING - APIs expected to change rapidly
      */
-    public class XWPFSDTCell : AbstractXWPFSDT, ICell
+    public class XWPFSDTCell : XWPFAbstractSDT, ICell
     {
         private XWPFSDTContentCell cellContent;
 

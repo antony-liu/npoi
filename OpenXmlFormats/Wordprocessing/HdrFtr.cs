@@ -806,7 +806,7 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
             return ctObj;
         }
 
-        internal void Write(StreamWriter sw)
+        public void Write(StreamWriter sw)
         {
             sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
             sw.Write("<w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" ");
@@ -853,12 +853,10 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         {
             this.footnoteField.RemoveAt(pos);
         }
-        public int SizeOfFootnoteArray
+
+        public int SizeOfFootnoteArray()
         {
-            get
-            {
-                return this.footnoteField.Count;
-            }
+            return this.footnoteField.Count;
         }
     }
 
@@ -1452,7 +1450,7 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
             return ctObj;
         }
 
-        internal void Write(StreamWriter sw)
+        public void Write(StreamWriter sw)
         {
             sw.Write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
             sw.Write("<w:endnotes xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" ");
@@ -1468,6 +1466,23 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
                 }
             }
             sw.Write("</w:endnotes>");
+        }
+
+        public int SizeOfEndnoteArray()
+        {
+            return this.endnote.Count;
+        }
+
+        public void RemoveEndnote(int pos)
+        {
+            this.endnote.RemoveAt(pos);
+        }
+
+        public CT_FtnEdn AddNewEndnote()
+        {
+            var note = new CT_FtnEdn();
+            endnote.Add(note);
+            return note;
         }
 
         [XmlElement("endnote", Order = 0)]

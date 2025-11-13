@@ -55,6 +55,7 @@ namespace NPOI.XWPF.UserModel
          * Keeps track on all id-values used in this document and included parts, like headers, footers, etc.
          */
         private readonly IdentifierManager drawingIdManager = new IdentifierManager(0L, 4294967295L);
+        private FootnoteEndnoteIdManager footnoteIdManager;
         protected List<XWPFFooter> footers = new List<XWPFFooter>();
         protected List<XWPFHeader> headers = new List<XWPFHeader>();
         protected List<XWPFHyperlink> hyperlinks = new List<XWPFHyperlink>();
@@ -64,7 +65,7 @@ namespace NPOI.XWPF.UserModel
         protected List<IBodyElement> bodyElements = new List<IBodyElement>();
         protected List<XWPFPictureData> pictures = new List<XWPFPictureData>();
         protected Dictionary<long, List<XWPFPictureData>> packagePictures = new Dictionary<long, List<XWPFPictureData>>();
-        protected Dictionary<int, XWPFFootnote> endnotes = new Dictionary<int, XWPFFootnote>();
+        protected XWPFEndnotes endnotes;
         protected XWPFNumbering numbering;
         protected XWPFStyles styles;
         protected XWPFFootnotes footnotes;
@@ -76,6 +77,7 @@ namespace NPOI.XWPF.UserModel
         public XWPFDocument(OPCPackage pkg)
             : base(pkg)
         {
+            this.footnoteIdManager = new FootnoteEndnoteIdManager(this);
             //build a tree of POIXMLDocumentParts, this document being the root
             Load(XWPFFactory.GetInstance());
         }
@@ -83,7 +85,7 @@ namespace NPOI.XWPF.UserModel
         public XWPFDocument(Stream is1)
             : base(PackageHelper.Open(is1))
         {
-
+            this.footnoteIdManager = new FootnoteEndnoteIdManager(this);
             //build a tree of POIXMLDocumentParts, this workbook being the root
             Load(XWPFFactory.GetInstance());
         }
@@ -91,6 +93,7 @@ namespace NPOI.XWPF.UserModel
         public XWPFDocument()
             : base(NewPackage())
         {
+            this.footnoteIdManager = new FootnoteEndnoteIdManager(this);
             OnDocumentCreate();
         }
 
@@ -241,18 +244,16 @@ namespace NPOI.XWPF.UserModel
                 POIXMLDocumentPart p = rp.DocumentPart;
                 String relation = rp.Relationship.RelationshipType;
                 if (relation.Equals(XWPFRelation.FOOTNOTE.Relation)) {
-                  this.footnotes = (XWPFFootnotes)p;
-                  this.footnotes.OnDocumentRead();
-               }
+                    this.footnotes = (XWPFFootnotes)p;
+                    this.footnotes.OnDocumentRead();
+                    this.footnotes.IdManager = footnoteIdManager;
+                }
                if (relation.Equals(XWPFRelation.ENDNOTE.Relation))
                {
-                   XmlDocument xmldoc = ConvertStreamToXml(p.GetPackagePart().GetInputStream());
-                   EndnotesDocument endnotesDocument = EndnotesDocument.Parse(xmldoc, NamespaceManager);
-                   foreach (CT_FtnEdn ctFtnEdn in endnotesDocument.Endnotes.endnote)
-                   {
-                       endnotes.Add(ctFtnEdn.id, new XWPFFootnote(this, ctFtnEdn));
-                   }
-               }
+                    this.endnotes = (XWPFEndnotes) p;
+                    this.endnotes.OnDocumentRead();
+                    this.endnotes.IdManager = footnoteIdManager;
+                }
             }
         }
 
@@ -477,16 +478,18 @@ namespace NPOI.XWPF.UserModel
 
         public XWPFFootnote GetFootnoteByID(int id)
         {
-            return footnotes?.GetFootnoteById(id);
+            return (XWPFFootnote)footnotes?.GetFootnoteById(id);
         }
 
-        public Dictionary<int, XWPFFootnote> Endnotes => endnotes;
+        public XWPFEndnotes Endnotes => endnotes;
 
-        public XWPFFootnote GetEndnoteByID(int id)
+        public XWPFEndnote GetEndnoteByID(int id)
         {
-            if (endnotes == null || !endnotes.TryGetValue(id, out XWPFFootnote byId)) 
+            if(endnotes == null)
+            {
                 return null;
-            return byId;
+            }
+            return endnotes.GetFootnoteById(id);
         }
 
         public List<XWPFFootnote> GetFootnotes()
@@ -1067,21 +1070,33 @@ namespace NPOI.XWPF.UserModel
 
                 XWPFFootnotes wrapper = (XWPFFootnotes)CreateRelationship(relation, XWPFFactory.GetInstance(), i);
                 wrapper.SetFootnotes(footnotesDoc.Footnotes);
+                wrapper.IdManager = this.footnoteIdManager;
                 footnotes = wrapper;
             }
 
             return footnotes;
         }
 
+        /**
+         * Add a CTFtnEdn footnote to the document.
+         *
+         * @param note CTFtnEnd to be added.
+         * @return New {@link XWPFFootnote}
+         */
         public XWPFFootnote AddFootnote(CT_FtnEdn note)
         {
             return footnotes.AddFootnote(note);
         }
-
-        public XWPFFootnote AddEndnote(CT_FtnEdn note)
+        /**
+         * Add a CTFtnEdn endnote to the document.
+         *
+         * @param note CTFtnEnd to be added.
+         * @return New {@link XWPFEndnote}
+         */
+        public XWPFEndnote AddEndnote(CT_FtnEdn note)
         {
-            XWPFFootnote endnote = new XWPFFootnote(this, note);
-            endnotes.Add(note.id, endnote);
+            XWPFEndnote endnote = new XWPFEndnote(this, note);
+            endnotes.AddEndnote(note);
             return endnote;
         }
 
@@ -1118,6 +1133,72 @@ namespace NPOI.XWPF.UserModel
             }
         }
 
+        /**
+     * Create a new end note and add it to the document.
+     *
+     * @return New {@link XWPFEndnote}.
+     * @since 4.0.0
+     */
+        public XWPFEndnote CreateEndnote()
+        {
+            XWPFEndnotes endnotes = this.CreateEndnotes();
+
+            XWPFEndnote endnote = endnotes.CreateEndnote();
+            return endnote;
+
+        }
+
+        public XWPFEndnotes CreateEndnotes()
+        {
+            if(endnotes == null)
+            {
+                EndnotesDocument endnotesDoc = new EndnotesDocument();
+
+                XWPFRelation relation = XWPFRelation.ENDNOTE;
+                int i = GetRelationIndex(relation);
+
+                XWPFEndnotes wrapper = (XWPFEndnotes) CreateRelationship(relation, XWPFFactory.GetInstance(), i);
+                wrapper.SetEndnotes(endnotesDoc.Endnotes);
+                wrapper.IdManager = footnoteIdManager;
+                endnotes = wrapper;
+            }
+
+            return endnotes;
+
+        }
+
+        /**
+         * Gets the list of end notes for the document.
+         *
+         * @return List, possibly empty, of {@link XWPFEndnote}s.
+         */
+        public List<XWPFEndnote> GetEndnotes()
+        {
+            if(endnotes == null)
+            {
+                return new List<XWPFEndnote>();
+            }
+            return endnotes.GetEndnotesList();
+        }
+
+        /**
+         * Remove the specified end note if present.
+         *
+         * @param pos Array position of the end note to be removed.
+         * @return True if the end note was removed.
+         * @since 4.0.0
+         */
+        public bool RemoveEndnote(int pos)
+        {
+            if(null != endnotes)
+            {
+                return endnotes.RemoveEndnote(pos);
+            }
+            else
+            {
+                return false;
+            }
+        }
         /**
          * remove a BodyElement from bodyElements array list 
          * @param pos

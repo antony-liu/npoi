@@ -1,7 +1,7 @@
-/* ====================================================================
+﻿/* ====================================================================
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
-   this work for Additional information regarding copyright ownership.
+   this work for additional information regarding copyright ownership.
    The ASF licenses this file to You under the Apache License, Version 2.0
    (the "License"); you may not use this file except in compliance with
    the License.  You may obtain a copy of the License at
@@ -15,58 +15,101 @@
    limitations under the License.
 ==================================================================== */
 
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-
-using NPOI.OpenXmlFormats.Wordprocessing;
-using NPOI.OpenXml4Net.OPC;
-using NPOI.OOXML;
+using System.Text;
 
 namespace NPOI.XWPF.UserModel
 {
-    /**
-     * Looks After the collection of Footnotes for a document
-     *  
-     * @author Mike McEuen (mceuen@hp.com)
-     */
-    public class XWPFFootnotes : POIXMLDocumentPart
+    using NPOI.OOXML;
+    using NPOI.OpenXml4Net.OPC;
+    using NPOI.OpenXmlFormats.Wordprocessing;
+    using NPOI.Util;
+    using System.Xml;
+
+    /// <summary>
+    /// Looks After the collection of Footnotes for a document.
+    /// Manages bottom-of-the-page footnotes (<see cref="XWPFFootnote"/>).
+    /// </summary>
+    public class XWPFFootnotes : XWPFAbstractFootnotesEndnotes
     {
-        private readonly List<XWPFFootnote> listFootnote = [];
-        private CT_Footnotes ctFootnotes;
+        protected CT_Footnotes ctFootnotes;
         private readonly List<XWPFHyperlink> hyperlinks = [];
-
-        protected XWPFDocument document;
-
-        /**
-         * Construct XWPFFootnotes from a package part
-         *
-         * @param part the package part holding the data of the footnotes,
-         * @param rel  the package relationship of type "http://schemas.Openxmlformats.org/officeDocument/2006/relationships/footnotes"
-         */
-        public XWPFFootnotes(PackagePart part)
-            : base(part)
-        {
-            ;
-        }
-        [Obsolete("deprecated in POI 3.14, scheduled for removal in POI 3.16")]
-        public XWPFFootnotes(PackagePart part, PackageRelationship rel)
-            : this(part)
+        /// <summary>
+        /// Construct XWPFFootnotes from a package part
+        /// </summary>
+        /// <param name="part">the package part holding the data of the footnotes,</param>
+        ///
+        /// <remarks>
+        /// @since POI 3.14-Beta1
+        /// </remarks>
+        public XWPFFootnotes(PackagePart part) : base(part)
         {
 
         }
-        /**
-         * Construct XWPFFootnotes from scratch for a new document.
-         */
+
+        /// <summary>
+        /// Construct XWPFFootnotes from scratch for a new document.
+        /// </summary>
         public XWPFFootnotes()
         {
         }
 
-        /**
-         * Read document
-         */
+        /// <summary>
+        /// Sets the ctFootnotes
+        /// </summary>
+        /// <param name="footnotes">Collection of CTFntEdn objects.</param>
+        public void SetFootnotes(CT_Footnotes footnotes)
+        {
+            ctFootnotes = footnotes;
+        }
 
+        /// <summary>
+        /// Create a new footnote and add it to the document.
+        /// </summary>
+        /// <returns>New <see cref="XWPFFootnote"/></returns>
+        /// <remarks>
+        /// @since 4.0.0
+        /// </remarks>
+        public XWPFFootnote CreateFootnote()
+        {
+            CT_FtnEdn newNote = new();
+            newNote.type = ST_FtnEdn.normal;
+
+            XWPFFootnote footnote = AddFootnote(newNote);
+            footnote.GetCTFtnEdn().id = IdManager.NextId();
+            return footnote;
+
+        }
+
+        /// <summary>
+        /// Remove the specified footnote if present.
+        /// </summary>
+        /// <param name="pos">Array position of the footnote to be removed</param>
+        /// <returns>True if the footnote was removed.</returns>
+        /// <remarks>
+        /// @since 4.0.0
+        /// </remarks>
+        public bool RemoveFootnote(int pos)
+        {
+            if(ctFootnotes.SizeOfFootnoteArray() >= pos - 1)
+            {
+                ctFootnotes.RemoveFootnote(pos);
+                listFootnote.RemoveAt(pos);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Read document
+        /// </summary>
         internal override void OnDocumentRead()
         {
             FootnotesDocument notesDoc;
@@ -78,101 +121,72 @@ namespace NPOI.XWPF.UserModel
                 notesDoc = FootnotesDocument.Parse(xmldoc, NamespaceManager);
                 ctFootnotes = notesDoc.Footnotes;
             }
-            catch (XmlException)
+            catch(XmlException)
             {
                 throw new POIXMLException();
             }
             finally
             {
-                if (is1 != null)
+                if(is1 != null)
                 {
-                    is1.Close();
+                is1.Close();
                 }
             }
             //get any Footnote
-            if (ctFootnotes.footnote != null)
+            if(ctFootnotes.footnote != null)
             {
-                foreach (CT_FtnEdn note in ctFootnotes.footnote)
+                foreach(CT_FtnEdn note in ctFootnotes.footnote)
                 {
                     listFootnote.Add(new XWPFFootnote(note, this));
                 }
             }
             InitHyperlinks();
         }
-
         private void InitHyperlinks()
         {
             try
             {
                 IEnumerator<PackageRelationship> relIter =
                     GetPackagePart().GetRelationshipsByType(XWPFRelation.HYPERLINK.Relation).GetEnumerator();
-                while (relIter.MoveNext())
+                while(relIter.MoveNext())
                 {
                     PackageRelationship rel = relIter.Current;
                     hyperlinks.Add(new XWPFHyperlink(rel.Id, rel.TargetUri.OriginalString));
                 }
             }
-            catch (InvalidDataException e)
+            catch(InvalidDataException e)
             {
                 throw new POIXMLException(e);
             }
         }
-
         protected internal override void Commit()
         {
-            /*XmlOptions xmlOptions = new XmlOptions(DEFAULT_XML_OPTIONS);
-            xmlOptions.SaveSyntheticDocumentElement=(new QName(CTFootnotes.type.Name.NamespaceURI, "footnotes"));
-            Dictionary<String,String> map = new Dictionary<String,String>();
-            map.Put("http://schemas.Openxmlformats.org/officeDocument/2006/relationships", "r");
-            map.Put("http://schemas.Openxmlformats.org/wordProcessingml/2006/main", "w");
-            xmlOptions.SaveSuggestedPrefixes=(map);*/
+            //XmlOptions xmlOptions = new XmlOptions(DEFAULT_XML_OPTIONS);
+            //xmlOptions.SetSaveSyntheticDocumentElement(new QName(CTFootnotes.type.Name.NamespaceURI, "footnotes"));
             PackagePart part = GetPackagePart();
-            using (Stream out1 = part.GetOutputStream())
+            using(Stream out1 = part.GetOutputStream())
             {
                 FootnotesDocument notesDoc = new FootnotesDocument(ctFootnotes);
                 notesDoc.Save(out1);
             }
         }
 
-        public List<XWPFFootnote> GetFootnotesList()
-        {
-            return listFootnote;
-        }
-
-        public XWPFFootnote GetFootnoteById(int id)
-        {
-            foreach(XWPFFootnote note in listFootnote) {
-                if(note.GetCTFtnEdn().id == id)
-                    return note;
-            }
-            return null;
-        }
-
-        /**
-         * Sets the ctFootnotes
-         * @param footnotes
-         */
-        public void SetFootnotes(CT_Footnotes footnotes)
-        {
-            ctFootnotes = footnotes;
-        }
-
-        /**
-         * add an XWPFFootnote to the document
-         * @param footnote
-         * @throws IOException		 
-         */
+        /// <summary>
+        /// Add an <see cref="XWPFFootnote"/> to the document
+        /// </summary>
+        /// <param name="footnote">Footnote to add</param>
+        /// <exception cref="IOException"></exception>
         public void AddFootnote(XWPFFootnote footnote)
         {
             listFootnote.Add(footnote);
             ctFootnotes.AddNewFootnote().Set(footnote.GetCTFtnEdn());
         }
 
-        /**
-         * add a footnote to the document
-         * @param note
-         * @throws IOException		 
-         */
+        /// <summary>
+        /// Add a CT footnote to the document
+        /// </summary>
+        /// <param name="note">CTFtnEdn to add.</param>
+        /// <exception cref="IOException"></exception>
         public XWPFFootnote AddFootnote(CT_FtnEdn note)
         {
             CT_FtnEdn newNote = ctFootnotes.AddNewFootnote();
@@ -182,71 +196,23 @@ namespace NPOI.XWPF.UserModel
             return xNote;
         }
 
-        public void SetXWPFDocument(XWPFDocument doc)
-        {
-            document = doc;
-        }
         /// <summary>
-        /// Create a new footnote and add it to the document. 
+        /// Get the list of <see cref="XWPFFootnote"/> in the Footnotes part.
         /// </summary>
-        /// <remarks>
-        /// The new note will have one paragraph with the style "FootnoteText"
-        /// and one run containing the required footnote reference with the 
-        /// style "FootnoteReference".
-        /// </remarks>
-        /// <returns>New XWPFFootnote</returns>
-        public XWPFFootnote CreateFootnote()
+        /// <returns>List, possibly empty, of footnotes.</returns>
+        public List<XWPFFootnote> GetFootnotesList()
         {
-            CT_FtnEdn newNote = new CT_FtnEdn();
-            newNote.type = ST_FtnEdn.normal;
-
-            XWPFFootnote footnote = AddFootnote(newNote);
-            int id = ctFootnotes.SizeOfFootnoteArray;
-            footnote.GetCTFtnEdn().id = id;
-            return footnote;
-        }
-
-        /// <summary>
-        /// Remove the specified footnote if present.
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public bool RemoveFootnote(int pos)
-        {
-            if (ctFootnotes.SizeOfFootnoteArray >= pos - 1)
+            List<XWPFFootnote> resultList = new List<XWPFFootnote>();
+            foreach(XWPFAbstractFootnoteEndnote note in listFootnote)
             {
-                ctFootnotes.RemoveFootnote(pos);
-                listFootnote.RemoveAt(pos);
-                return true;
+                resultList.Add((XWPFFootnote) note);
             }
-            else
-            {
-                return false;
-            }
-        }
-        /**
-         * @see NPOI.XWPF.UserModel.IBody#getPart()
-         */
-        public XWPFDocument GetXWPFDocument()
-        {
-            if (document != null)
-            {
-                return document;
-            }
-            else
-            {
-                var parent = GetParent();
-                while(parent!=null && parent is not XWPFDocument)
-                {
-                    parent=parent.GetParent();
-                }
-                return parent as XWPFDocument;
-            }
+            return resultList;
         }
 
         public XWPFHyperlink GetHyperlinkByID(string id)
         {
-            foreach (XWPFHyperlink link in hyperlinks)
+            foreach(XWPFHyperlink link in hyperlinks)
             {
                 if(link.Id.Equals(id))
                 {
@@ -261,8 +227,5 @@ namespace NPOI.XWPF.UserModel
         {
             return hyperlinks;
         }
-
-    }//end class
-
-
+    }
 }

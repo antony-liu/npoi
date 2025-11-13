@@ -82,7 +82,7 @@ namespace NPOI.XWPF.UserModel
                         {
                             footnoteText.Append("[").Append(ftn.id).Append(": ");
 
-                            XWPFFootnote footnote = null;
+                            XWPFAbstractFootnoteEndnote footnote = null;
 
                             if (r.ItemsElementName.Count > i && r.ItemsElementName[i] == RunItemsChoiceType.endnoteReference)
                             {
@@ -109,6 +109,10 @@ namespace NPOI.XWPF.UserModel
                                     }
                                     footnoteText.Append(p.Text);
                                 }
+                            }
+                            else
+                            {
+                                footnoteText.Append("!!! End note with ID \"" + ftn.id + "\" not found in document.");
                             }
 
                             footnoteText.Append("]");
@@ -1801,13 +1805,19 @@ namespace NPOI.XWPF.UserModel
         /// Add a new run with a reference to the specified footnote. The footnote reference run will have the style name "FootnoteReference".
         /// </summary>
         /// <param name="footnote">Footnote to which to add a reference.</param>
-        public void AddFootnoteReference(XWPFFootnote footnote)
+        public void AddFootnoteReference(XWPFAbstractFootnoteEndnote footnote)
         {
             XWPFRun run = CreateRun();
             CT_R ctRun = run.GetCTR();
             var rstyle=ctRun.AddNewRPr().AddNewRStyle();
             rstyle.val="FootnoteReference";
             var footnoteRef = ctRun.AddNewFootnoteReference();
+            if(footnote is XWPFEndnote) {
+                ctRun.AddNewEndnoteReference().id = footnote.Id.ToString();
+            } else
+            {
+                ctRun.AddNewFootnoteReference().id = footnote.Id.ToString();
+            }
             footnoteRef.id= footnote.Id.ToString();
         }
         public XWPFFieldRun CreateFieldRun()

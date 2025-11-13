@@ -848,6 +848,7 @@ namespace TestCases.XSSF.UserModel
 
             XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(new FileInfo(fileName));
             ClassicAssert.IsTrue(wb2.PivotTables.Count == 1);
+            wb2.Close();
         }
 
         [Test]
@@ -866,6 +867,7 @@ namespace TestCases.XSSF.UserModel
             XSSFWorkbook wb2 = (XSSFWorkbook)WorkbookFactory.Create(new FileInfo(fileName));
             SetPivotData(wb2);
             ClassicAssert.IsTrue(wb2.PivotTables.Count == 2);
+            wb2.Close();
         }
 
         [Test]

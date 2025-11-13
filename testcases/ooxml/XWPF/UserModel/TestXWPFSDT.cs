@@ -36,8 +36,8 @@ namespace TestCases.XWPF.UserModel
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug54849.docx");
             String tag = null;
             String title = null;
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
-            foreach (AbstractXWPFSDT sdt in sdts)
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
+            foreach (XWPFAbstractSDT sdt in sdts)
             {
                 if (sdt.Content.ToString().Equals("Rich_text"))
                 {
@@ -72,13 +72,13 @@ namespace TestCases.XWPF.UserModel
 
         };
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug54849.docx");
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
 
             ClassicAssert.AreEqual(contents.Length, sdts.Count, "number of sdts");
 
             for (int i = 0; i < contents.Length; i++)
             {//contents.Length; i++){
-                AbstractXWPFSDT sdt = sdts[i];
+                XWPFAbstractSDT sdt = sdts[i];
 
                 ClassicAssert.AreEqual(contents[i], sdt.Content.ToString(), i + ": " + contents[i]);
             }
@@ -92,7 +92,7 @@ namespace TestCases.XWPF.UserModel
             //Bug54771a.docx and Bug54771b.docx test slightly 
             //different recursion patterns. Keep both!
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug54771a.docx");
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
             String text = sdts[(0)].Content.Text;
             ClassicAssert.AreEqual(2, sdts.Count);
             AssertContains(text, "Test");
@@ -118,7 +118,7 @@ namespace TestCases.XWPF.UserModel
         public void TestNewLinesBetweenRuns()
         {
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug55142.docx");
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
             List<String> targs = new List<String>();
             //these test newlines and tabs in paragraphs/body elements
             targs.Add("Rich-text1 abcdefghi");
@@ -134,7 +134,7 @@ namespace TestCases.XWPF.UserModel
 
             for (int i = 0; i < sdts.Count; i++)
             {
-                AbstractXWPFSDT sdt = sdts[i];
+                XWPFAbstractSDT sdt = sdts[i];
                 ClassicAssert.AreEqual(targs[i], sdt.Content.Text, targs[i]);
             }
         }
@@ -144,7 +144,7 @@ namespace TestCases.XWPF.UserModel
         {
             //handle sdtbody without an sdtpr
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug60341.docx");
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
             ClassicAssert.AreEqual(1, sdts.Count);
             ClassicAssert.AreEqual("", sdts[0].GetTag());
             ClassicAssert.AreEqual("", sdts[0].GetTitle());
@@ -158,16 +158,16 @@ namespace TestCases.XWPF.UserModel
             //We should try to add the actual triggering document
             //to our test suite.
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("Bug62859.docx");
-            List<AbstractXWPFSDT> sdts = ExtractAllSDTs(doc);
+            List<XWPFAbstractSDT> sdts = ExtractAllSDTs(doc);
             ClassicAssert.AreEqual(1, sdts.Count);
             ClassicAssert.AreEqual("", sdts[0].GetTag());
             ClassicAssert.AreEqual("", sdts[0].GetTitle());
         }
 
-        private List<AbstractXWPFSDT> ExtractAllSDTs(XWPFDocument doc)
+        private List<XWPFAbstractSDT> ExtractAllSDTs(XWPFDocument doc)
         {
 
-            List<AbstractXWPFSDT> sdts = new List<AbstractXWPFSDT>();
+            List<XWPFAbstractSDT> sdts = new List<XWPFAbstractSDT>();
 
             IList<XWPFHeader> headers = doc.HeaderList;
             foreach (XWPFHeader header in headers)
@@ -186,16 +186,16 @@ namespace TestCases.XWPF.UserModel
             {
                 sdts.AddRange(ExtractSDTsFromBodyElements(footnote.BodyElements));
             }
-            foreach (KeyValuePair<int, XWPFFootnote> e in doc.Endnotes)
+            foreach (XWPFEndnote footnote in doc.GetEndnotes())
             {
-                sdts.AddRange(ExtractSDTsFromBodyElements(e.Value.BodyElements));
+                sdts.AddRange(ExtractSDTsFromBodyElements(footnote.BodyElements));
             }
             return sdts;
         }
 
-        private List<AbstractXWPFSDT> ExtractSDTsFromBodyElements(IList<IBodyElement> elements)
+        private List<XWPFAbstractSDT> ExtractSDTsFromBodyElements(IList<IBodyElement> elements)
         {
-            List<AbstractXWPFSDT> sdts = new List<AbstractXWPFSDT>();
+            List<XWPFAbstractSDT> sdts = new List<XWPFAbstractSDT>();
             foreach (IBodyElement e in elements)
             {
                 if (e is XWPFSDT)
@@ -225,10 +225,10 @@ namespace TestCases.XWPF.UserModel
             return sdts;
         }
 
-        private List<AbstractXWPFSDT> ExtractSDTsFromTable(XWPFTable table)
+        private List<XWPFAbstractSDT> ExtractSDTsFromTable(XWPFTable table)
         {
 
-            List<AbstractXWPFSDT> sdts = new List<AbstractXWPFSDT>();
+            List<XWPFAbstractSDT> sdts = new List<XWPFAbstractSDT>();
             foreach (XWPFTableRow r in table.Rows)
             {
                 foreach (ICell c in r.GetTableICells())
