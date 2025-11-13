@@ -18,6 +18,7 @@
 using NPOI;
 using NPOI.OOXML;
 using NPOI.Openxml4Net.Exceptions;
+using NPOI.OpenXml4Net.Exceptions;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.OpenXml4Net.OPC.Internal;
 using NPOI.SS.UserModel;
@@ -1103,6 +1104,26 @@ namespace TestCases.OpenXml4Net.OPC
                 //    IOUtils.CloseQuietly(is1);
                 //}
             }
+        }
+
+        [Test]
+        public void TestBug62592()
+        {
+            Assert.Throws(typeof(InvalidFormatException), () =>
+            {
+                Stream is1 = OpenXml4NetTestDataSamples.OpenSampleStream("62592.thmx");
+                OPCPackage p = OPCPackage.Open(is1);
+            });
+        }
+
+        [Test]
+        public void TestBug62592SequentialCallsToGetParts()
+        {
+            //make absolutely certain that sequential calls don't throw InvalidFormatExceptions
+            String originalFile = OpenXml4NetTestDataSamples.GetSampleFileName("TestPackageCommon.docx");
+            OPCPackage p2 = OPCPackage.Open(originalFile, PackageAccess.READ);
+            p2.GetParts();
+            p2.GetParts();
         }
     }
 }
