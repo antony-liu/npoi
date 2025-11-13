@@ -297,8 +297,8 @@ using Cysharp.Text;
         }
 
         /**
-     * Get text color. The returned value is a string in the hex form "RRGGBB".
-     */
+         * Get text color. The returned value is a string in the hex form "RRGGBB".
+         */
         public String GetColor()
         {
             String color = null;
@@ -428,10 +428,10 @@ using Cysharp.Text;
             }
         }
         /**
-     * Get the CTUnderline for the run.
-     * @param create Create a new underline if necessary
-     * @return The underline, or null create is false and there is no underline.
-     */
+         * Get the CTUnderline for the run.
+         * @param create Create a new underline if necessary
+         * @return The underline, or null create is false and there is no underline.
+         */
         private CT_Underline GetCTUnderline(bool create)
         {
             CT_RPr pr = GetRunProperties(true);
@@ -616,6 +616,92 @@ using Cysharp.Text;
             }
         }
 
+        /**
+         * Set the underline color for the run's underline, if any.
+         *
+         * @param color An RGB color value (e.g, "a0C6F3") or "auto". 
+         * @since 4.0.0
+         */
+        public void setUnderlineColor(String color)
+        {
+            
+        }
+
+        /**
+         * Get the underline theme color for the run's underline, if any.
+         *
+         * @return The {@link STThemeColor.Enum}.
+         * @since 4.0.0
+         */
+        public string UnderlineThemeColor
+        {
+            get
+            {
+                CT_Underline underline = GetCTUnderline(false);
+                ST_ThemeColor color = ST_ThemeColor.none;
+                if(underline != null)
+                {
+                    color = underline.themeColor;
+                }
+                return color.ToString();
+            }
+            set
+            {
+                CT_Underline underline = GetCTUnderline(true);
+                if(Enum.TryParse(value, true, out ST_ThemeColor val))
+                {
+                    underline.themeColor = val;
+                }
+            }
+        }
+
+        /**
+         * Get the underline color for the run's underline, if any.
+         *
+         * @return The RGB color value as as a string of hexadecimal digits (e.g., "A0B2F1") or "auto".
+         * @since 4.0.0
+         */
+        public String UnderlineColor
+        {
+            get
+            {
+                CT_Underline underline = GetCTUnderline(true);
+                //String colorName = "auto";
+                //Object rawValue = underline.color;
+                //if(rawValue != null)
+                //{
+                //    if(rawValue is String)
+                //    {
+                //        colorName = (String) rawValue;
+                //    }
+                //    else
+                //    {
+                //        byte[] rgbColor = (byte[])rawValue;
+                //        colorName = HexDump.ToHex(rgbColor[0]) + HexDump.ToHex(rgbColor[1]) + HexDump.ToHex(rgbColor[2]);
+                //    }
+                //}
+                //return colorName;
+                return string.IsNullOrEmpty(underline.color) ? "auto" : underline.color;
+            }
+            set
+            {
+                CT_Underline underline = GetCTUnderline(true);
+                //SimpleValue svColor = null;
+                //if(color.equals("auto"))
+                //{
+                //    STHexColorAuto hexColor = STHexColorAuto.Factory.newInstance();
+                //    hexColor.set(STHexColorAuto.Enum.forString(color));
+                //    svColor = (SimpleValue) hexColor;
+                //}
+                //else
+                //{
+                //    ST_HexColorRGB rgbColor = STHexColorRGB.Factory.newInstance();
+                //    rgbColor.setStringValue(color);
+                //    svColor = (SimpleValue) rgbColor;
+                //}
+                underline.color = value;
+            }
+        }
         private static void _getText(object o, StringBuilder text, RunItemsChoiceType itemType)
         {
             if (o is CT_Text ctText) {
@@ -692,14 +778,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetStrike())
                     return false;
                 return IsCTOnOff(pr.strike);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff strike = pr.IsSetStrike() ? pr.strike : pr.AddNewStrike();
                 strike.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -729,6 +815,7 @@ using Cysharp.Text;
          *              this run
          */
         [Obsolete]
+        [Removal(Version = "4.2")]
         public bool IsStrike
         {
             get
@@ -750,14 +837,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetDstrike())
                     return false;
                 return IsCTOnOff(pr.dstrike);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(false);
                 CT_OnOff dstrike = pr.IsSetDstrike() ? pr.dstrike : pr.AddNewDstrike();
                 dstrike.val = value;//(value ? STOnOff.TRUE : STOnOff.FALSE);
             }
@@ -766,14 +853,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetSmallCaps())
                     return false;
                 return IsCTOnOff(pr.smallCaps);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff caps = pr.IsSetSmallCaps() ? pr.smallCaps : pr.AddNewSmallCaps();
                 caps.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -783,14 +870,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetCaps())
                     return false;
                 return IsCTOnOff(pr.caps);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff caps = pr.IsSetCaps() ? pr.caps : pr.AddNewCaps();
                 caps.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -800,14 +887,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetShadow())
                     return false;
                 return IsCTOnOff(pr.shadow);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff shadow = pr.IsSetShadow() ? pr.shadow : pr.AddNewShadow();
                 shadow.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -817,14 +904,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetImprint())
                     return false;
                 return IsCTOnOff(pr.imprint);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff imprinted = pr.IsSetImprint() ? pr.imprint : pr.AddNewImprint();
                 imprinted.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -834,14 +921,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetEmboss())
                     return false;
                 return IsCTOnOff(pr.emboss);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_OnOff emboss = pr.IsSetEmboss() ? pr.emboss : pr.AddNewEmboss();
                 emboss.val = value;//(value ? ST_OnOff.True : ST_OnOff.False);
             }
@@ -851,9 +938,10 @@ using Cysharp.Text;
 
 
         [Obsolete]
+        [Removal(Version = "4.2")]
         public void SetStrike(bool value)
         {
-            CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+            CT_RPr pr = GetRunProperties(true);
             CT_OnOff strike = pr.IsSetStrike() ? pr.strike : pr.AddNewStrike();
             strike.val = value;
         }
@@ -867,17 +955,19 @@ using Cysharp.Text;
          * @return VerticalAlign
          * @see VerticalAlign all possible value that could be Applyed to this run
          */
+        [Obsolete]
+        [Removal(Version = "4.2")]
         public VerticalAlign Subscript
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 return (pr != null && pr.IsSetVertAlign()) ?
                     EnumConverter.ValueOf<VerticalAlign, ST_VerticalAlignRun>(pr.vertAlign.val) : VerticalAlign.BASELINE;
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_VerticalAlignRun ctValign = pr.IsSetVertAlign() ? pr.vertAlign : pr.AddNewVertAlign();
                 ctValign.val = EnumConverter.ValueOf<ST_VerticalAlignRun, VerticalAlign>(value);
             }
@@ -887,14 +977,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetKern())
                     return 0;
                 return (int)pr.kern.val;
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_HpsMeasure kernmes = pr.IsSetKern() ? pr.kern : pr.AddNewKern();
                 kernmes.val = (ulong)value;
             }
@@ -904,10 +994,10 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetHighlight())
                     return false;
-                if (pr.highlight.val == ST_HighlightColor.none)
+                if (!pr.highlight.valSpecified || pr.highlight.val == ST_HighlightColor.none)
                     return false;
                 return true;
             }
@@ -920,14 +1010,14 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 if (pr == null || !pr.IsSetSpacing())
                     return 0;
                 return int.Parse(pr.spacing.val);
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_SignedTwipsMeasure spc = pr.IsSetSpacing() ? pr.spacing : pr.AddNewSpacing();
                 spc.val = value.ToString();
             }
@@ -965,7 +1055,7 @@ using Cysharp.Text;
          */
         public String GetFontFamily(FontCharRange fcr)
         {
-            CT_RPr pr = run.rPr;
+            CT_RPr pr = GetRunProperties(false);
             if (pr == null || !pr.IsSetRFonts()) return null;
 
             CT_Fonts fonts = pr.rFonts;
@@ -994,7 +1084,7 @@ using Cysharp.Text;
          */
         public void SetFontFamily(String fontFamily, FontCharRange fcr)
         {
-            CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+            CT_RPr pr = GetRunProperties(true);
             CT_Fonts fonts = pr.IsSetRFonts() ? pr.rFonts : pr.AddNewRFonts();
 
             if (fcr == FontCharRange.None)
@@ -1043,12 +1133,12 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 return (pr != null && pr.IsSetSz()) ? pr.sz.val / 2.0 : -1;
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 if (value < 1)
                 {
                     // fix for TestBug58922() in NPOI
@@ -1084,13 +1174,13 @@ using Cysharp.Text;
         {
             get
             {
-                CT_RPr pr = run.rPr;
+                CT_RPr pr = GetRunProperties(false);
                 return (pr != null && pr.IsSetPosition()) ? int.Parse(pr.position.val)
                         : -1;
             }
             set
             {
-                CT_RPr pr = run.IsSetRPr() ? run.rPr : run.AddNewRPr();
+                CT_RPr pr = GetRunProperties(true);
                 CT_SignedHpsMeasure position = pr.IsSetPosition() ? pr.position : pr.AddNewPosition();
                 position.val = (value.ToString());
             }
@@ -1435,6 +1525,182 @@ using Cysharp.Text;
                 ctLang.val = value;
             }
         }
+
+        /**
+         * Get or set the text expand/collapse scale value.
+         *
+         * @param percentage The percentage to expand or compress the text
+         * @since 4.0.0
+         */
+        public int TextScale
+        {
+            get
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_TextScale scale = pr.IsSetW() ? pr.w : pr.AddNewW();
+                int.TryParse(scale.val, out int value);
+                if(value == 0)
+                {
+                    value = 100; // 100% scaling, that is, no change. See 17.3.2.43 w (Expanded/Compressed Text)
+                }
+                return value;
+            }
+            set
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_TextScale scale = pr.IsSetW() ? pr.w : pr.AddNewW();
+                scale.val = value.ToString();
+            }
+        }
+
+        /**
+         * Get or set the highlight color for the run
+         *
+         * @return {@link STHighlightColor} for the run.
+         * @since 4.0.0
+         */
+        public ST_HighlightColor TextHighlightColor
+        {
+            get
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_Highlight highlight = pr.IsSetHighlight() ? pr.highlight : pr.AddNewHighlight();
+                ST_HighlightColor color = highlight.val;
+                if(!highlight.valSpecified)
+                {
+                    color = ST_HighlightColor.none;
+                }
+                return color;
+            }
+            set
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_Highlight highlight = pr.IsSetHighlight() ? pr.highlight : pr.AddNewHighlight();
+                //ST_HighlightColor color = highlight.val;
+                //if(Enum.TryParse(value, out color))
+                //{
+                //    highlight.val = color;
+                //}
+                //else
+                //{
+                //    highlight.val = ST_HighlightColor.none;
+                //}
+                highlight.val = value;
+            }
+        }
+
+        /**
+         * Get the vanish (hidden text) value
+         *
+         * @return True if the run is hidden text.
+         * @since 4.0.0
+         */
+        public bool IsVanish
+        {
+            get
+            {
+                CT_RPr pr = GetRunProperties(true);
+                return pr != null && pr.IsSetVanish() && IsCTOnOff(pr.vanish);
+            }
+            set
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_OnOff vanish = pr.IsSetVanish() ? pr.vanish : pr.AddNewVanish();
+                vanish.val = value;
+            }
+        }
+
+        /**
+         * Get the vertical alignment value
+         *
+         * @return {@link STVerticalAlignRun.Enum} value (see 22.9.2.17 ST_VerticalAlignRun (Vertical Positioning Location))
+         * @since 4.0.0
+         */
+        public ST_VerticalAlignRun VerticalAlignment
+        {
+            get
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_VerticalAlignRun vertAlign = pr.IsSetVertAlign() ? pr.vertAlign : pr.AddNewVertAlign();
+                ST_VerticalAlignRun val = vertAlign.val;
+                //if(val == null)
+                //{
+                //    val = STVerticalAlignRun.BASELINE;
+                //}
+                return val;
+            }
+            set
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_VerticalAlignRun vertAlign = pr.IsSetVertAlign() ? pr.vertAlign : pr.AddNewVertAlign();
+                //ST_VerticalAlignRun align = vertAlign.val;
+                //if(align == null)
+                //{
+                //    align = STVerticalAlignRun.Factory.newInstance();
+                //}
+                //ST_VerticalAlignRun val = STVerticalAlignRun.Enum.forString(verticalAlignment);
+                //if(val != null)
+                //{
+                //    align.setStringValue(val.toString());
+                //    vertAlign.xsetVal(align);
+                //}
+                vertAlign.val = value;
+            }
+        }
+
+        /**
+         * Get the emphasis mark value for the run.
+         *
+         * @return {@link STEm.Enum} emphasis mark type enumeration. See 17.18.24 ST_Em (Emphasis Mark Type).
+         * @since 4.0.0
+         */
+        public ST_Em EmphasisMark
+        {
+            get
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_Em emphasis = pr.IsSetEm() ? pr.em : pr.AddNewEm();
+
+                ST_Em val = emphasis.val;
+                //if(val == null)
+                //{
+                //    val = STEm.NONE;
+                //}
+                return val;
+            }
+            set
+            {
+                CT_RPr pr = GetRunProperties(true);
+                CT_Em emphasisMark = pr.IsSetEm() ? pr.em : pr.AddNewEm();
+                //ST_Em mark = emphasisMark.val;
+                //if(mark == null)
+                //{
+                //    mark = STEm.Factory.newInstance();
+                //}
+                //STEm.Enum val = STEm.Enum.forString(markType);
+                //if(val != null)
+                //{
+                //    mark.setStringValue(val.toString());
+                //    emphasisMark.xsetVal(mark);
+                //}
+                emphasisMark.val = value;
+            }
+        }
+
+        /**
+         * Set the emphasis mark for the run. The emphasis mark goes above or below the run
+         * text.
+         *
+         * @param markType Emphasis mark type name, e.g., "dot" or "none". See 17.18.24 ST_Em (Emphasis Mark Type)
+         * @since 4.0.0
+         */
+        public void setEmphasisMark(String markType)
+        {
+            
+
+
+        }
+
         protected CT_RPr GetRunProperties(bool create)
         {
             CT_RPr pr = run.IsSetRPr() ? run.rPr : null;

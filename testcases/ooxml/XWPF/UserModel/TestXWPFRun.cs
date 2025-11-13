@@ -22,12 +22,10 @@ namespace TestCases.XWPF.UserModel
     using NPOI.XWPF.Model;
     using NPOI.XWPF.UserModel;
     using NUnit.Framework;
-using NUnit.Framework.Legacy;
-    using Org.BouncyCastle.Asn1.X500;
+    using NUnit.Framework.Legacy;
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using CT_Blip = NPOI.OpenXmlFormats.Dml.CT_Blip;
     using CT_BlipFillProperties = NPOI.OpenXmlFormats.Dml.CT_BlipFillProperties;
     using CT_Picture = NPOI.OpenXmlFormats.Dml.Picture.CT_Picture;
@@ -38,17 +36,18 @@ using NUnit.Framework.Legacy;
     [TestFixture]
     public class TestXWPFRun
     {
-
+        private XWPFDocument doc;
         public CT_R ctRun;
         public XWPFParagraph p;
+        private IRunBody irb;
         [SetUp]
         public void SetUp()
         {
-            XWPFDocument doc = new XWPFDocument();
+            doc = new XWPFDocument();
             p = doc.CreateParagraph();
+            irb = p;
 
             this.ctRun = new CT_R();
-
         }
 
         [Test]
@@ -149,29 +148,14 @@ using NUnit.Framework.Legacy;
         public void TestSetGetUnderline()
         {
             CT_RPr rpr = ctRun.AddNewRPr();
+            XWPFRun run = new XWPFRun(ctRun, irb);
             rpr.AddNewU().val = (ST_Underline.dash);
 
-            XWPFRun run = new XWPFRun(ctRun, p);
             ClassicAssert.AreEqual(UnderlinePatterns.Dash, run.Underline);
 
             run.Underline = UnderlinePatterns.None;
             ClassicAssert.AreEqual(ST_Underline.none, rpr.u.val);
         }
-
-
-        [Test]
-        public void TestSetGetVAlign()
-        {
-            CT_RPr rpr = ctRun.AddNewRPr();
-            rpr.AddNewVertAlign().val = (ST_VerticalAlignRun.subscript);
-
-            XWPFRun run = new XWPFRun(ctRun, p);
-            ClassicAssert.AreEqual(VerticalAlign.SUBSCRIPT, run.Subscript);
-
-            run.Subscript = (VerticalAlign.BASELINE);
-            ClassicAssert.AreEqual(ST_VerticalAlignRun.baseline, rpr.vertAlign.val);
-        }
-
 
         [Test]
         public void TestSetGetFontFamily()
@@ -473,21 +457,6 @@ using NUnit.Framework.Legacy;
         }
 
         [Test]
-        public void TestSetGetHighlight()
-        {
-            XWPFRun run = new XWPFRun(ctRun, p);
-            ClassicAssert.AreEqual(false, run.IsHighlighted);
-
-            // TODO Do this using XWPFRun methods
-            run.GetCTR().AddNewRPr().AddNewHighlight().val = (ST_HighlightColor.none);
-            ClassicAssert.AreEqual(false, run.IsHighlighted);
-            run.GetCTR().rPr.highlight.val = (ST_HighlightColor.cyan);
-            ClassicAssert.AreEqual(true, run.IsHighlighted);
-            run.GetCTR().rPr.highlight.val = (ST_HighlightColor.none);
-            ClassicAssert.AreEqual(false, run.IsHighlighted);
-        }
-
-        [Test]
         public void TestAddPicture()
         {
             XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("TestDocument.docx");
@@ -692,6 +661,121 @@ using NUnit.Framework.Legacy;
                 ClassicAssert.AreEqual(isWhitespace, ctText.space == "preserve");
             }
         }
+
+        [Test]
+        public void TestSetGetTextScale()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual(100, run.TextScale);
+            run.TextScale = 200;
+            ClassicAssert.AreEqual(200, run.TextScale);
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetTextHighlightColor()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual(ST_HighlightColor.none, run.TextHighlightColor);
+            ClassicAssert.AreEqual(false, run.IsHighlighted);
+            run.TextHighlightColor = ST_HighlightColor.darkGreen; //"darkGreen"; // See 17.18.40 ST_HighlightColor (Text Highlight Colors)
+            ClassicAssert.AreEqual(ST_HighlightColor.darkGreen, run.TextHighlightColor);
+            ClassicAssert.AreEqual(true, run.IsHighlighted);
+            run.TextHighlightColor = ST_HighlightColor.none;
+            ClassicAssert.AreEqual(false, run.IsHighlighted);
+
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetVanish()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual(false, run.IsVanish);
+            run.IsVanish = true;
+            ClassicAssert.AreEqual(true, run.IsVanish);
+            run.IsVanish = false;
+            ClassicAssert.AreEqual(false, run.IsVanish);
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetVerticalAlignment()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual(ST_VerticalAlignRun.baseline, run.VerticalAlignment);
+            // Reset to a fresh run so we test case of run not having vertical alignment at all
+            run = document.CreateParagraph().CreateRun();
+            run.VerticalAlignment = ST_VerticalAlignRun.subscript; //("subscript");
+            ClassicAssert.AreEqual(ST_VerticalAlignRun.subscript, run.VerticalAlignment);
+            run.VerticalAlignment = ST_VerticalAlignRun.superscript; //("superscript");
+            ClassicAssert.AreEqual(ST_VerticalAlignRun.superscript, run.VerticalAlignment);
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetVAlign()
+        {
+            CT_RPr rpr = ctRun.AddNewRPr();
+            rpr.AddNewVertAlign().val = ST_VerticalAlignRun.subscript;
+
+            XWPFRun run = new XWPFRun(ctRun, irb);
+            ClassicAssert.AreEqual(VerticalAlign.SUBSCRIPT, run.Subscript);
+
+            run.Subscript = VerticalAlign.BASELINE;
+            ClassicAssert.AreEqual(ST_VerticalAlignRun.baseline, rpr.vertAlign.val);
+        }
+
+
+        [Test]
+        public void TestSetGetEmphasisMark()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual(ST_Em.none, run.EmphasisMark);
+            // Reset to a fresh run so we test case of run not having property at all
+            run = document.CreateParagraph().CreateRun();
+            run.EmphasisMark = ST_Em.dot; //("dot");
+            ClassicAssert.AreEqual(ST_Em.dot, run.EmphasisMark);
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetUnderlineColor()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual("auto", run.UnderlineColor);
+            // Reset to a fresh run so we test case of run not having property at all
+            run = document.CreateParagraph().CreateRun();
+            string colorRgb = "C0F1a2";
+            run.UnderlineColor = colorRgb;
+            ClassicAssert.AreEqual(colorRgb, run.UnderlineColor);
+            run.UnderlineColor = "auto";
+            ClassicAssert.AreEqual("auto", run.UnderlineColor);
+            document.Close();
+        }
+
+        [Test]
+        public void TestSetGetUnderlineThemeColor()
+        {
+            XWPFDocument document = new XWPFDocument();
+            XWPFRun run = document.CreateParagraph().CreateRun();
+            ClassicAssert.AreEqual("none", run.UnderlineThemeColor);
+            // Reset to a fresh run so we test case of run not having property at all
+            run = document.CreateParagraph().CreateRun();
+            string colorName = "accent4";
+            run.UnderlineThemeColor = colorName;
+            ClassicAssert.AreEqual(Enum.Parse(typeof(ST_ThemeColor), colorName).ToString(), run.UnderlineThemeColor);
+            run.UnderlineThemeColor = "none";
+            ClassicAssert.AreEqual("none", run.UnderlineThemeColor);
+            document.Close();
+        }
+
         [Test]
         public void TestSetStyleId()
         {

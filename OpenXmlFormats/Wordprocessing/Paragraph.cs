@@ -5001,6 +5001,39 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         {
             return this.highlightField != null;
         }
+
+        public bool IsSetW()
+        {
+            return this.wField != null;
+        }
+
+        public CT_TextScale AddNewW()
+        {
+            this.wField = new CT_TextScale();
+            return this.wField;
+        }
+
+        public bool IsSetVanish()
+        {
+            return this.vanish != null;
+        }
+
+        public CT_OnOff AddNewVanish()
+        {
+            this.vanish = new CT_OnOff();
+            return this.vanish;
+        }
+
+        public bool IsSetEm()
+        {
+            return this.emField != null;
+        }
+
+        public CT_Em AddNewEm()
+        {
+            this.emField = new CT_Em();
+            return this.emField;
+        }
     }
 
 

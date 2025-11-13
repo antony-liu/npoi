@@ -1734,7 +1734,8 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
             if (node == null)
                 return null;
             CT_Highlight ctObj = new CT_Highlight();
-            if (node.Attributes["w:val"] != null)
+            ctObj.valFieldSpecified = node.Attributes["w:val"] != null;
+            if (ctObj.valFieldSpecified)
                 ctObj.val = (ST_HighlightColor)Enum.Parse(typeof(ST_HighlightColor), node.Attributes["w:val"].Value);
             return ctObj;
         }
@@ -1744,13 +1745,15 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
         internal void Write(StreamWriter sw, string nodeName)
         {
             sw.Write(string.Format("<w:{0}", nodeName));
-            XmlHelper.WriteAttribute(sw, "w:val", this.val.ToString());
+            if(valFieldSpecified || val!= ST_HighlightColor.none)
+                XmlHelper.WriteAttribute(sw, "w:val", this.val.ToString());
             sw.Write(">");
             sw.WriteEndW(nodeName);
         }
 
 
         private ST_HighlightColor valField;
+        private bool valFieldSpecified;
         /// <summary>
         /// Highlighting Color
         /// </summary>
@@ -1764,7 +1767,14 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
             set
             {
                 this.valField = value;
+                this.valFieldSpecified = value != ST_HighlightColor.black;
             }
+        }
+
+        public bool valSpecified
+        {
+            get { return this.valFieldSpecified; }
+            set { valFieldSpecified = value; }
         }
     }
     /// <summary>
