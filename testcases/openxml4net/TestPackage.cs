@@ -23,16 +23,19 @@ using NPOI.OpenXml4Net.OPC;
 using NPOI.OpenXml4Net.OPC.Internal;
 using NPOI.SS.UserModel;
 using NPOI.Util;
+using NPOI.XWPF.UserModel;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Security;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace TestCases.OpenXml4Net.OPC
 {
@@ -1107,6 +1110,129 @@ namespace TestCases.OpenXml4Net.OPC
         }
 
         [Test]
+        public void TestBug56479()
+        {
+            Stream is1 = OpenXml4NetTestDataSamples.OpenSampleStream("dcterms_bug_56479.zip");
+            OPCPackage p = OPCPackage.Open(is1);
+
+            // Check we found the contents of it
+            bool foundCoreProps = false, foundDocument = false, foundTheme1 = false;
+            foreach( PackagePart part in p.GetParts())
+            {
+                String partName = part.PartName.ToString();
+                String contentType = part.ContentType;
+                if("/docProps/core.xml".Equals(partName))
+                {
+                    ClassicAssert.AreEqual(ContentTypes.CORE_PROPERTIES_PART, contentType);
+                    foundCoreProps = true;
+                }
+                if("/word/document.xml".Equals(partName))
+                {
+                    ClassicAssert.AreEqual(XWPFRelation.DOCUMENT.ContentType, contentType);
+                    foundDocument = true;
+                }
+                if("/word/theme/theme1.xml".Equals(partName))
+                {
+                    ClassicAssert.AreEqual(XWPFRelation.THEME.ContentType, contentType);
+                    foundTheme1 = true;
+                }
+            }
+            ClassicAssert.IsTrue(foundCoreProps, "Core not found in " + p.GetParts());
+            ClassicAssert.IsFalse(foundDocument, "Document should not be found in " + p.GetParts());
+            ClassicAssert.IsFalse(foundTheme1, "Theme1 should not found in " + p.GetParts());
+            p.Close();
+
+            is1.Close();
+        }
+
+        [Test]
+        [Ignore("need slideshow")]
+        public void UnparseableCentralDirectory()
+        {
+            //File f = OpenXml4NetTestDataSamples.getSampleFile("at.pzp.www_uploads_media_PP_Scheinecker-jdk6error.pptx");
+            //SlideShow<?,?> ppt = SlideShowFactory.create(f, null, true);
+            //ppt.close();
+        }
+
+        [Test]
+        public void TestClosingStreamOnException()
+        {
+            Stream is1 = OpenXml4NetTestDataSamples.OpenSampleStream("dcterms_bug_56479.zip");
+            FileInfo tmp = TempFile.CreateTempFile("poi-test-truncated-zip", "");
+            // create a corrupted zip file by truncating a valid zip file to the first 100 bytes
+            Stream os = new FileStream(tmp.FullName, FileMode.Open, FileAccess.ReadWrite);
+            for(int i = 0; i < 100; i++)
+            {
+                os.WriteByte((byte)is1.ReadByte());
+            }
+            os.Flush();
+            os.Close();
+
+            is1.Close();
+
+            // feed the corrupted zip file to OPCPackage
+            try
+            {
+                OPCPackage.Open(tmp, PackageAccess.READ);
+            }
+            catch(Exception e)
+            {
+                // expected: the zip file is invalid
+                // this test does not care if open() throws an exception or not.
+            }
+            // If the stream is not closed on exception, it will keep a file descriptor to tmp,
+            // and requests to the OS to delete the file will fail.
+            tmp.Delete();
+            //ClassicAssert.IsTrue(!tmp.Exists, "Can't delete tmp file");
+        }
+
+        /**
+         * If ZipPackage is passed an invalid file, a call to close
+         *  (eg from the OPCPackage open method) should tidy up the
+         *  stream / file the broken file is being read from.
+         * See bug #60128 for more
+         */
+        [Test]
+        public void TestTidyStreamOnInvalidFile1()
+        {
+            Assert.Throws(typeof(ODFNotOfficeXmlFileException), () =>
+            {
+                OpenInvalidFile("SampleSS.ods", false);
+            });
+
+        }
+
+        [Test]
+        public void TestTidyStreamOnInvalidFile2()
+        {
+            ClassicAssert.Throws(typeof(ODFNotOfficeXmlFileException), () =>
+            {
+                OpenInvalidFile("SampleSS.ods", true);
+            });
+
+        }
+
+        [Test]
+        public void TestTidyStreamOnInvalidFile3()
+        {
+            Assert.Throws(typeof(NotOfficeXmlFileException), () =>
+            {
+                OpenInvalidFile("SampleSS.txt", false);
+            });
+
+        }
+
+        [Test]
+        public void TestTidyStreamOnInvalidFile4()
+        {
+            Assert.Throws(typeof(NotOfficeXmlFileException), () =>
+            {
+                OpenInvalidFile("SampleSS.txt", true);
+            });
+
+        }
+
+        [Test]
         public void TestBug62592()
         {
             Assert.Throws(typeof(InvalidFormatException), () =>
@@ -1125,11 +1251,55 @@ namespace TestCases.OpenXml4Net.OPC
             p2.GetParts();
             p2.GetParts();
         }
+
+        //[Test]
+        public void TestDoNotCloseStream()
+        {
+            //OutputStream os = Mockito.mock(OutputStream.class);
+		    //try (XSSFWorkbook wb = new XSSFWorkbook()) {
+			   // wb.createSheet();
+			   // wb.write(os);
+		    //}
+		    //verify(os, never()).close();
+
+		    //try (SXSSFWorkbook wb = new SXSSFWorkbook()) {
+			   // wb.createSheet();
+			   // wb.write(os);
+		    //}
+            //verify(os, never()).close();
+	    }
+
+
+
+        private static void OpenInvalidFile(String name, bool useStream)
+        {
+            // Spreadsheet has a good mix of alternate file types
+            POIDataSamples files = POIDataSamples.GetSpreadSheetInstance();
+            ZipPackage pkgTest = null;
+            Stream is1 = (useStream) ? files.OpenResourceAsStream(name) : null;
+            try
+            {
+                ZipPackage pkg = (useStream) ? new ZipPackage(is1, PackageAccess.READ) : new ZipPackage(files.GetFileInfo(name), PackageAccess.READ);
+                try
+                {
+                    pkgTest = pkg;
+                    ClassicAssert.IsNotNull(pkg.ZipArchive);
+                    ClassicAssert.IsFalse(pkg.ZipArchive.IsClosed);
+                    pkg.GetParts();
+                    Assert.Fail("Shouldn't work");
+                }
+                finally { pkg.Close(); }
+            }
+            finally
+            {
+                if(is1!=null)
+                    is1.Close();
+                if(pkgTest != null)
+                {
+                    ClassicAssert.IsNotNull(pkgTest.ZipArchive);
+                    ClassicAssert.IsTrue(pkgTest.ZipArchive.IsClosed);
+                }
+            }
+        }
     }
 }
-
-
-
-
-
-

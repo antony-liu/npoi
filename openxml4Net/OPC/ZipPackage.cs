@@ -61,9 +61,16 @@ namespace NPOI.OpenXml4Net.OPC
         {
             isStream = true;
             ZipInputStream zis = ZipHelper.OpenZipStream(in1);
-            // TODO: ZipSecureFile
-            //ThresholdInputStream zis = ZipHelper.OpenZipStream(in1);
-            this.zipArchive = new ZipInputStreamZipEntrySource(zis);
+            try
+            { 
+                // TODO: ZipSecureFile
+                //ThresholdInputStream zis = ZipHelper.OpenZipStream(in1);
+                this.zipArchive = new ZipInputStreamZipEntrySource(zis);
+            }
+            catch(ZipException ez)
+            {
+                throw new NotOfficeXmlFileException("Can't open the specified file.", ez);
+            }
         }
 
         /**
@@ -97,6 +104,10 @@ namespace NPOI.OpenXml4Net.OPC
             {
                 ZipFile zipFile = ZipHelper.OpenZipFile(file);
                 ze = new ZipFileZipEntrySource(zipFile);
+            }
+            catch(ZipException ez)
+            {
+                throw new NotOfficeXmlFileException("Can't open the specified file: '" + file + "'", ez);
             }
             catch (IOException e)
             {
