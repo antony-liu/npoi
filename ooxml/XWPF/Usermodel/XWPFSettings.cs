@@ -443,10 +443,14 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                return ctSettings.evenAndOddHeaders.val;
+                return (ctSettings.evenAndOddHeaders != null)&&ctSettings.evenAndOddHeaders.val;
             }
             set
             {
+                if(ctSettings.evenAndOddHeaders == null)
+                {
+                    ctSettings.evenAndOddHeaders = new CT_OnOff();
+                }
                 ctSettings.evenAndOddHeaders.val = value;
             }
         }
@@ -460,10 +464,14 @@ namespace NPOI.XWPF.UserModel
         {
             get
             {
-                return ctSettings.mirrorMargins.val;
+                return ctSettings.mirrorMargins!=null&&ctSettings.mirrorMargins.val;
             }
             set
             {
+                if(ctSettings.mirrorMargins == null)
+                {
+                    ctSettings.mirrorMargins = new CT_OnOff();
+                }
                 ctSettings.mirrorMargins.val = value;
             }
         }
