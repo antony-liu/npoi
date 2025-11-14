@@ -343,10 +343,9 @@ namespace NPOI.XSSF.Binary
 
         private double RkNumber(byte[] data, int offset)
         {
-            //see 2.5.122 for this abomination
+            //see 2.5.122
             byte b0 = data[offset];
 
-            //String s = Int32.ToString(b0, 2);
             bool numDivBy100 = ((b0 & 1) == 1); // else as is
             bool floatingPoint = ((b0 >> 1 & 1) == 0); // else signed integer
 
@@ -366,7 +365,8 @@ namespace NPOI.XSSF.Binary
             }
             else
             {
-                d = LittleEndian.GetInt(_rkBuffer);
+                int rawInt = LittleEndian.GetInt(_rkBuffer, 4);
+                d = rawInt >> 2;//divide by 4/shift bits coz 30 bit int, not 32
             }
             d = (numDivBy100) ? d/100 : d;
             return d;
