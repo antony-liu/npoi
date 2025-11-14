@@ -77,6 +77,20 @@ namespace TestCases.SS.Formula.Atp
 
         }
 
+        [Test]
+        public void TestRandBetweenLargeLongs()
+        {
+            for(int i = 0; i < 100; i++)
+            {
+                Evaluator.ClearAllCachedResultValues();
+                formulaCell.SetCellFormula("RANDBETWEEN(0,9999999999)");
+                Evaluator.EvaluateFormulaCell(formulaCell);
+                double value = formulaCell.NumericCellValue;
+                ClassicAssert.IsTrue(value >= 0.0, "rand is greater than or equal to lowerbound");
+                ClassicAssert.IsTrue(value <= 9999999999.0, "rand is less than or equal to upperbound");
+            }
+        }
+
         /**
          * Check special case where rounded up bottom value is greater than 
          * top value.
