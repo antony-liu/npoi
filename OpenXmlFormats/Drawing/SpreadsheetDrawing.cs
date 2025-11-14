@@ -1400,7 +1400,15 @@ namespace NPOI.OpenXmlFormats.Dml.Spreadsheet
 
         public int SizeOfAbsoluteAnchorArray()
         {
-            return 0;
+            int count = 0;
+            foreach(IEG_Anchor anchor in cellAnchors)
+            {
+                if(anchor is CT_AbsoluteCellAnchor)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 
         public int SizeOfOneCellAnchorArray()
@@ -1485,6 +1493,11 @@ namespace NPOI.OpenXmlFormats.Dml.Spreadsheet
                 throw new NotImplementedException($"invalid localname {node.ChildNodes[0].LocalName}");
             }
             return anchor;
+        }
+
+        public CT_TwoCellAnchor GetTwoCellAnchorArray(int v)
+        {
+            throw new NotImplementedException();
         }
     }
     [Serializable]

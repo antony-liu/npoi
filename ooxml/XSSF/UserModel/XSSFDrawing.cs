@@ -197,6 +197,29 @@ namespace NPOI.XSSF.UserModel
             return chart;
         }
 
+        /**
+         * Imports the chart from the <code>srcChart</code> into this drawing.
+         *
+         * @param srcChart
+         *            the source chart to be cloned into this drawing.
+         * @return the newly created chart.
+         * @throws XmlException
+         * @throws IOException
+         * @since 4.0.0
+         */
+        public XSSFChart ImportChart(XSSFChart srcChart)
+        {
+            CT_TwoCellAnchor anchor = ((XSSFDrawing) srcChart.GetParent()).GetCTDrawing().GetTwoCellAnchorArray(0);
+            CT_Marker from = anchor.from.Copy();
+            CT_Marker to = anchor.to.Copy();
+            XSSFClientAnchor destAnchor = new XSSFClientAnchor(from, to);
+            destAnchor.AnchorType = AnchorType.MoveAndResize;
+            XSSFChart destChart = CreateChart(destAnchor) as XSSFChart;
+            destChart.GetCTChartSpace().Set(srcChart.GetCTChartSpace().Copy());
+            destChart.GetCTChart().Set(srcChart.GetCTChart().Copy());
+            return destChart;
+        }
+
         /// <summary>
         /// Removes chart.
         /// </summary>

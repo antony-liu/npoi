@@ -67,6 +67,37 @@ namespace NPOI.Util
         {
             return (T)Copy((Object)original);
         }
+
+        public static void Set<T>(this T target, T source)
+        {
+            if(source == null || target == null)
+                throw new ArgumentNullException("Source or target object is null");
+
+            CopyProperties(source, target);
+        }
+
+        private static void CopyProperties(object source, object target)
+        {
+            // 使用上面的反射方法实现
+            Type sourceType = source.GetType();
+            Type targetType = target.GetType();
+
+            var sourceProperties = sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach(var sourceProperty in sourceProperties)
+            {
+                if(!sourceProperty.CanRead)
+                    continue;
+
+                var targetProperty = targetType.GetProperty(sourceProperty.Name);
+                if(targetProperty != null && targetProperty.CanWrite &&
+                    targetProperty.PropertyType == sourceProperty.PropertyType)
+                {
+                    var value = sourceProperty.GetValue(source);
+                    targetProperty.SetValue(target, value);
+                }
+            }
+        }
     }
 
     public class ReferenceEqualityComparer : EqualityComparer<Object>
