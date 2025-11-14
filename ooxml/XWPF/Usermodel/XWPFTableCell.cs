@@ -618,5 +618,88 @@ using Cysharp.Text;
         {
             return part.GetXWPFDocument();
         }
+
+        /**
+         * Get the table width as a decimal value.
+         * <p>If the width type is DXA or AUTO, then the value will always have
+         * a fractional part of zero (because these values are really integers).
+         * If the with type is percentage, then value may have a non-zero fractional
+         * part.
+         *
+         * @return Width value as a double-precision decimal.
+         * @since 4.0.0
+         */
+        public double WidthDecimal
+        {
+            get
+            {
+                return XWPFTable.GetWidthDecimal(GetTcWidth());
+            }
+        }
+
+        /**
+         * Get the width type for the table, as an {@link STTblWidth.Enum} value.
+         * A table width can be specified as an absolute measurement (an integer
+         * number of twips), a percentage, or the value "AUTO".
+         *
+         * @return The width type.
+         * @since 4.0.0
+         */
+        /**
+         * Set the width value type for the table.
+         * <p>If the width type is changed from the current type and the currently-set value
+         * is not consistent with the new width type, the value is reset to the default value
+         * for the specified width type.</p>
+         *
+         * @param widthType Width type
+         * @since 4.0.0
+         */
+        public TableWidthType WidthType
+        {
+            get
+            {
+                return XWPFTable.GetWidthType(GetTcWidth());
+            }
+            set
+            {
+                XWPFTable.SetWidthType(value, GetTcWidth());
+            }
+        }
+
+        /**
+         * Set the width to the value "auto", an integer value (20ths of a point), or a percentage ("nn.nn%").
+         *
+         * @param widthValue String matching one of "auto", [0-9]+, or [0-9]+(\.[0-9]+)%.
+         * @since 4.0.0
+         */
+        
+        public void SetWidth(String widthValue)
+        {
+            XWPFTable.SetWidthValue(widthValue, GetTcWidth());
+        }
+
+        private CT_TblWidth GetTcWidth()
+        {
+            CT_TcPr tcPr = GetTcPr();
+            return tcPr.IsSetTcW() ? tcPr.tcW : tcPr.AddNewTcW();
+        }
+
+        /**
+         * Get the cell properties for the cell.
+         * @return The cell properties
+         * @since 4.0.0
+         */
+        protected CT_TcPr GetTcPr()
+        {
+            return ctTc.IsSetTcPr() ? ctTc.tcPr : ctTc.AddNewTcPr();
+        }
+
+        public int Width
+        {
+            get
+            {
+                return int.Parse(GetTcWidth().w);
+            }
+        }
     }// end class
 }

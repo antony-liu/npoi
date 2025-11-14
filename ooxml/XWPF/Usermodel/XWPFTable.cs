@@ -16,11 +16,14 @@
 ==================================================================== */
 namespace NPOI.XWPF.UserModel
 {
-    using System;
-    using System.Text;
-    using NPOI.OpenXmlFormats.Wordprocessing;
-    using System.Collections.Generic;
+    using EnumsNET;
     using NPOI.OOXML;
+    using NPOI.OpenXmlFormats.Wordprocessing;
+    using NPOI.Util;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Text.RegularExpressions;
 
     /**
      * <p>Sketch of XWPFTable class. Only table's text is being hold.</p>
@@ -29,6 +32,10 @@ namespace NPOI.XWPF.UserModel
      */
     public class XWPFTable : IBodyElement, ISDTContents
     {
+        public static String REGEX_PERCENTAGE = "[0-9]+(\\.[0-9]+)?%";
+        public static String DEFAULT_PERCENTAGE_WIDTH = "100%";
+        static String NS_OOXML_WP_MAIN = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+        public static String REGEX_WIDTH_VALUE = "auto|[0-9]+|" + REGEX_PERCENTAGE;
 
         protected StringBuilder text = new StringBuilder();
         private CT_Tbl ctTbl;
@@ -280,7 +287,11 @@ namespace NPOI.XWPF.UserModel
 
 
         /**
-         * @return width value
+         * Get the width value as an integer.
+         * <p>If the width type is AUTO, DXA, or NIL, the value is 20ths of a point. If
+         * the width type is PCT, the value is the percentage times 50 (e.g., 2500 for 50%).</p> 
+         * @return width value as an integer
+         * Set the width in 20ths of a point (twips).
          */
         public int Width
         {
@@ -296,7 +307,7 @@ namespace NPOI.XWPF.UserModel
                 CT_TblWidth tblWidth = tblPr.IsSetTblW() ? tblPr.tblW : tblPr
                         .AddNewTblW();
                 tblWidth.w = value.ToString();
-                tblWidth.type = ST_TblWidth.pct;
+                tblWidth.type = ST_TblWidth.dxa;
             }
         }
 
@@ -1369,7 +1380,206 @@ namespace NPOI.XWPF.UserModel
             }
             return null;
         }
+        /**
+         * Get the table width as a decimal value.
+         * <p>If the width type is DXA or AUTO, then the value will always have
+         * a fractional part of zero (because these values are really integers).
+         * If the with type is percentage, then value may have a non-zero fractional
+         * part.
+         *
+         * @return Width value as a double-precision decimal.
+         * @since 4.0.0
+         */
+        public double WidthDecimal
+        {
+            get
+            {
+                return GetWidthDecimal(GetTblPr().tblW);
+            }
+        }
 
+        /**
+         * Get the width as a decimal value.
+         * <p>This method is also used by table cells.
+         * @param ctWidth Width value to evaluate.
+         * @return Width value as a decimal
+         * @since 4.0.0
+         */
+        internal static double GetWidthDecimal(CT_TblWidth ctWidth)
+        {
+            double result = 0.0;
+            ST_TblWidth typeValue = ctWidth.type;
+            if(typeValue == ST_TblWidth.dxa
+                    || typeValue == ST_TblWidth.auto
+                    || typeValue == ST_TblWidth.nil)
+            {
+                result = 0.0 + int.Parse(ctWidth.w);
+            }
+            else if(typeValue == ST_TblWidth.pct)
+            {
+                // Percentage values are stored as integers that are 50 times
+                // percentage.
+                result = int.Parse(ctWidth.w) / 50.0;
+            }
+            else
+            {
+                // Should never get here
+            }
+            return result;
+        }
+
+        
+
+        /**
+         * Get the width type from the width value
+         * @param ctWidth CTTblWidth to evalute
+         * @return The table width type
+         * @since 4.0.0
+         */
+        internal static TableWidthType GetWidthType(CT_TblWidth ctWidth)
+        {
+            ST_TblWidth typeValue = ctWidth.type;
+            if(!ctWidth.typeSpecified)
+            {
+                typeValue = ST_TblWidth.nil;
+                ctWidth.type = typeValue;
+            }
+            switch(typeValue)
+            {
+                case ST_TblWidth.nil:
+                    return TableWidthType.Nil;
+                case ST_TblWidth.auto:
+                    return TableWidthType.Auto;
+                case ST_TblWidth.dxa:
+                    return TableWidthType.Dxa;
+                case ST_TblWidth.pct:
+                    return TableWidthType.Pct;
+                default:
+                    // Should never get here
+                    return TableWidthType.Auto;
+            }
+        }
+
+        /**
+         * Set the width to the value "auto", an integer value (20ths of a point), or a percentage ("nn.nn%").
+         *
+         * @param widthValue String matching one of "auto", [0-9]+, or [0-9]+(\.[0-9]+)%.
+         * @since 4.0.0
+         */
+        public void SetWidth(String widthValue)
+        {
+            SetWidthValue(widthValue, GetTblPr().tblW);
+        }
+
+        /**
+         * Set the width value from a string
+         * @param widthValue The width value string
+         * @param ctWidth CTTblWidth to set the value on.
+         */
+        internal static void SetWidthValue(String widthValue, CT_TblWidth ctWidth)
+        {
+            if(!Regex.Match(widthValue, REGEX_WIDTH_VALUE).Success)
+            {
+                throw new RuntimeException("Table width value \"" + widthValue + "\" "
+                        + "must match regular expression \"" + REGEX_WIDTH_VALUE + "\".");
+            }
+            if(Regex.Match(widthValue, "auto").Success)
+            {
+                ctWidth.type = ST_TblWidth.auto;
+                ctWidth.w = "0";
+            }
+            else if(Regex.Match(widthValue, REGEX_PERCENTAGE).Success)
+            {
+                SetWidthPercentage(ctWidth, widthValue);
+            }
+            else
+            {
+                // Must be an integer
+                ctWidth.w = widthValue;
+                ctWidth.type = ST_TblWidth.dxa;
+            }
+        }
+
+        /**
+         * Set the underlying table width value to a percentage value.
+         * @param ctWidth The CTTblWidth to set the value on 
+         * @param widthValue String width value in form "33.3%" or an integer that is 50 times desired percentage value (e.g,
+         * 2500 for 50%)
+         * @since 4.0.0
+         */
+        protected static void SetWidthPercentage(CT_TblWidth ctWidth, String widthValue)
+        {
+            ctWidth.type = ST_TblWidth.pct;
+            if(Regex.Match(widthValue, REGEX_PERCENTAGE).Success)
+            {
+                String numberPart = widthValue.Substring(0,  widthValue.Length - 1);
+                double percentage = Double.Parse(numberPart) * 50;
+                long intValue = (long)Math.Round(percentage, 0);
+                ctWidth.w = intValue.ToString();
+            }
+            else if(Regex.Match(widthValue, "[0-9]+").Success)
+            {
+                ctWidth.w = widthValue;
+            }
+            else
+            {
+                throw new RuntimeException("setWidthPercentage(): Width value must be a percentage (\"33.3%\" or an integer, was \"" + widthValue + "\"");
+            }
+        }
+
+        /**
+         * Set the width value type for the table.
+         * <p>If the width type is changed from the current type and the currently-set value
+         * is not consistent with the new width type, the value is reset to the default value
+         * for the specified width type.</p>
+         *
+         * @param widthType Width type
+         * @since 4.0.0
+         */
+        /**
+         * Get the width type for the table, as an {@link STTblWidth.Enum} value.
+         * A table width can be specified as an absolute measurement (an integer
+         * number of twips), a percentage, or the value "AUTO".
+         *
+         * @return The width type.
+         * @since 4.0.0
+         */
+        public TableWidthType WidthType
+        {
+            get
+            {
+                return GetWidthType(GetTblPr().tblW);
+            }
+            set
+            {
+                SetWidthType(value, GetTblPr().tblW);
+            }
+        }
+
+        /**
+         * Set the width type if different from current width type
+         * @param widthType The new width type
+         * @param ctWidth CTTblWidth to set the type on
+         * @since 4.0.0
+         */
+        internal static void SetWidthType(TableWidthType widthType, CT_TblWidth ctWidth)
+        {
+            TableWidthType currentType = GetWidthType(ctWidth);
+            if(!currentType.Equals(widthType))
+            {
+                ST_TblWidth stWidthType = widthType.ToST_TblWidth();
+                ctWidth.type = stWidthType;
+                switch(stWidthType)
+                {
+                    case ST_TblWidth.pct:
+                        SetWidthPercentage(ctWidth, DEFAULT_PERCENTAGE_WIDTH);
+                        break;
+                    default:
+                        ctWidth.w = "0";
+                        break;
+                }
+            }
+        }
     }// end class
 
 }

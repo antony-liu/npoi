@@ -4890,6 +4890,11 @@ namespace NPOI.OpenXmlFormats.Wordprocessing
             sw.WriteEndW(nodeName);
         }
 
+        public bool IsSetTcW()
+        {
+            return tcW != null;
+        }
+
         public CT_TcPr()
         {
             //this.tcPrChangeField = new CT_TcPrChange();

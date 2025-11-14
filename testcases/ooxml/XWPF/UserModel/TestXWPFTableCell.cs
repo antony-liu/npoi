@@ -112,7 +112,7 @@ namespace TestCases.XWPF.UserModel
             ClassicAssert.IsNull(tableRows[1].GetCell(1).GetVerticalAlignment()); // should return null since alignment isn't set
         }
 
-        [Ignore("This is not a very useful test as written. It is not worth the execution time for a unit test")]
+        //This is not a very useful test as written. It is not worth the execution time for a unit test"
         [Test]
         public void TestCellVerticalAlignShouldNotThrowNPE()
         {
@@ -131,6 +131,21 @@ namespace TestCases.XWPF.UserModel
                     }
                 }
             }
+        }
+
+        [Test]
+        public void TestCellGetSetWidth()
+        {
+            XWPFDocument doc = new XWPFDocument();
+            XWPFTable table = doc.CreateTable();
+            XWPFTableRow tr = table.CreateRow();
+            XWPFTableCell cell = tr.AddNewTableCell();
+
+            cell.SetWidth("50%");
+            ClassicAssert.AreEqual(TableWidthType.Pct, cell.WidthType);
+            ClassicAssert.AreEqual(50.0, cell.WidthDecimal, 0.0);
+            ClassicAssert.AreEqual(2500, cell.Width);
+            doc.Close();
         }
     }
 }

@@ -193,15 +193,62 @@ namespace TestCases.XWPF.UserModel
         {
             XWPFDocument doc = new XWPFDocument();
 
-            CT_Tbl table = new CT_Tbl();
-            table.AddNewTblPr().AddNewTblW().w = "1000";
+            XWPFTable xtab = doc.CreateTable();
 
-            XWPFTable xtab = new XWPFTable(table, doc);
+            ClassicAssert.AreEqual(0, xtab.Width);
+            ClassicAssert.AreEqual(TableWidthType.Auto, xtab.WidthType);
 
+            xtab.SetWidth("1000");
+            ClassicAssert.AreEqual(TableWidthType.Dxa, xtab.WidthType);
             ClassicAssert.AreEqual(1000, xtab.Width);
 
-            xtab.Width = 100;
-            ClassicAssert.AreEqual(100, int.Parse(table.tblPr.tblW.w));
+            xtab.SetWidth("auto");
+            ClassicAssert.AreEqual(TableWidthType.Auto, xtab.WidthType);
+            ClassicAssert.AreEqual(0, xtab.Width);
+            ClassicAssert.AreEqual(0.0, xtab.WidthDecimal, 0.01);
+
+            xtab.SetWidth("999");
+            ClassicAssert.AreEqual(TableWidthType.Dxa, xtab.WidthType);
+            ClassicAssert.AreEqual(999, xtab.Width);
+
+            xtab.SetWidth("50.5%");
+            ClassicAssert.AreEqual(TableWidthType.Pct, xtab.WidthType);
+            ClassicAssert.AreEqual(50.5, xtab.WidthDecimal, 0.01);
+
+            // Test effect of Setting width type to a new value
+
+            // From PCT to NIL:
+            xtab.WidthType = TableWidthType.Nil;
+            ClassicAssert.AreEqual(TableWidthType.Nil, xtab.WidthType);
+            ClassicAssert.AreEqual(0, xtab.Width);
+
+            xtab.SetWidth("999"); // Sets type to DXA 
+            ClassicAssert.AreEqual(TableWidthType.Dxa, xtab.WidthType);
+
+            // From DXA to AUTO:
+            xtab.WidthType = TableWidthType.Auto;
+            ClassicAssert.AreEqual(TableWidthType.Auto, xtab.WidthType);
+            ClassicAssert.AreEqual(0, xtab.Width);
+
+            xtab.WidthType = TableWidthType.Pct;
+            ClassicAssert.AreEqual(TableWidthType.Pct, xtab.WidthType);
+
+            // From PCT to DXA:
+            xtab.SetWidth("33.3%");
+            xtab.WidthType = TableWidthType.Dxa;
+            ClassicAssert.AreEqual(TableWidthType.Dxa, xtab.WidthType);
+            ClassicAssert.AreEqual(0, xtab.Width);
+
+            // From DXA to DXA: (value should be unchanged)
+            xtab.SetWidth("999");
+            xtab.WidthType = TableWidthType.Dxa;
+            ClassicAssert.AreEqual(TableWidthType.Dxa, xtab.WidthType);
+            ClassicAssert.AreEqual(999, xtab.Width);
+
+            // From DXA to PCT:
+            xtab.WidthType = TableWidthType.Pct;
+            ClassicAssert.AreEqual(TableWidthType.Pct, xtab.WidthType);
+            ClassicAssert.AreEqual(100.0, xtab.WidthDecimal, 0.0);
 
             try
             {
@@ -209,7 +256,7 @@ namespace TestCases.XWPF.UserModel
             }
             catch(IOException e)
             {
-                Assert.Fail("Unable to close doc");
+                ClassicAssert.Fail("Unable to close doc");
             }
         }
         [Test]
