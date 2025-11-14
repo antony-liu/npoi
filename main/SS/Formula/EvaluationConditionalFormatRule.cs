@@ -245,9 +245,9 @@ namespace NPOI.SS.Formula
                     return false;
                 }
 
-                return (value == andFormat.value || value.Equals(andFormat.value))
-                       && (format == andFormat.format || format.Equals(andFormat.format))
-                       && (str == andFormat.str || str.Equals(andFormat.str));
+                return value == andFormat.value
+                       && format == andFormat.format
+                       && str == andFormat.str;
             }
 
             /**

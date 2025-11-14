@@ -386,10 +386,6 @@ namespace NPOI.SS.Formula
             {
                 return false;
             }
-            if (token is OperationPtg)
-            {
-                return true;
-            }
 
             return false;
         }

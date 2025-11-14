@@ -754,23 +754,18 @@ namespace NPOI.OOXML
                     throw new POIXMLException(e);
                 }
             }
-            if (extPart != null)
+            if (extPart != null && ext != null && ext.props != null)
             {
                 using Stream out1 = extPart.GetOutputStream();
                 if(extPart.Size > 0)
                     extPart.Clear();
                 ext.props.Save(out1);
             }
-            if (custPart != null)
+            if (custPart != null && cust != null && cust.props != null)
             {
                 using Stream out1 = custPart.GetOutputStream();
                 cust.props.Save(out1);
             }
-
-
         }
-
-
     }
-
 }

@@ -51,7 +51,7 @@ namespace NPOI.XSSF.UserModel
 
             // we potentially need to adjust the column/row information in the shape
             // the same way as we do in setRow()/setColumn()
-            if (vmlShape != null && vmlShape.SizeOfClientDataArray() > 0)
+            if (comment != null && vmlShape != null && vmlShape.SizeOfClientDataArray() > 0)
             {
                 CellReference ref1 = new CellReference(comment.@ref);
                 CT_ClientData clientData = vmlShape.GetClientDataArray(0);
@@ -74,13 +74,11 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return _comments.GetAuthor((int)_comment.authorId);
+                return _comments.GetAuthor(_comment.authorId);
             }
             set 
             {
-                _comment.authorId = (
-                    (uint)_comments.FindAuthor(value)
-                );
+                _comment.authorId = (uint)_comments.FindAuthor(value);
             }
         }
 

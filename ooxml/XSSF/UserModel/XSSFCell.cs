@@ -572,7 +572,12 @@ namespace NPOI.XSSF.UserModel
                 XSSFCell cell = ((XSSFSheet)Sheet).GetFirstCellInArrayFormula(this);
                 return cell.GetCellFormula(fpb);
             }
-            if (f.t == ST_CellFormulaType.shared)
+            
+            if(f == null)
+            {
+                return null;
+            }
+            else if (f.t == ST_CellFormulaType.shared)
             {
                 //return ConvertSharedFormula((int)f.si);
                 return ConvertSharedFormula((int)f.si, fpb == null ? XSSFEvaluationWorkbook.Create(Sheet.Workbook) : fpb);
