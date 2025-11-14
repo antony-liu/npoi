@@ -545,16 +545,15 @@ namespace NPOI.XSSF.UserModel
         }
 
 
-        ///**
-        // * Perform a registration of ourselves 
-        // *  to the style table
-        // */
+        /**
+         * Perform a registration of ourselves 
+         *  to the style table
+         */
         public long RegisterTo(StylesTable styles)
         {
             this._themes = styles.Theme;
-            short idx = (short)styles.PutFont(this, true);
-            this._index = idx;
-            return idx;
+            this._index = styles.PutFont(this, true);
+            return this._index;
         }
         /**
          * Records the Themes Table that is associated with

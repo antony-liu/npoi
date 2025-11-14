@@ -109,6 +109,9 @@ namespace NPOI.SS.UserModel
                 finally
                 {
                     IOUtils.CloseQuietly(stream);
+                    // as we processed the full stream already, we can close the filesystem here
+                    // otherwise file handles are leaked
+                    root.FileSystem.Close();
                 }
             }
 

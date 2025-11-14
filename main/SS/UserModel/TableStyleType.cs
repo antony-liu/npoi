@@ -153,7 +153,7 @@ namespace NPOI.SS.UserModel
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
             while (firstStart <= c) {
-                if (c >= firstStart && c <= secondStart -1) 
+                if (c <= secondStart -1) 
                     return new CellRangeAddress(table.StartRowIndex, table.EndRowIndex, firstStart, secondStart - 1);
                 firstStart = secondStart + c2Stripe;
                 secondStart = firstStart + c1Stripe;
@@ -205,7 +205,7 @@ namespace NPOI.SS.UserModel
             // could do fancy math, but tables can't be that wide, a simple loop is fine
             // if not in this type of stripe, return null
             while (firstStart <= c) {
-                if (c >= firstStart && c <= secondStart -1)
+                if (c <= secondStart -1)
                     return new CellRangeAddress(firstStart, secondStart - 1, table.StartColIndex, table.EndColIndex);
                 firstStart = secondStart + c2Stripe;
                 secondStart = firstStart + c1Stripe;

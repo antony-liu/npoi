@@ -18,14 +18,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
+using NPOI.Util;
 
 namespace NPOI.POIFS.FileSystem
 {
     public class EntryUtils
     {
         /**
-     * Copies an Entry into a target POIFS directory, recursively
-     */
+         * Copies an Entry into a target POIFS directory, recursively
+         */
         public static void CopyNodeRecursively(Entry entry, DirectoryEntry target)
         {
             // System.err.println("copyNodeRecursively called with "+entry.getName()+
@@ -95,6 +96,7 @@ namespace NPOI.POIFS.FileSystem
          * @deprecated use {@link FilteringDirectoryNode} instead
          */
         [Obsolete("To be removed NPOI 2.8.")]
+        [Removal( Version = "4.2")]
         public static void CopyNodes(DirectoryEntry sourceRoot,
                 DirectoryEntry targetRoot, List<String> excepts)
         {
