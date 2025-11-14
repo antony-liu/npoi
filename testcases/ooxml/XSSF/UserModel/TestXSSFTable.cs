@@ -374,15 +374,21 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(2, table.RowCount);
 
             // add columns
-            table.CreateColumn("Column B");
-            table.CreateColumn("Column D");
-            table.CreateColumn("Column C", 2); // add between B and D
+            XSSFTableColumn c1 = table.GetColumns()[0];
+            XSSFTableColumn cB = table.CreateColumn("Column B");
+            XSSFTableColumn cD = table.CreateColumn("Column D");
+            XSSFTableColumn cC = table.CreateColumn("Column C", 2); // add between B and D
             table.UpdateReferences();
             table.UpdateHeaders();
 
             ClassicAssert.AreEqual(4, table.ColumnCount);
             ClassicAssert.AreEqual(2, table.RowCount);
 
+            // column IDs start at 1, and increase in the order columns are added (see bug #62740)
+            ClassicAssert.AreEqual(1, c1.Id, "Column c ID");
+            ClassicAssert.IsTrue(c1.Id < cB.Id, "Column B ID");
+            ClassicAssert.IsTrue(cB.Id < cD.Id, "Column D ID");
+            ClassicAssert.IsTrue(cD.Id < cC.Id, "Column C ID");
             ClassicAssert.AreEqual("Column 1", table.GetColumns()[0].Name); // generated name
             ClassicAssert.AreEqual("Column B", table.GetColumns()[1].Name);
             ClassicAssert.AreEqual("Column C", table.GetColumns()[2].Name);

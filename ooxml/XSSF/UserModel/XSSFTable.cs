@@ -79,6 +79,7 @@ namespace NPOI.XSSF.UserModel
         }
 
         [Obsolete("deprecated in POI 3.14, scheduled for removal in POI 3.16")]
+        [Removal(Version = "4.0")]
         protected XSSFTable(PackagePart part, PackageRelationship rel)
             : this(part)
         {
