@@ -47,7 +47,7 @@ namespace NPOI.SS.UserModel
             decimalSymbols = culture.NumberFormat;
             scientificFormat = new DecimalFormat("0.#####E0" , decimalSymbols);
             integerFormat = new DecimalFormat("#", decimalSymbols);
-            decimalFormat = new DecimalFormat("#.##########", decimalSymbols);
+            decimalFormat = new DecimalFormat("0.##########", decimalSymbols);
             this.culture = culture;
         }
 

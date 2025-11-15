@@ -61,10 +61,8 @@ namespace NPOI.XSSF.Extractor
         }
 
         public XSSFBEventBasedExcelExtractor(OPCPackage container)
-        : base(container)
+            : base(container)
         {
-
-            ;
         }
 
         public static void main(String[] args)
@@ -128,65 +126,68 @@ namespace NPOI.XSSF.Extractor
         /// <summary>
         /// Processes the file and returns the text
         /// </summary>
-        public String GetText()
+        public override String Text
         {
-            try
+            get
             {
-                XSSFBSharedStringsTable strings = new XSSFBSharedStringsTable(Package);
-                XSSFBReader xssfbReader = new XSSFBReader(Package);
-                XSSFBStylesTable styles = xssfbReader.GetXSSFBStylesTable();
-                XSSFBReader.SheetIterator iter = (XSSFBReader.SheetIterator) xssfbReader.GetSheetsData();
-
-                StringBuilder text = new StringBuilder();
-                SheetTextExtractor sheetExtractor = new SheetTextExtractor(this);
-                XSSFBHyperlinksTable hyperlinksTable = null;
-                while(iter.MoveNext())
+                try
                 {
-                    Stream stream = iter.Current;
-                    if(IncludeSheetNames)
-                    {
-                        text.Append(iter.SheetName);
-                        text.Append('\n');
-                    }
-                    if(handleHyperlinksInCells)
-                    {
-                        hyperlinksTable = new XSSFBHyperlinksTable(iter.SheetPart);
-                    }
-                    XSSFBCommentsTable comments = IncludeCellComments ? iter.GetXSSFBSheetComments() : null;
-                    ProcessSheet(sheetExtractor, styles, comments, strings, stream);
-                    if(IncludeHeadersFooters)
-                    {
-                        sheetExtractor.AppendHeaderText(text);
-                    }
-                    sheetExtractor.AppendCellText(text);
-                    if(IncludeTextBoxes)
-                    {
-                        ProcessShapes(iter.Shapes, text);
-                    }
-                    if(IncludeHeadersFooters)
-                    {
-                        sheetExtractor.AppendFooterText(text);
-                    }
-                    sheetExtractor.Reset();
-                    stream.Close();
-                }
+                    XSSFBSharedStringsTable strings = new XSSFBSharedStringsTable(Package);
+                    XSSFBReader xssfbReader = new XSSFBReader(Package);
+                    XSSFBStylesTable styles = xssfbReader.GetXSSFBStylesTable();
+                    XSSFBReader.SheetIterator iter = (XSSFBReader.SheetIterator) xssfbReader.GetSheetsData();
 
-                return text.ToString();
-            }
-            catch(IOException)
-            {
-                //LOGGER.log(POILogger.WARN, e);
-                return null;
-            }
-            catch(SAXException)
-            {
-                //LOGGER.log(POILogger.WARN, se);
-                return null;
-            }
-            catch(OpenXml4NetException)
-            {
-                //LOGGER.log(POILogger.WARN, o4je);
-                return null;
+                    StringBuilder text = new StringBuilder();
+                    SheetTextExtractor sheetExtractor = new SheetTextExtractor(this);
+                    XSSFBHyperlinksTable hyperlinksTable = null;
+                    while(iter.MoveNext())
+                    {
+                        Stream stream = iter.Current;
+                        if(IncludeSheetNames)
+                        {
+                            text.Append(iter.SheetName);
+                            text.Append('\n');
+                        }
+                        if(handleHyperlinksInCells)
+                        {
+                            hyperlinksTable = new XSSFBHyperlinksTable(iter.SheetPart);
+                        }
+                        XSSFBCommentsTable comments = IncludeCellComments ? iter.GetXSSFBSheetComments() : null;
+                        ProcessSheet(sheetExtractor, styles, comments, strings, stream);
+                        if(IncludeHeadersFooters)
+                        {
+                            sheetExtractor.AppendHeaderText(text);
+                        }
+                        sheetExtractor.AppendCellText(text);
+                        if(IncludeTextBoxes)
+                        {
+                            ProcessShapes(iter.Shapes, text);
+                        }
+                        if(IncludeHeadersFooters)
+                        {
+                            sheetExtractor.AppendFooterText(text);
+                        }
+                        sheetExtractor.Reset();
+                        stream.Close();
+                    }
+
+                    return text.ToString();
+                }
+                catch(IOException)
+                {
+                    //LOGGER.log(POILogger.WARN, e);
+                    return null;
+                }
+                catch(SAXException)
+                {
+                    //LOGGER.log(POILogger.WARN, se);
+                    return null;
+                }
+                catch(OpenXml4NetException)
+                {
+                    //LOGGER.log(POILogger.WARN, o4je);
+                    return null;
+                }
             }
         }
 

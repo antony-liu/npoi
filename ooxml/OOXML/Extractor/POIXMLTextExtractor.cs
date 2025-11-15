@@ -73,7 +73,7 @@ namespace NPOI.OOXML.Extractor
         /**
          * Returns the opened OPCPackage that Contains the document
          */
-        public OPCPackage Package
+        public virtual OPCPackage Package
         {
             get
             {

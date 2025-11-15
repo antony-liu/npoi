@@ -45,7 +45,6 @@ namespace TestCases.XSSF.Extractor
         /// Get text out of the simple file
         /// </summary>
         [Test]
-        [Ignore("SAX bug")]
         public void TestGetSimpleText()
         {
             // a very simple file
@@ -93,7 +92,6 @@ namespace TestCases.XSSF.Extractor
         /// </summary>
         /// <exception cref="Exception"></exception>
         [Test]
-        [Ignore("SAX bug")]
         public void TestShapes()
         {
             XSSFEventBasedExcelExtractor ooxmlExtractor = GetExtractor("WithTextBox.xlsb");
@@ -112,7 +110,6 @@ namespace TestCases.XSSF.Extractor
         }
 
         [Test]
-        [Ignore("SAX bug")]
         public void TestBeta()
         {
             XSSFEventBasedExcelExtractor extractor = GetExtractor("Simple.xlsb");
@@ -122,13 +119,12 @@ namespace TestCases.XSSF.Extractor
                     "This is an example spreadsheet created with Microsoft Excel 2007 Beta 2.");
         }
         [Test]
-        [Ignore("SAX bug")]
         public void Test62815()
         {
             //test file based on http://oss.sheetjs.com/test_files/RkNumber.xlsb
             XSSFEventBasedExcelExtractor extractor = GetExtractor("62815.xlsb");
             extractor.IncludeCellComments = true;
-            String[] rows = extractor.Text.Split(["\r\n"], StringSplitOptions.RemoveEmptyEntries);
+            String[] rows = extractor.Text.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             ClassicAssert.AreEqual(283, rows.Length);
             StreamReader reader = new StreamReader(XSSFTestDataSamples.GetSampleFile("62815.xlsb.txt").Open(FileMode.Open));
             String line = reader.ReadLine();

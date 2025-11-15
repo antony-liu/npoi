@@ -166,9 +166,13 @@ namespace NPOI.XSSF.Extractor
         /// <summary>
         /// Returns the opened OPCPackage container.
         /// </summary>
-        public OPCPackage GetPackage()
+        public override OPCPackage Package
         {
-            return container;
+            get
+            {
+                return container;
+            }
+            
         }
 
         /// <summary>

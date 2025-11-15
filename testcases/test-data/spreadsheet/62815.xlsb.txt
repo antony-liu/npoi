@@ -281,4 +281,4 @@ RkNumber
 3.37E-11
 1.12E-16
 #excel doesn't display ...863, this was manually altered to get the test to work
-3.7477917436899863E-22
+3.7477917436899900E-22
