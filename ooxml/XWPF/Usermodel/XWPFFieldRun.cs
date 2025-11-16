@@ -14,6 +14,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
+using System;
+
 namespace NPOI.XWPF.UserModel
 {
     using NPOI.OpenXmlFormats.Wordprocessing;
@@ -25,25 +27,25 @@ namespace NPOI.XWPF.UserModel
      */
     public class XWPFFieldRun : XWPFRun
     {
-        private CT_SimpleField field;
+        private readonly CT_SimpleField @field;
 
-        public XWPFFieldRun(CT_SimpleField field, CT_R run, IRunBody p)
+        public XWPFFieldRun(CT_SimpleField sField, CT_R run, IRunBody p)
                 : base(run, p)
         {
             ;
-            this.field = field;
+            this.@field = sField;
         }
 
 
         public CT_SimpleField GetCTField()
         {
-            return field;
+            return @field;
         }
 
         public string FieldInstruction
         {
-            get { return field.instr; }
-            set { field.instr = value; }
+            get { return @field.instr; }
+            set { @field.instr = value; }
         }
     }
 
