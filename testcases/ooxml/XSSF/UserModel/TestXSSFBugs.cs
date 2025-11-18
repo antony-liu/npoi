@@ -3293,13 +3293,21 @@ namespace TestCases.XSSF.UserModel
             cell.CellStyle = style;
 
             // Everything is fine at this point, cell is red
+            XSSFColor actual = cell.CellStyle.FillBackgroundColorColor as XSSFColor;
+            ClassicAssert.IsNull(actual);
+            actual = cell.CellStyle.FillForegroundColorColor as XSSFColor;
+            ClassicAssert.IsNotNull(actual);
+            ClassicAssert.AreEqual(color.ARGBHex, actual.ARGBHex);
 
             Dictionary<String, Object> properties = new Dictionary<String, Object>();
             properties.Add(CellUtil.BORDER_BOTTOM, BorderStyle.Thin); //or BorderStyle.THIN
             CellUtil.SetCellStyleProperties(cell, properties);
 
             // Now the cell is all black
-            XSSFColor actual = cell.CellStyle.FillBackgroundColorColor as XSSFColor;
+            actual = cell.CellStyle.FillBackgroundColorColor as XSSFColor;
+            ClassicAssert.IsNotNull(actual);
+            ClassicAssert.IsNull(actual.ARGBHex);
+            actual = cell.CellStyle.FillForegroundColorColor as XSSFColor;
             ClassicAssert.IsNotNull(actual);
             ClassicAssert.AreEqual(color.ARGBHex, actual.ARGBHex);
 
