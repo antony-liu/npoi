@@ -36,8 +36,8 @@ namespace TestCases.SS
     {
         private readonly String xls = "SampleSS.xls";
         private readonly String xlsx = "SampleSS.xlsx";
-        private readonly String[] xls_prot = new String[] { "password.xls", "password" };
-        private readonly String[] xlsx_prot = new String[] { "protected_passtika.xlsx", "tika" };
+        private readonly String[] xls_protected = new String[] { "password.xls", "password" };
+        private readonly String[] xlsx_protected = new String[] { "protected_passtika.xlsx", "tika" };
         private readonly String txt = "SampleSS.txt";
 
         private readonly string testdataPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
@@ -310,14 +310,14 @@ namespace TestCases.SS
 
             // Protected, correct password, opens fine
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xls_prot[0]), xls_prot[1]
+                    HSSFTestDataSamples.GetSampleFile(xls_protected[0]), xls_protected[1]
             );
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
 
             wb = WorkbookFactory.Create(
-                    HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]), xlsx_prot[1]
+                    HSSFTestDataSamples.GetSampleFile(xlsx_protected[0]), xlsx_protected[1]
             );
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is XSSFWorkbook);
@@ -330,9 +330,9 @@ namespace TestCases.SS
             try
             {
                 wb = WorkbookFactory.Create(
-                        HSSFTestDataSamples.GetSampleFile(xls_prot[0]), "wrong"
+                        HSSFTestDataSamples.GetSampleFile(xls_protected[0]), "wrong"
                 );
-                AssertCloseDoesNotModifyFile(xls_prot[0], wb);
+                AssertCloseDoesNotModifyFile(xls_protected[0], wb);
                 Assert.Fail("Shouldn't be able to open with the wrong password");
             }
             catch (EncryptedDocumentException)
@@ -342,9 +342,9 @@ namespace TestCases.SS
             try
             {
                 wb = WorkbookFactory.Create(
-                        HSSFTestDataSamples.GetSampleFile(xlsx_prot[0]), "wrong"
+                        HSSFTestDataSamples.GetSampleFile(xlsx_protected[0]), "wrong"
                 );
-                AssertCloseDoesNotModifyFile(xlsx_prot[0], wb);
+                AssertCloseDoesNotModifyFile(xlsx_protected[0], wb);
                 Assert.Fail("Shouldn't be able to open with the wrong password");
             }
             catch (EncryptedDocumentException)
@@ -426,6 +426,21 @@ namespace TestCases.SS
             wb = WorkbookFactory.Create(altXLSX);
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is XSSFWorkbook);
+        }
+
+        /**
+         * Check that the overloaded file methods which take passwords work properly
+         */
+        [Test]
+        public void TestCreateEmpty()
+        {
+            IWorkbook wb = WorkbookFactory.Create(false);
+            ClassicAssert.IsTrue(wb is HSSFWorkbook);
+            wb.Close();
+
+            wb = WorkbookFactory.Create(true);
+            ClassicAssert.IsTrue(wb is XSSFWorkbook);
+            wb.Close();
         }
     }
 

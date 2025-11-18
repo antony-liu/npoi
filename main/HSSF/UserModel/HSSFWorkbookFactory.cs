@@ -32,6 +32,15 @@ namespace NPOI.HSSF.UserModel
     /// </summary>
     public class HSSFWorkbookFactory : WorkbookFactory
     {
+        /**
+         * Create a new empty Workbook
+         *
+         * @return The created workbook
+         */
+        public static HSSFWorkbook CreateWorkbook()
+        {
+            return new HSSFWorkbook();
+        }
         /// <summary>
         /// <para>
         /// Creates a HSSFWorkbook from the given NPOIFSFileSystem

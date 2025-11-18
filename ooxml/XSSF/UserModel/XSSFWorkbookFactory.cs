@@ -24,23 +24,23 @@ using System.Text;
 
 namespace NPOI.XSSF.UserModel
 {
-
-
-
-
     using NPOI;
-
     using NPOI.OpenXml4Net.Exceptions;
-
     using NPOI.OpenXml4Net.OPC;
-
-
-
     using NPOI.SS.UserModel;
     using NPOI.Util;
 
     public class XSSFWorkbookFactory : WorkbookFactory
     {
+        /**
+         * Create a new empty Workbook
+         *
+         * @return The created workbook
+         */
+        public static XSSFWorkbook CreateWorkbook()
+        {
+            return new XSSFWorkbook();
+        }
         /// <summary>
         /// <para>
         /// Creates a XSSFWorkbook from the given OOXML Package.

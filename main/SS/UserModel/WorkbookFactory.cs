@@ -44,6 +44,24 @@ namespace NPOI.SS.UserModel
     public class WorkbookFactory
     {
         /// <summary>
+        /// Create a new empty Workbook, either XSSF or HSSF depending
+        /// on the parameter
+        /// </summary>
+        /// <param name="xssf">If an XSSFWorkbook or a HSSFWorkbook should be created</param>
+        /// <returns>The created workbook</returns>
+        /// <exception cref="IOException">if an error occurs while reading the data</exception>
+        public static IWorkbook Create(bool xssf)
+        {
+            if(xssf)
+            {
+                return CreateXSSFWorkbook();
+            }
+            else
+            {
+                return CreateHSSFWorkbook();
+            }
+        }
+        /// <summary>
         /// <para>
         /// Creates a HSSFWorkbook from the given NPOIFSFileSystem
         /// </para>
