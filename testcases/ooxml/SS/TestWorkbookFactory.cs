@@ -106,6 +106,12 @@ namespace TestCases.SS
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is HSSFWorkbook);
             AssertCloseDoesNotModifyFile(xls, wb);
+            wb = WorkbookFactory.Create(
+                new POIFSFileSystem(HSSFTestDataSamples.OpenSampleFileStream(xls)).Root
+            );
+            ClassicAssert.IsNotNull(wb);
+            ClassicAssert.IsTrue(wb is HSSFWorkbook);
+            AssertCloseDoesNotModifyFile(xls, wb);
 
             // Package -> xssf
             wb = XSSFWorkbookFactory.Create(
@@ -422,10 +428,12 @@ namespace TestCases.SS
             wb = WorkbookFactory.Create(altXLS);
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is HSSFWorkbook);
+            CloseOrRevert(wb);
 
             wb = WorkbookFactory.Create(altXLSX);
             ClassicAssert.IsNotNull(wb);
             ClassicAssert.IsTrue(wb is XSSFWorkbook);
+            CloseOrRevert(wb);
         }
 
         /**
@@ -436,11 +444,26 @@ namespace TestCases.SS
         {
             IWorkbook wb = WorkbookFactory.Create(false);
             ClassicAssert.IsTrue(wb is HSSFWorkbook);
-            wb.Close();
+            CloseOrRevert(wb);
 
             wb = WorkbookFactory.Create(true);
             ClassicAssert.IsTrue(wb is XSSFWorkbook);
-            wb.Close();
+            CloseOrRevert(wb);
+        }
+
+        [Test]
+        public void TestInvalidFormatException()
+        {
+            String filename = "OPCCompliance_DerivedPartNameFAIL.docx";
+            try
+            {
+                WorkbookFactory.Create(POIDataSamples.GetOpenXML4JInstance().OpenResourceAsStream(filename));
+                Assert.Fail("Expecting an Exception for this document");
+            }
+            catch(IOException)
+            {
+                // expected here
+            }
         }
     }
 
