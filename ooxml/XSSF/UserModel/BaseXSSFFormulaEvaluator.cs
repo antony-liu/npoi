@@ -68,6 +68,22 @@ namespace NPOI.XSSF.UserModel
             }
             throw new Exception("Unexpected eval class (" + eval.GetType().Name + ")");
         }
+
+        protected void SetCellType(ICell cell, CellType cellType)
+        {
+            if(cell is XSSFCell)
+            {
+                IEvaluationWorkbook evaluationWorkbook = GetEvaluationWorkbook();
+                BaseXSSFEvaluationWorkbook xewb = typeof(BaseXSSFEvaluationWorkbook).IsAssignableFrom(evaluationWorkbook.GetType()) ? (BaseXSSFEvaluationWorkbook) evaluationWorkbook : null;
+
+                ((XSSFCell) cell).SetCellType(cellType, xewb);
+            }
+            else
+            {
+                // could be an SXSSFCell
+                cell.SetCellType(cellType);
+            }
+        }
     }
 
 }

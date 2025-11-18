@@ -1658,9 +1658,8 @@ namespace NPOI.XSSF.UserModel
         /// </summary>
         /// <param name="cell">The cell that is removed</param>
         /// <param name="evalWb">in use, if one exists</param>
-        internal void OnDeleteFormula(XSSFCell cell, XSSFEvaluationWorkbook evalWb)
+        internal void OnDeleteFormula(XSSFCell cell, BaseXSSFEvaluationWorkbook evalWb)
         {
-
             CT_CellFormula f = cell.GetCTCell().f;
             if(f != null
                && f.t == ST_CellFormulaType.shared

@@ -560,7 +560,7 @@ namespace NPOI.XSSF.UserModel
          * @return a formula for the cell
          * @throws InvalidOperationException if the cell type returned by {@link #getCellType()} is not CELL_TYPE_FORMULA
          */
-        protected internal String GetCellFormula(XSSFEvaluationWorkbook fpb)
+        protected internal String GetCellFormula(BaseXSSFEvaluationWorkbook fpb)
         {
             CellType cellType = CellType;
             if (cellType != CellType.Formula) 
@@ -591,7 +591,7 @@ namespace NPOI.XSSF.UserModel
         /// <param name="si">Shared Group Index</param>
         /// <param name="fpb"></param>
         /// <returns>non shared formula created for the given shared formula and this cell</returns>
-        private String ConvertSharedFormula(int si, XSSFEvaluationWorkbook fpb)
+        private String ConvertSharedFormula(int si, BaseXSSFEvaluationWorkbook fpb)
         {
             XSSFSheet sheet = (XSSFSheet)Sheet;
 
@@ -1049,6 +1049,17 @@ namespace NPOI.XSSF.UserModel
         /// <param name="cellType"></param>
         public ICell SetCellType(CellType cellType)
         {
+            return SetCellType(cellType, null);
+        }
+
+        /**
+         * Needed by bug #62834, which points out getCellFormula() expects an evaluation context or creates a new one,
+         * so if there is one in use, it needs to be carried on through.
+         * @param cellType
+         * @param evalWb BaseXSSFEvaluationWorkbook already in use, or null if a new implicit one should be used
+         */
+        public ICell SetCellType(CellType cellType, BaseXSSFEvaluationWorkbook evalWb)
+        {
             CellType prevType = CellType;
 
             if (IsPartOfArrayFormulaGroup)
@@ -1059,7 +1070,7 @@ namespace NPOI.XSSF.UserModel
             {
                 if(_cell.IsSetF())
                 {
-                    (_row.Sheet as XSSFSheet).OnDeleteFormula(this, null);
+                    (_row.Sheet as XSSFSheet).OnDeleteFormula(this, evalWb);
                 }
                 ((XSSFWorkbook)Sheet.Workbook).OnDeleteFormula(this);
             }

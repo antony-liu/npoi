@@ -470,6 +470,38 @@ namespace TestCases.XSSF.UserModel
             finally { wb.Close(); }
         }
 
+        /**
+         * see bug 62834, handle when a shared formula range doesn't contain only formula cells
+         * @throws IOException 
+         */
+        [Test]
+        public void TestBug62834()
+        {
+            IWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("62834.xlsx");
+            try
+            {
+                IFormulaEvaluator evaluator = wb.GetCreationHelper().CreateFormulaEvaluator();
+
+                ICell a2 = wb.GetSheetAt(0).GetRow(1).GetCell(0);
+                ICell value = evaluator.EvaluateInCell(a2);
+                ClassicAssert.AreEqual("a value", value.StringCellValue, "wrong value A2");
+
+                //            evaluator.clearAllCachedResultValues();
+
+                ICell a3 = wb.GetSheetAt(0).GetRow(2).GetCell(0);
+                value = evaluator.EvaluateInCell(a3);
+                ClassicAssert.AreEqual("a value", value.StringCellValue, "wrong value A3");
+
+                ICell a5 = wb.GetSheetAt(0).GetRow(4).GetCell(0);
+                value = evaluator.EvaluateInCell(a5);
+                ClassicAssert.AreEqual("another value", value.StringCellValue, "wrong value A5");
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
         [Test]
         public void TestNPOIIssue_1057()
         {

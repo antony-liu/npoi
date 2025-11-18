@@ -64,6 +64,15 @@ namespace NPOI.SS.Formula
         }
 
         /**
+         * internal use
+         * @return evaluation workbook
+         */
+        protected IEvaluationWorkbook GetEvaluationWorkbook()
+        {
+            return _bookEvaluator.Workbook;
+        }
+
+        /**
          * Should be called whenever there are major Changes (e.g. moving sheets) to input cells
          * in the Evaluated workbook.  If performance is not critical, a single call to this method
          * may be used instead of many specific calls to the Notify~ methods.
@@ -214,7 +223,7 @@ namespace NPOI.SS.Formula
             return EvaluateFormulaCell(cell);
         }
 
-        protected static void SetCellType(ICell cell, CellValue cv)
+        protected void SetCellType(ICell cell, CellValue cv)
         {
             CellType cellType = cv.CellType;
             switch (cellType)
@@ -223,7 +232,7 @@ namespace NPOI.SS.Formula
                 case CellType.Error:
                 case CellType.Numeric:
                 case CellType.String:
-                    cell.SetCellType(cellType);
+                    SetCellType(cell, cellType);
                     return;
                 case CellType.Blank:
                     // never happens - blanks eventually Get translated to zero
@@ -236,6 +245,15 @@ namespace NPOI.SS.Formula
             }
         }
 
+        /**
+         * Override if a different variation is needed, e.g. passing the evaluator to the cell method
+         * @param cell
+         * @param cellType
+         */
+        protected void SetCellType(ICell cell, CellType cellType)
+        {
+            cell.SetCellType(cellType);
+        }
         protected abstract IRichTextString CreateRichTextString(String str);
 
         protected void SetCellValue(ICell cell, CellValue cv)
