@@ -387,7 +387,7 @@ namespace TestCases.SS
           * Check that a helpful exception is raised on a non-existing file
           */
         [Test]
-        public void TestNonExistantFile()
+        public void TestNonExistingFile()
         {
             FileInfo nonExistantFile = new FileInfo("notExistantFile");
             ClassicAssert.IsFalse(nonExistantFile.Exists);
@@ -402,6 +402,31 @@ namespace TestCases.SS
             }
         }
 
+        /**
+         * See Bugzilla bug #62831 - #WorkbookFactory.create(File) needs
+         *  to work for sub-classes of File too, eg JFileChooser
+         */
+        [Test]
+        [Ignore("Potential loop detected")]
+        public void TestFileSubclass()
+        {
+            IWorkbook wb;
+
+            FileInfo normalXLS = HSSFTestDataSamples.GetSampleFile(xls);
+            FileInfo normalXLSX = HSSFTestDataSamples.GetSampleFile(xlsx);
+            FileInfo altXLS = new FileInfo(normalXLS.FullName);
+            FileInfo altXLSX = new FileInfo(normalXLSX.FullName);
+            ClassicAssert.IsTrue(altXLS.Exists);
+            ClassicAssert.IsTrue(altXLSX.Exists);
+
+            wb = WorkbookFactory.Create(altXLS);
+            ClassicAssert.IsNotNull(wb);
+            ClassicAssert.IsTrue(wb is HSSFWorkbook);
+
+            wb = WorkbookFactory.Create(altXLSX);
+            ClassicAssert.IsNotNull(wb);
+            ClassicAssert.IsTrue(wb is XSSFWorkbook);
+        }
     }
 
 }
