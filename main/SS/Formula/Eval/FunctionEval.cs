@@ -147,7 +147,7 @@ namespace NPOI.SS.Formula.Eval
             retval[47] = new DStarRunner(DStarRunner.DStarAlgorithmEnum.DVAR);
             retval[48] = TextFunction.TEXT; // TEXT
             retval[49] = new NotImplementedFunction("LINEST"); // LINEST
-            retval[50] = new NotImplementedFunction("TREND"); // TREND
+            retval[50] = new Trend(); // TREND
             retval[51] = new NotImplementedFunction("LOGEST"); // LOGEST
             retval[52] = new NotImplementedFunction("GROWTH"); // GROWTH
             retval[53] = new NotImplementedFunction("GOTO"); // GOTO

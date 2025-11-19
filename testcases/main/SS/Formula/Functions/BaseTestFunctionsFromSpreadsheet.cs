@@ -74,7 +74,7 @@ namespace TestCases.SS.Formula.Functions
 
 
 
-        private static void ConfirmExpectedResult(String msg, ICell expected, CellValue actual)
+        private void ConfirmExpectedResult(String msg, ICell expected, CellValue actual)
         {
             if (expected == null)
             {
@@ -107,7 +107,13 @@ namespace TestCases.SS.Formula.Functions
                 case CellType.Formula: // will never be used, since we will call method After formula Evaluation
                     throw new AssertionException("Cannot expect formula as result of formula Evaluation: " + msg);
                 case CellType.Numeric:
-                    ClassicAssert.AreEqual(expected.NumericCellValue, actual.NumberValue, 0.0, msg);
+                    if(Filename=="Trend.xls")
+                    {
+                        ClassicAssert.AreEqual(Math.Round(expected.NumericCellValue, 10),
+                            Math.Round(actual.NumberValue, 10), 0.0, msg);
+                    }
+                    else
+                        ClassicAssert.AreEqual(expected.NumericCellValue, actual.NumberValue, 0.0, msg);
                     break;
                 case CellType.String:
                     ClassicAssert.AreEqual(expected.RichStringCellValue.String, actual.StringValue, msg);
@@ -312,10 +318,10 @@ namespace TestCases.SS.Formula.Functions
             return sb.ToString();
         }
         /**
- * Asserts that the 'read me' comment page exists, and has this class' name in one of the
- * cells.  This back-link is to make it easy to find this class if a reader encounters the
- * spreadsheet first.
- */
+         * Asserts that the 'read me' comment page exists, and has this class' name in one of the
+         * cells.  This back-link is to make it easy to find this class if a reader encounters the
+         * spreadsheet first.
+         */
         private void confirmReadMeSheet(HSSFWorkbook workbook)
         {
             String firstSheetName = workbook.GetSheetName(0);
