@@ -77,7 +77,6 @@ namespace NPOI.SS.Formula
                 out1.Append(rawSheetName);
             }
         }
-
         public static void AppendFormat(StringBuilder out1, String workbookName, String rawSheetName)
         {
             bool needsQuotes = NeedsDelimiting(workbookName) || NeedsDelimiting(rawSheetName);
@@ -99,7 +98,7 @@ namespace NPOI.SS.Formula
             }
         }
 
-        private static void AppendAndEscape(StringBuilder sb, String rawSheetName)
+        public static void AppendAndEscape(StringBuilder sb, String rawSheetName)
         {
             int len = rawSheetName.Length;
             for (int i = 0; i < len; i++)
@@ -114,7 +113,7 @@ namespace NPOI.SS.Formula
             }
         }
 
-        private static bool NeedsDelimiting(String rawSheetName)
+        public static bool NeedsDelimiting(String rawSheetName)
         {
             int len = rawSheetName.Length;
             if (len < 1)

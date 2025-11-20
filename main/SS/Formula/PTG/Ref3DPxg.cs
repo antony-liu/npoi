@@ -122,21 +122,7 @@ namespace NPOI.SS.Formula.PTG
         public override String ToFormulaString()
         {
             StringBuilder sb = new StringBuilder();
-            if (externalWorkbookNumber >= 0)
-            {
-                sb.Append('[');
-                sb.Append(externalWorkbookNumber);
-                sb.Append(']');
-            }
-            if (firstSheetName != null)
-            {
-                SheetNameFormatter.AppendFormat(sb, firstSheetName);
-            }
-            if (lastSheetName != null)
-            {
-                sb.Append(':');
-                SheetNameFormatter.AppendFormat(sb, lastSheetName);
-            }
+            SheetRangeAndWorkbookIndexFormatter.Format(sb, externalWorkbookNumber, firstSheetName, lastSheetName);
             sb.Append('!');
             sb.Append(FormatReferenceAsString());
             return sb.ToString();
