@@ -25,6 +25,7 @@ namespace NPOI.OOXML
     using NPOI.OpenXml4Net.Exceptions;
     using System.Xml;
     using NPOI.OpenXml4Net.OPC.Internal;
+    using NPOI.XWPF.UserModel;
 
     /**
      * Represents an entry of a OOXML namespace.
@@ -747,6 +748,15 @@ namespace NPOI.OOXML
         protected void Read(POIXMLFactory factory, Dictionary<PackagePart, POIXMLDocumentPart> context)
         {
             PackagePart pp = GetPackagePart();
+
+            if(pp.ContentType.Equals(XWPFRelation.GLOSSARY_DOCUMENT.ContentType))
+            {
+                logger.Log(POILogger.WARN,
+                        "POI does not currently support template.main+xml (glossary) parts.  " +
+                        "Skipping this part for now.");
+                return;
+            }
+
             // add mapping a second time, in case of initial caller hasn't done so
             POIXMLDocumentPart otherChild = PutDictionary(context, pp, this);
             if (otherChild != null && otherChild != this)

@@ -460,5 +460,27 @@ namespace TestCases.XWPF.Extractor
             POITestCase.AssertContains(txt, "Sequencing data");
             extractor.Close();
         }
+
+        [Test]
+        public void TestGlossary() 
+        {
+            XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("60316.dotx");
+            XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
+            String txt = extractor.Text;
+            POITestCase.AssertContains(txt, "Getting the perfect");
+            //this content appears only in the glossary document
+            //once we add processing for this, we can change this to contains
+            POITestCase.AssertNotContained(txt, "table rows");
+        }
+
+        [Test]
+        public void TestPartsInTemplate() 
+        {
+            XWPFDocument doc = XWPFTestDataSamples.OpenSampleDocument("60316b.dotx");
+            XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
+            String txt = extractor.Text;
+            POITestCase.AssertContains(txt, "header 2");
+            POITestCase.AssertContains(txt, "footer 1");
+        }
     }
 }

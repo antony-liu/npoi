@@ -51,6 +51,7 @@ namespace NPOI.XSSF.UserModel
          * Create an instance of XSSFColor from the supplied XML bean
          */
         [Obsolete("Remove it at NPOI 2.8.0")]
+        [Removal(Version = "4.2")]
         public XSSFColor(CT_Color color)
             : this(color, new DefaultIndexedColorMap())
         {
