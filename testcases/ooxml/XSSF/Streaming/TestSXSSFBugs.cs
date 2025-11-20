@@ -6,7 +6,9 @@ using NPOI.XSSF.Streaming;
 using NPOI.XSSF.UserModel;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using System;
 using System.IO;
+using TestCases.HPSF.Basic;
 using TestCases.SS;
 using TestCases.SS.UserModel;
 
@@ -21,9 +23,9 @@ namespace TestCases.XSSF.Streaming
 
         }
         // override some tests which do not work for SXSSF
-        [Ignore("cloneSheet() not implemented")]  public override void Bug18800() { /* cloneSheet() not implemented */ }
-        [Ignore("cloneSheet() not implemented")]  public override void Bug22720() { /* cloneSheet() not implemented */ }
-        [Ignore("Evaluation is not fully supported")]  public override void Bug47815() { /* Evaluation is not supported */ }
+        [Ignore("cloneSheet() not implemented")] public override void Bug18800() { /* cloneSheet() not implemented */ }
+        [Ignore("cloneSheet() not implemented")] public override void Bug22720() { /* cloneSheet() not implemented */ }
+        [Ignore("Evaluation is not fully supported")] public override void Bug47815() { /* Evaluation is not supported */ }
         [Ignore("Evaluation is not fully supported")] public override void Bug46729_testMaxFunctionArguments() { /* Evaluation is not supported */ }
         [Ignore("Reading data is not supported")] public override void Bug57798() { /* Reading data is not supported */ }
 
@@ -71,10 +73,10 @@ namespace TestCases.XSSF.Streaming
             {
                 base.bug60197_NamedRangesReferToCorrectSheetWhenSheetOrderIsChanged();
             }
-            catch (RuntimeException e)
+            catch(RuntimeException e)
             {
                 var cause = e.InnerException;
-                if (cause is IOException && cause.Message == "Stream closed")
+                if(cause is IOException && cause.Message == "Stream closed")
                 {
                     // expected on the second time that _testDataProvider.writeOutAndReadBack(SXSSFWorkbook) is called
                     // if the test makes it this far, then we know that XSSFName sheet indices are updated when sheet
@@ -99,7 +101,8 @@ namespace TestCases.XSSF.Streaming
             {
                 WriteWorkbook(wb, SXSSFITestDataProvider.instance);
                 ClassicAssert.Fail("Should catch exception here");
-            } catch(RuntimeException e)
+            }
+            catch(RuntimeException e)
             {
                 // this is not implemented yet
                 wb.Close();
@@ -152,6 +155,54 @@ namespace TestCases.XSSF.Streaming
             // formula value cell
             CellRangeAddress range = new CellRangeAddress(rowIndex, rowIndex, colIndex, colIndex);
             sheet.SetArrayFormula(col1Value, range);
+        }
+
+        [Test]
+        [Ignore("takes too long for the normal test run")]
+        public void Test62872()
+        {
+            int COLUMN_COUNT = 300;
+            int ROW_COUNT = 600000;
+            int TEN_MINUTES = 1000*60*10;
+
+            SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            //workbook.SetCompressTempFiles(true);
+            SXSSFSheet sheet = workbook.CreateSheet("RawData") as SXSSFSheet;
+
+            SXSSFRow row = sheet.CreateRow(0) as SXSSFRow;
+            SXSSFCell cell;
+
+            for(int i = 1; i <= COLUMN_COUNT; i++)
+            {
+                cell = row.CreateCell(i - 1) as SXSSFCell;
+                cell.SetCellValue("Column " + i);
+            }
+            var tick = DateTime.Now.Ticks;
+            for(int i = 1; i < ROW_COUNT; i++)
+            {
+                row = sheet.CreateRow(i) as SXSSFRow;
+                for(int j = 1; j <= COLUMN_COUNT; j++)
+                {
+                    cell = row.CreateCell(j - 1) as SXSSFCell;
+                    
+                    //make some noise
+                    cell.SetCellValue(new DateTime(tick + i*TEN_MINUTES+(j*TEN_MINUTES)/COLUMN_COUNT));
+                }
+                i++;
+                // if (i % 1000 == 0)
+                // logger.info("Created Row " + i);
+            }
+            FileStream out1 = new FileStream(TempFile.CreateTempFile("test62872", ".xlsx").FullName,
+                FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            try
+            {
+                workbook.Write(out1);
+                workbook.Dispose();
+                workbook.Close();
+                //out1.Flush();
+            }
+            finally { out1.Close(); }
+            // logger.info("File written!");
         }
     }
 }
