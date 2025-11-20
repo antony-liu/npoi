@@ -326,6 +326,44 @@ namespace TestCases.XSSF.UserModel
         }
 
         [Test]
+        public void TestCreateTableIds()
+        {
+            XSSFWorkbook wb = new XSSFWorkbook();
+            try {
+                XSSFSheet sheet = wb.CreateSheet() as XSSFSheet;
+
+                AreaReference reference1 = wb.GetCreationHelper().CreateAreaReference(
+                    new CellReference(0, 0), new CellReference(2, 2));
+
+                XSSFTable table1 = sheet.CreateTable(reference1);
+                ClassicAssert.AreEqual("A1:C3", table1.GetCTTable().@ref);
+
+                ClassicAssert.AreEqual(1, table1.GetCTTable().tableColumns.GetTableColumnArray(0).id);
+                ClassicAssert.AreEqual(2, table1.GetCTTable().tableColumns.GetTableColumnArray(1).id);
+                ClassicAssert.AreEqual(3, table1.GetCTTable().tableColumns.GetTableColumnArray(2).id);
+
+                ClassicAssert.AreEqual(1, table1.GetCTTable().id);
+
+                AreaReference reference2 = wb.GetCreationHelper().CreateAreaReference(
+                    new CellReference(10, 10), new CellReference(12, 12));
+
+                XSSFTable table2 = sheet.CreateTable(reference2);
+                ClassicAssert.AreEqual("K11:M13", table2.GetCTTable().@ref);
+
+                // these IDs duplicate those from table1 and may be cause of https://bz.apache.org/bugzilla/show_bug.cgi?id=62906
+                ClassicAssert.AreEqual(1, table2.GetCTTable().tableColumns.GetTableColumnArray(0).id);
+                ClassicAssert.AreEqual(2, table2.GetCTTable().tableColumns.GetTableColumnArray(1).id);
+                ClassicAssert.AreEqual(3, table2.GetCTTable().tableColumns.GetTableColumnArray(2).id);
+
+                ClassicAssert.AreEqual(2, table2.GetCTTable().id);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
         public void TestSetArea()
         {
             XSSFWorkbook wb = new XSSFWorkbook();
