@@ -25,7 +25,6 @@ namespace NPOI.POIFS.FileSystem
 {
     using NPOI.POIFS.Common;
     using NPOI.POIFS.Storage;
-
     using NPOI.Util;
 
     public enum FileMagic
@@ -96,7 +95,8 @@ namespace NPOI.POIFS.FileSystem
         public static FileMagicContainer PDF = new FileMagicContainer("%PDF");
         public static FileMagicContainer HTML = new FileMagicContainer(
             Encoding.UTF8.GetBytes("<!DOCTYP"),
-            Encoding.UTF8.GetBytes("<html"));
+            Encoding.UTF8.GetBytes("<html"),
+            Encoding.UTF8.GetBytes("<HTML"));
         public static FileMagicContainer WORD2 = new FileMagicContainer(
             new byte[]{ (byte)0xdb, (byte)0xa5, 0x2d, 0x00});
         // keep UNKNOWN always as last enum!
@@ -104,7 +104,10 @@ namespace NPOI.POIFS.FileSystem
         public static FileMagicContainer UNKNOWN = new FileMagicContainer(Array.Empty<byte>());
 
         byte[][] magic;
-
+        public byte[][] GetMagic()
+        {
+            return magic;
+        }
         public FileMagicContainer(long magic)
         {
             this.magic = new byte[1][];
@@ -117,18 +120,26 @@ namespace NPOI.POIFS.FileSystem
             this.magic = new byte[1][];
             this.magic[0] = magic;
         }
-        FileMagicContainer(byte[] m1, byte[] m2)
+        FileMagicContainer(byte[] m0, byte[] m1)
         {
             this.magic = new byte[2][];
-            this.magic[0] = m1;
-            this.magic[1] = m2;
+            this.magic[0] = m0;
+            this.magic[1] = m1;
+        }
+
+        FileMagicContainer(byte[] m0, byte[] m1, byte[] m2)
+        {
+            this.magic = new byte[3][];
+            this.magic[0] = m0;
+            this.magic[1] = m1;
+            this.magic[2] = m2;
         }
         FileMagicContainer(string magic)
             : this(Encoding.GetEncoding(LocaleUtil.CHARSET_1252).GetBytes(magic))
         {
 
         }
-        private static readonly Dictionary<FileMagic, FileMagicContainer> Values = 
+        public static readonly Dictionary<FileMagic, FileMagicContainer> Values = 
             new Dictionary<FileMagic, FileMagicContainer>(){
             { FileMagic.OLE2, OLE2 },
             { FileMagic.OOXML , OOXML },
@@ -147,20 +158,9 @@ namespace NPOI.POIFS.FileSystem
         {
             foreach(var fm in Values)
             {
-                int i=0;
-                bool found = true;
                 foreach(byte[] ma in fm.Value.magic)
                 {
-                    foreach(byte m in ma)
-                    {
-                        byte d = magic[i++];
-                        if(!(d == m || (m == 0x70 && (d == 0x10 || d == 0x20 || d == 0x40))))
-                        {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if(found)
+                    if(FindMagic(ma, magic))
                     {
                         return fm.Key;
                     }
@@ -169,6 +169,25 @@ namespace NPOI.POIFS.FileSystem
             return FileMagic.UNKNOWN;
         }
 
+        public static FileMagic ValueOf(string magic)
+        {
+            if(Enum.TryParse<FileMagic>(magic, out FileMagic fm))
+                return fm;
+            throw new ArgumentException("Unknown magic: " + magic);
+        }
+        private static bool FindMagic(byte[] cmp, byte[] actual)
+        {
+            int i=0;
+            foreach(byte m in cmp)
+            {
+                byte d = actual[i++];
+                if(!(d == m || (m == 0x70 && (d == 0x10 || d == 0x20 || d == 0x40))))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         /**
          * Get the file magic of the supplied InputStream (which MUST
          *  support mark and reset).<p>

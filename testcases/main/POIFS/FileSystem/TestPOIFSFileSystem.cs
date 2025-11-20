@@ -27,19 +27,19 @@
 
 namespace TestCases.POIFS.FileSystem
 {
+    using NPOI.POIFS.Common;
+    using NPOI.POIFS.FileSystem;
+    using NPOI.POIFS.Properties;
+    using NPOI.POIFS.Storage;
+    using NPOI.Util;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using System.Collections;
-    using System.IO;
-
-    using NUnit.Framework;using NUnit.Framework.Legacy;
-
-    using NPOI.POIFS.FileSystem;
-    using NPOI.Util;
-    using NPOI.POIFS.Storage;
-    using NPOI.POIFS.Properties;
-    using TestCases.HSSF;
-    using NPOI.POIFS.Common;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using TestCases.HSSF;
 
     /**
      * Tests for POIFSFileSystem
@@ -406,6 +406,24 @@ namespace TestCases.POIFS.FileSystem
         private static Stream OpenSampleStream(String sampleFileName)
         {
             return HSSFTestDataSamples.OpenSampleFileStream(sampleFileName);
+        }
+
+        [Test]
+        public void FileMagics()
+        {
+            foreach(var fm in FileMagicContainer.Values)
+            {
+                if(fm.Key == FileMagic.UNKNOWN)
+                {
+                    continue;
+                }
+                foreach(byte[] b in fm.Value.GetMagic())
+                {
+                    ClassicAssert.AreEqual(fm.Key, FileMagicContainer.ValueOf(b));
+                }
+            }
+
+            ClassicAssert.AreEqual(FileMagic.UNKNOWN, FileMagicContainer.ValueOf(Encoding.UTF8.GetBytes("foobaa")));
         }
     }
 }

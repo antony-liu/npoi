@@ -82,7 +82,7 @@ namespace TestCases.OOXML
             XSSFWorkbook newWorkbook =
                     XSSFTestDataSamples.WriteOutAndReadBack(workbook);
             workbook.Close();
-            ClassicAssert.IsTrue(workbook != newWorkbook);
+            ClassicAssert.AreNotSame(workbook, newWorkbook);
 
 
             POIXMLProperties newProps = newWorkbook.GetProperties();
