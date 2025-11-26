@@ -49,9 +49,9 @@ namespace NPOI.Util
         {
         #if NETSTANDARD2_1 || NET6_0_OR_GREATER || NETSTANDARD2_0
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        #endif
             BIG5 = Encoding.GetEncoding("big5");
             WIN_1252 = Encoding.GetEncoding("windows-1252");
-        #endif 
         }
         private static Encoding ISO_8859_1 = Encoding.GetEncoding("ISO-8859-1");
         private static Encoding UTF16LE = Encoding.Unicode;

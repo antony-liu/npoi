@@ -266,7 +266,7 @@ namespace NPOI.Util
             while (true)
             {
                 int got = stream.Read(b, off + total, len - total - off);
-                if (got <= 0)
+                if (len > 0 && got <= 0)
                 {
                     return (total == 0) ? -1 : total;
                 }
@@ -427,6 +427,29 @@ namespace NPOI.Util
                 out1.Write(buff, 0, count);
             }
         }
+        /**
+         * Copies all the data from the given InputStream to the OutputStream. It
+         * leaves both streams open, so you will still need to close them once done.
+         *
+         * @param inp The {@link InputStream} which provides the data
+         * @param out The {@link OutputStream} to write the data to
+         * @return the amount of bytes copied
+         *
+         * @throws IOException If copying the data fails.
+         */
+        public static long copy(InputStream inp, Stream out1)
+        {
+            byte[] buff = new byte[4096];
+            long totalCount = 0;
+            for(int count; (count = inp.Read(buff)) > 0; totalCount += count)
+            {
+                //if(count > 0)
+                //{
+                    out1.Write(buff, 0, count);
+                //}
+            }
+            return totalCount;
+        }
 
         public static long CalculateChecksum(byte[] data)
         {
@@ -548,7 +571,24 @@ namespace NPOI.Util
             return new byte[(int)length];
         }
 
-        public static void SafelyAllocateCheck(long length, int maxLength)
+        /**
+         * Simple utility function to check that you haven't hit EOF
+         * when reading a byte.
+         *
+         * @param is inputstream to read
+         * @return byte read, unless
+         * @throws IOException on IOException or EOF if -1 is read
+         */
+        public static int ReadByte(InputStream is1) 
+        {
+            int b = is1.Read();
+            if (b == -1) {
+                throw new EOFException();
+            }
+            return b;
+        }
+
+public static void SafelyAllocateCheck(long length, int maxLength)
         {
             if (length < 0L)
             {

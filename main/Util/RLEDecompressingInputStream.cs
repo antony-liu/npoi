@@ -200,7 +200,7 @@ namespace NPOI.Util
         {
             pos = 0;
             int w = ReadShort(input);
-            if (w == -1)
+            if (w == -1 || w == 0)
             {
                 return -1;
             }

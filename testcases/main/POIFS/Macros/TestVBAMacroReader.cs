@@ -15,6 +15,9 @@
    limitations under the License.
 ==================================================================== */
 
+using NUnit.Framework;
+using System.Reflection;
+
 namespace TestCases.POIFS.Macros
 {
     using NPOI.POIFS.FileSystem;
@@ -24,6 +27,8 @@ namespace TestCases.POIFS.Macros
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
+    using System.Reflection.Metadata;
     using System.Text;
     using System.Text.RegularExpressions;
     using TestCases;
@@ -315,6 +320,7 @@ namespace TestCases.POIFS.Macros
             FileInfo f = POIDataSamples.GetSpreadSheetInstance().GetFileInfo("59830.xls");
             VBAMacroReader r = new VBAMacroReader(f);
             Dictionary<string, string> macros = r.ReadMacros();
+            ClassicAssert.AreEqual(29, macros.Count);
             ClassicAssert.IsNotNull(macros["Module20"]);
             StringAssert.Contains("here start of superscripting", macros["Module20"]);
             r.Close();
@@ -355,6 +361,52 @@ namespace TestCases.POIFS.Macros
             Dictionary<string, string> macros = r.ReadMacros();
             ClassicAssert.IsNotNull(macros["Module1"]);
             StringAssert.Contains("9/8/2004", macros["Module1"]);
+            r.Close();
+        }
+
+        [Test]
+        public void Bug60279() 
+        {
+            FileInfo f = POIDataSamples.GetDocumentInstance().GetFileInfo("60279.doc");
+            VBAMacroReader r = new VBAMacroReader(f);
+            Dictionary<String, String> macros = r.ReadMacros();
+            ClassicAssert.AreEqual(1, macros.Count);
+            String content = macros["ThisDocument"];
+            StringAssert.Contains("Attribute VB_Base = \"1Normal.ThisDocument\"", content);
+            StringAssert.Contains("Attribute VB_Customizable = True", content);
+            r.Close();
+    }
+
+        [Test]
+        public void Bug62624() 
+        {
+            //macro comes from Common Crawl: HRLOXHGMGLFIJQQU27RIWXOARRHAAAAS
+            FileInfo f = POIDataSamples.GetSpreadSheetInstance().GetFileInfo("62624.bin");
+            VBAMacroReader r = new VBAMacroReader(f);
+
+            Dictionary<String, IModule> macros = r.ReadMacroModules();
+            ClassicAssert.AreEqual(13, macros.Count);
+            ClassicAssert.IsNotNull(macros["M\u00F3dulo1"]);
+            StringAssert.Contains("Calcula_tributos", macros["M\u00F3dulo1"].GetContent());
+            ClassicAssert.AreEqual(ModuleType.Module, macros["M\u00F3dulo1"].GetModuleType());
+            r.Close();
+        }
+
+        [Test]
+        public void Bug62625() 
+        {
+            //macro comes from Common Crawl: 4BZ22N5QG5R2SUU2MNN47PO7VBQLNYIQ
+            //A REFERENCE_NAME can sometimes only have an ascii string without
+            //a reserved byte followed by the unicode string.
+            //See https://github.com/decalage2/oletools/blob/master/oletools/olevba.py#L1516
+            //and https://github.com/decalage2/oletools/pull/135 from (@c1fe)
+
+
+            FileInfo f = POIDataSamples.GetSpreadSheetInstance().GetFileInfo("62625.bin");
+            VBAMacroReader r = new VBAMacroReader(f);
+
+            Dictionary<String, IModule> macros = r.ReadMacroModules();
+            ClassicAssert.AreEqual(20, macros.Count);
             r.Close();
         }
     }
