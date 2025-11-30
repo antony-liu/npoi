@@ -445,7 +445,21 @@ namespace TestCases.XWPF.UserModel
         {
             XWPFRun run = p.CreateRun() as XWPFRun;
             ClassicAssert.IsNull(run.Lang);
+            run.Lang = "en-CA";
+            ClassicAssert.AreEqual("en-CA", run.Lang);
 
+            run.Lang = "fr-CA";
+            ClassicAssert.AreEqual("fr-CA", run.Lang);
+
+            run.Lang = null;
+            ClassicAssert.IsNull(run.Lang);
+        }
+
+        [Test]
+        public void TestSetGetLang2()
+        {
+            XWPFRun run = p.CreateRun();
+            ClassicAssert.IsNull(run.Lang);
             run.GetCTR().AddNewRPr().AddNewLang().val = "en-CA";
             ClassicAssert.AreEqual("en-CA", run.Lang);
 

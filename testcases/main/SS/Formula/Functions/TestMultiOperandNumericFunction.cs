@@ -18,6 +18,7 @@
 namespace TestCases.SS.Formula.Functions
 {
     using NPOI.SS;
+    using NPOI.SS.Formula.Eval;
     using NPOI.SS.Formula.Functions;
     using NUnit.Framework;
     using NUnit.Framework.Legacy;
@@ -31,6 +32,27 @@ namespace TestCases.SS.Formula.Functions
         {
             MultiOperandNumericFunction fun = new MultiOperandNumericFunction1(true, true);
             ClassicAssert.AreEqual(SpreadsheetVersion.EXCEL2007.MaxFunctionArgs, fun.MaxNumOperands);
+        }
+
+        [Test]
+        public void MissingArgEvalsAreCountedAsZero()
+        {
+            MultiOperandNumericFunction instance = new Stub(true, true);
+            ValueEval result = instance.Evaluate(new ValueEval[] {MissingArgEval.instance}, 0, 0);
+            ClassicAssert.IsTrue(result is NumberEval);
+            ClassicAssert.AreEqual(0.0, ((NumberEval) result).NumberValue, 0);
+        }
+    }
+
+    public class Stub : MultiOperandNumericFunction
+    {
+        public Stub(bool isReferenceBoolCounted, bool isBlankCounted)
+            : base(isReferenceBoolCounted, isBlankCounted)
+        {
+        }
+        protected internal override double Evaluate(double[] values)
+        {
+            return values[0];
         }
     }
 

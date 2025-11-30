@@ -401,7 +401,7 @@ namespace NPOI.SS.Formula.Eval
             retval[316] = new NotImplementedFunction("TTEST"); // TTEST
             retval[317] = new NotImplementedFunction("PROB"); // PROB
             retval[318] = AggregateFunction.DEVSQ; // DEVSQ
-            retval[319] = new NotImplementedFunction("GEOMEAN"); // GEOMEAN
+            retval[319] = AggregateFunction.GEOMEAN; // GEOMEAN
             retval[320] = new NotImplementedFunction("HARMEAN"); // HARMEAN
             retval[321] = AggregateFunction.SUMSQ; // SUMSQ
             retval[322] = new NotImplementedFunction("KURT"); // KURT

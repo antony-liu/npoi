@@ -42,22 +42,19 @@ namespace NPOI.SS.Formula.Functions
 
         public ValueEval Evaluate(ValueEval[] args, int srcCellRow, int srcCellCol)
         {
-
-            double d;
             try
             {
                 double[] values = GetNumberArray(args);
-                d = Evaluate(values);
+                double d = Evaluate(values);
+                if(Double.IsNaN(d) || Double.IsInfinity(d))
+                    return ErrorEval.NUM_ERROR;
+
+                return new NumberEval(d);
             }
             catch (EvaluationException e)
             {
                 return e.GetErrorEval();
             }
-
-            if (Double.IsNaN(d) || Double.IsInfinity(d))
-                return ErrorEval.NUM_ERROR;
-
-            return new NumberEval(d);
         }
 
         private sealed class DoubleList
@@ -225,6 +222,11 @@ namespace NPOI.SS.Formula.Functions
                 {
                     temp.Add(0.0);
                 }
+                return;
+            }
+            if(ve == MissingArgEval.instance)
+            {
+                temp.Add(0.0);
                 return;
             }
             throw new InvalidOperationException("Invalid ValueEval type passed for conversion: ("

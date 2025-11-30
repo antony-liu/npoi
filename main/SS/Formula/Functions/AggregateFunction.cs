@@ -19,6 +19,7 @@ using NPOI.SS.Formula.Functions;
 namespace NPOI.SS.Formula.Functions
 {
     using System;
+    using MathNet.Numerics.Statistics;
     using NPOI.SS.Formula.Eval;
 
     public class AVEDEV : AggregateFunction
@@ -326,6 +327,22 @@ namespace NPOI.SS.Formula.Functions
     }
 
 
+    public class GeoMean : AggregateFunction
+    {
+        protected internal override double Evaluate(double[] values)
+        {
+            // The library implementation returns 0 for an input sequence like [1, 0]. So this check is necessary.
+            foreach(double value in values)
+            {
+                if(value <= 0)
+                {
+                    throw new EvaluationException(ErrorEval.NUM_ERROR);
+                }
+            }
+            
+            return Statistics.GeometricMean(values);
+        }
+    }
     /**
      * @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
      *
@@ -375,6 +392,7 @@ namespace NPOI.SS.Formula.Functions
         public static readonly Function SUMSQ = new SUMSQ();
         public static readonly Function VAR = new VAR();
         public static readonly Function VARP = new VARP();
+        public static readonly Function GEOMEAN = new GeoMean();
         public static readonly Function PERCENTILE = new Percentile();
     }
 }
