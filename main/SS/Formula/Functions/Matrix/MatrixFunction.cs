@@ -81,7 +81,8 @@ namespace NPOI.SS.Formula.Functions
                         i = 0;
                         j++;
                     }
-                    matrix[j, i++] = vector[idx];
+                    if(j < matrix.Length)
+                        matrix[j, i++] = vector[idx];
                 }
             }
 
