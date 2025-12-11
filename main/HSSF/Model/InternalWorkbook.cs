@@ -818,6 +818,7 @@ namespace NPOI.HSSF.Model
          */
         public void SetSheetHidden(int sheetnum, SheetVisibility visibility)
         {
+            CheckSheets(sheetnum);
             BoundSheetRecord bsr = GetBoundSheetRec(sheetnum);
             bsr.IsHidden = visibility == SheetVisibility.Hidden;
             bsr.IsVeryHidden = visibility == SheetVisibility.VeryHidden;

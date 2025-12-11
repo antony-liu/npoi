@@ -58,50 +58,6 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        [Obsolete]
-        public void TestSheetHiddenOld()
-        {
-            IWorkbook wb = _testDataProvider.CreateWorkbook();
-            wb.CreateSheet("MySheet");
-
-            ClassicAssert.IsFalse(wb.IsSheetHidden(0));
-            ClassicAssert.IsFalse(wb.IsSheetVeryHidden(0));
-
-            wb.SetSheetHidden(0, SheetVisibility.Hidden);
-            ClassicAssert.IsTrue(wb.IsSheetHidden(0));
-            ClassicAssert.IsFalse(wb.IsSheetVeryHidden(0));
-
-            wb.SetSheetHidden(0, SheetVisibility.VeryHidden);
-            ClassicAssert.IsFalse(wb.IsSheetHidden(0));
-            ClassicAssert.IsTrue(wb.IsSheetVeryHidden(0));
-
-            wb.SetSheetHidden(0, SheetVisibility.Visible);
-            ClassicAssert.IsFalse(wb.IsSheetHidden(0));
-            ClassicAssert.IsFalse(wb.IsSheetVeryHidden(0));
-
-            try
-            {
-                wb.SetSheetHidden(0, -1);
-                Assert.Fail("expectd exception");
-            }
-            catch (ArgumentException)
-            {
-                // ok
-            }
-            try
-            {
-                wb.SetSheetHidden(0, 3);
-                Assert.Fail("expectd exception");
-            }
-            catch (ArgumentException)
-            {
-                // ok
-            }
-
-            wb.Close();
-        }
-
-        [Test]
         public void TestSheetVisibility()
         {
             IWorkbook wb = _testDataProvider.CreateWorkbook();
@@ -126,6 +82,29 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsFalse(wb.IsSheetVeryHidden(0));
             ClassicAssert.AreEqual(SheetVisibility.Visible, wb.GetSheetVisibility(0));
 
+            // verify limits-check
+
+            // check sheet-index with one more => throws exception
+            try
+            {
+                wb.SetSheetVisibility(1, SheetVisibility.Hidden);
+                ClassicAssert.Fail("Should catch exception here");
+            }
+            catch(ArgumentException e)
+            {
+                // expected here
+            }
+
+            // check sheet-index with index out of bounds => throws exception
+            try
+            {
+                wb.SetSheetVisibility(10, SheetVisibility.Hidden);
+                ClassicAssert.Fail("Should catch exception here");
+            }
+            catch(ArgumentException e)
+            {
+                // expected here
+            }
             wb.Close();
         }
 
