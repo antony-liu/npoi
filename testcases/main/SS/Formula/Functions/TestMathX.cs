@@ -1050,6 +1050,11 @@ namespace TestCases.SS.Formula.Functions
             AssertEquals("floor ", 1.5, MathX.Floor(d, s));
             d = 0.234; s = 0.01;
             AssertEquals("floor ", 0.23, MathX.Floor(d, s));
+
+            // see bug 62839
+            d = -123;
+            s = 10;
+            AssertEquals("floor ", -130, MathX.Floor(d, s));
         }
         [Ignore("not implement")]
         [Test]

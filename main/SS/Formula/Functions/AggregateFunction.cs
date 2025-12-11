@@ -333,6 +333,10 @@ namespace NPOI.SS.Formula.Functions
 
     public class GeoMean : AggregateFunction
     {
+        public GeoMean()
+        {
+            SetMissingArgPolicy(Policy.COERCE);
+        }
         protected internal override double Evaluate(double[] values)
         {
             // The library implementation returns 0 for an input sequence like [1, 0]. So this check is necessary.

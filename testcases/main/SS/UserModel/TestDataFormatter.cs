@@ -906,7 +906,20 @@ namespace TestCases.SS.UserModel
 
             ClassicAssert.AreEqual("4,33 " + euro, df.FormatRawCellContents(4.33, 178, formatString));
             ClassicAssert.AreEqual("1.234,33 " + euro, df.FormatRawCellContents(1234.33, 178, formatString));
+        }
 
+        [Test]
+        public void TestBug62839()
+        {
+            IWorkbook wb = new HSSFWorkbook();
+            ISheet sheet = wb.CreateSheet();
+            IRow row = sheet.CreateRow(0);
+            ICell cell = row.CreateCell(0);
+            cell.SetCellFormula("FLOOR(-123,10)");
+            DataFormatter df = new DataFormatter(CultureInfo.GetCultureInfo(("de-DE")));
+
+            String value = df.FormatCellValue(cell, wb.GetCreationHelper().CreateFormulaEvaluator());
+            ClassicAssert.AreEqual("-130", value);
         }
     }
 }

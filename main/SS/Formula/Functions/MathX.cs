@@ -313,18 +313,14 @@ namespace NPOI.SS.Formula.Functions
          */
         public static double Floor(double n, double s)
         {
-            double f;
-
-            if((n < 0 && s > 0) || (n > 0 && s < 0) || (s == 0 && n != 0))
+            if(s==0 && n!=0)
             {
-                f = double.NaN;
+                return double.NaN;
             }
             else
             {
-                f = (n == 0 || s == 0) ? 0 : Math.Floor(n / s) * s;
+                return (n==0 || s==0) ? 0 : Math.Floor(n/s) * s;
             }
-
-            return f;
         }
 
         /**
