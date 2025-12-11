@@ -9,7 +9,12 @@ namespace NPOI.SS.Formula.Functions
 {
     public class Mdeterm:OneArrayArg
     {
-        private MutableValueCollector instance = new MutableValueCollector(false, false);
+        private MutableValueCollector instance;
+        public Mdeterm()
+        {
+            instance = new MutableValueCollector(false, false);
+            instance.SetBlankEvalPolicy(MultiOperandNumericFunction.Policy.ERROR);
+        }
         protected override double[] CollectValues(ValueEval arg)
         {
             double[] values = instance.collectValues(arg);

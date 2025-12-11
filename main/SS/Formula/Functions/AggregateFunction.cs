@@ -91,6 +91,10 @@ namespace NPOI.SS.Formula.Functions
     }
     public class PRODUCT : AggregateFunction
     {
+        public PRODUCT()
+        {
+            SetMissingArgPolicy(Policy.SKIP);
+        }
         protected internal override double Evaluate(double[] values)
         {
             return MathX.Product(values);

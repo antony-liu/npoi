@@ -17,9 +17,10 @@
 
 namespace NPOI.SS.Formula.Functions
 {
-    using System;
-    using NPOI.SS.Formula.Eval;
     using NPOI.SS.Formula;
+    using NPOI.SS.Formula.Eval;
+    using NPOI.Util;
+    using System;
 
     /**
      * @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
@@ -29,14 +30,24 @@ namespace NPOI.SS.Formula.Functions
      */
     public abstract class MultiOperandNumericFunction : Function
     {
+        public enum Policy { COERCE, SKIP, ERROR }
+        //private interface IEvalConsumer<TValue, TReceiver>
+        //{
+        //    void Accept(TValue value, TReceiver receiver);
+        //}
+
+        private Action<BoolEval, DoubleList> boolByRefConsumer;
+        private Action<BoolEval, DoubleList> boolByValueConsumer;
+        private Action<BlankEval, DoubleList> blankConsumer;
+        private Action<MissingArgEval, DoubleList> missingArgConsumer = ConsumerFactory.CreateForMissingArg(Policy.SKIP);
+
         static readonly double[] EMPTY_DOUBLE_ARRAY = [];
-        private readonly bool _isReferenceBoolCounted;
-        private readonly bool _isBlankCounted;
 
         protected MultiOperandNumericFunction(bool isReferenceBoolCounted, bool isBlankCounted)
         {
-            _isReferenceBoolCounted = isReferenceBoolCounted;
-            _isBlankCounted = isBlankCounted;
+            boolByRefConsumer = ConsumerFactory.CreateForBoolEval(isReferenceBoolCounted ? Policy.COERCE : Policy.SKIP);
+            boolByValueConsumer = ConsumerFactory.CreateForBoolEval(Policy.COERCE);
+            blankConsumer = ConsumerFactory.CreateForBlank(isBlankCounted ? Policy.COERCE : Policy.SKIP);
         }
         protected internal abstract double Evaluate(double[] values);
 
@@ -108,6 +119,15 @@ namespace NPOI.SS.Formula.Functions
 
         private static readonly int DEFAULT_MAX_NUM_OPERANDS = SpreadsheetVersion.EXCEL2007.MaxFunctionArgs;
 
+        public void SetMissingArgPolicy(Policy policy)
+        {
+            missingArgConsumer = ConsumerFactory.CreateForMissingArg(policy);
+        }
+
+        public void SetBlankEvalPolicy(Policy policy)
+        {
+            blankConsumer = ConsumerFactory.CreateForBlank(policy);
+        }
         /**
          * Maximum number of operands accepted by this function.
          * Subclasses may override to Change default value.
@@ -185,9 +205,13 @@ namespace NPOI.SS.Formula.Functions
             }
             if (ve is BoolEval boolEval)
             {
-                if (!isViaReference || _isReferenceBoolCounted)
+                if(isViaReference)
                 {
-                    temp.Add(boolEval.NumberValue);
+                    boolByRefConsumer.Invoke(boolEval, temp);
+                }
+                else
+                {
+                    boolByValueConsumer.Invoke(boolEval, temp);
                 }
                 return;
             }
@@ -218,15 +242,12 @@ namespace NPOI.SS.Formula.Functions
             }
             if (ve == BlankEval.instance)
             {
-                if (_isBlankCounted)
-                {
-                    temp.Add(0.0);
-                }
+                blankConsumer.Invoke((BlankEval) ve, temp);
                 return;
             }
             if(ve == MissingArgEval.instance)
             {
-                temp.Add(0.0);
+                missingArgConsumer.Invoke((MissingArgEval) ve, temp);
                 return;
             }
             throw new InvalidOperationException("Invalid ValueEval type passed for conversion: ("
@@ -289,5 +310,57 @@ namespace NPOI.SS.Formula.Functions
             return true;
         }
 
+        private static class ConsumerFactory
+        {
+            public static Action<MissingArgEval, DoubleList> CreateForMissingArg(Policy policy)
+            {
+                Action<MissingArgEval, DoubleList> coercer =
+                        (MissingArgEval value, DoubleList receiver) => receiver.Add(0.0);
+                return CreateAny(coercer, policy);
+            }
+
+            public static Action<BoolEval, DoubleList> CreateForBoolEval(Policy policy)
+            {
+                Action<BoolEval, DoubleList> coercer =
+                        (BoolEval value, DoubleList receiver) => receiver.Add(value.NumberValue);
+                return CreateAny(coercer, policy);
+            }
+
+            public static Action<BlankEval, DoubleList> CreateForBlank(Policy policy)
+            {
+                Action<BlankEval, DoubleList> coercer =
+                        (BlankEval value, DoubleList receiver) => receiver.Add(0.0);
+                return CreateAny(coercer, policy);
+            }
+
+            private static Action<T, DoubleList> CreateAny<T>(Action<T, DoubleList> coercer, Policy policy)
+                where T : ValueEval
+            {
+                switch(policy)
+                {
+                    case Policy.COERCE:
+                        return coercer;
+                    case Policy.SKIP:
+                        return doNothing<T>();
+                    case Policy.ERROR:
+                        return throwValueInvalid<T>();
+                    default:
+                        throw new AssertFailedException("");
+                }
+            }
+
+            private static Action<T, DoubleList> doNothing<T>() where T : ValueEval
+            {
+                return (T value, DoubleList receiver) => {
+                };
+            }
+
+            private static Action<T, DoubleList> throwValueInvalid<T>() where T : ValueEval
+            {
+                return (T value, DoubleList receiver) => {
+                    throw new EvaluationException(ErrorEval.VALUE_INVALID);
+                };
+            }
+        }
     }
 }

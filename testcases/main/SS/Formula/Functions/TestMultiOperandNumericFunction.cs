@@ -35,20 +35,30 @@ namespace TestCases.SS.Formula.Functions
         }
 
         [Test]
-        public void MissingArgEvalsAreCountedAsZero()
+        public void MissingArgEvalsAreCountedAsZeroIfPolicyIsCoerce()
         {
-            MultiOperandNumericFunction instance = new Stub(true, true);
+            MultiOperandNumericFunction instance = new Stub(true, true, MultiOperandNumericFunction.Policy.COERCE);
             ValueEval result = instance.Evaluate(new ValueEval[] {MissingArgEval.instance}, 0, 0);
             ClassicAssert.IsTrue(result is NumberEval);
             ClassicAssert.AreEqual(0.0, ((NumberEval) result).NumberValue, 0);
+        }
+        [Test]
+        public void MissingArgEvalsAreSkippedIfZeroIfPolicyIsSkipped()
+        {
+            MultiOperandNumericFunction instance = new Stub(true, true, MultiOperandNumericFunction.Policy.SKIP);
+            ValueEval result = instance.Evaluate(new ValueEval[]{new NumberEval(1), MissingArgEval.instance}, 0, 0);
+            ClassicAssert.IsTrue(result is NumberEval);
+            ClassicAssert.AreEqual(1.0, ((NumberEval) result).NumberValue, 0);
         }
     }
 
     public class Stub : MultiOperandNumericFunction
     {
-        public Stub(bool isReferenceBoolCounted, bool isBlankCounted)
+        public Stub(bool isReferenceBoolCounted, bool isBlankCounted, 
+            MultiOperandNumericFunction.Policy missingArgEvalPolicy)
             : base(isReferenceBoolCounted, isBlankCounted)
         {
+            SetMissingArgPolicy(missingArgEvalPolicy);
         }
         protected internal override double Evaluate(double[] values)
         {

@@ -22,6 +22,9 @@ namespace TestCases.HSSF.Model
     using NPOI.HSSF.UserModel;
     using NPOI.SS.Formula.PTG;
     using NPOI.HSSF.Model;
+    using NPOI.SS.Formula.Eval;
+    using TestCases.SS.Formula.Functions;
+    using NPOI.SS.Formula.Functions;
 
     /**
      * Tests specific formula examples in <tt>OperandClassTransformer</tt>.
@@ -48,6 +51,21 @@ namespace TestCases.HSSF.Model
             ConfirmTokenClass(ptgs, 0, Ptg.CLASS_ARRAY);
             ConfirmFuncClass(ptgs, 1, "ABS", Ptg.CLASS_ARRAY);
             ConfirmFuncClass(ptgs, 2, "MDETERM", Ptg.CLASS_VALUE);
+        }
+
+        [Test]
+        public void TestMdetermReturnsValueInvalidOnABlankCell()
+        {
+            ValueEval matrixRef = EvalFactory.CreateAreaEval("A1:B2",
+                new ValueEval[]{
+                        BlankEval.instance,
+                        new NumberEval(1),
+                        new NumberEval(2),
+                        new NumberEval(3)
+                }
+        );
+            ValueEval result = MatrixFunction.MDETERM.Evaluate(new ValueEval[]{matrixRef} , 0, 0);
+            ClassicAssert.AreEqual(ErrorEval.VALUE_INVALID, result);
         }
 
         /**
