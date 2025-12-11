@@ -87,7 +87,7 @@ namespace NPOI.OpenXml4Net.OPC
          */
         public static String IMAGE_PICT = "image/pict";
 
-        public static String EXTENSION_PICT = "tiff";
+        public static String EXTENSION_PICT = "pict";
 
         /**
          * XML file.
