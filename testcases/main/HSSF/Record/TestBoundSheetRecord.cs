@@ -58,7 +58,7 @@ namespace TestCases.HSSF.Record
             try
             {
                 record.Sheetname = ("s//*s");
-                ClassicAssert.IsTrue(false, "Should have thrown ArgumentException, but didnt");
+                Assert.Fail("Should have thrown IllegalArgumentException, but didnt");
             }
             catch (ArgumentException)
             {

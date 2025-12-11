@@ -2488,33 +2488,33 @@ namespace NPOI.XSSF.UserModel
 
         public int AddPicture(byte[] pictureData, PictureType format)
         {
-            int imageNumber = 1;
-            List<XSSFPictureData> allPics = (List<XSSFPictureData>)GetAllPictures();
+            //int imageNumber = 1;
+            //List<XSSFPictureData> allPics = (List<XSSFPictureData>)GetAllPictures();
 
-            if (allPics.Count > 0)
-            {
-                List<int> sortedIndexs = new List<int> { 0 };
+            //if (allPics.Count > 0)
+            //{
+            //    List<int> sortedIndexs = new List<int> { 0 };
 
-                sortedIndexs.AddRange
-                    (
-                        allPics
-                            .Select(pic => XSSFPictureData.RELATIONS[(int)pic.PictureType].GetFileNameIndex(pic))
-                            .OrderBy(i => i)
-                            .ToList()
-                    );
+            //    sortedIndexs.AddRange
+            //        (
+            //            allPics
+            //                .Select(pic => XSSFPictureData.RELATIONS[(int)pic.PictureType].GetFileNameIndex(pic))
+            //                .OrderBy(i => i)
+            //                .ToList()
+            //        );
 
-                int previous = sortedIndexs[0];
-                for (int index = 1; index < sortedIndexs.Count; index++)
-                {
-                    if (sortedIndexs[index] > previous + 1)
-                        break;
+            //    int previous = sortedIndexs[0];
+            //    for (int index = 1; index < sortedIndexs.Count; index++)
+            //    {
+            //        if (sortedIndexs[index] > previous + 1)
+            //            break;
 
-                    previous = sortedIndexs[index];
-                }
+            //        previous = sortedIndexs[index];
+            //    }
 
-                imageNumber = previous + 1;
-            }
-            
+            //    imageNumber = previous + 1;
+            //}
+            int imageNumber = GetAllPictures().Count + 1;
             XSSFPictureData img = (XSSFPictureData)CreateRelationship(XSSFPictureData.RELATIONS[(int)format], this.xssfFactory, imageNumber, true).DocumentPart;
             try
             {
@@ -2529,7 +2529,7 @@ namespace NPOI.XSSF.UserModel
             pictures.Add(img);
 
             // returns image Index
-            return allPics.Count - 1;
+            return imageNumber - 1;
         }
 
         public XSSFWorkbookType WorkbookType

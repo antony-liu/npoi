@@ -1497,7 +1497,19 @@ namespace NPOI.OpenXmlFormats.Dml.Spreadsheet
 
         public CT_TwoCellAnchor GetTwoCellAnchorArray(int v)
         {
-            throw new NotImplementedException();
+            int index = 0;
+            foreach(var anchor in cellAnchors)
+            {
+                if(anchor is  CT_TwoCellAnchor anchor1)
+                {
+                    if(index == v)
+                    {
+                        return anchor1;
+                    }
+                    index++;
+                }
+            }
+            return null;
         }
     }
     [Serializable]

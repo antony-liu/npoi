@@ -122,14 +122,20 @@ namespace NPOI.OpenXml4Net.OPC.Internal
          */
         public void AddContentType(PackagePartName partName, String contentType)
         {
-            bool defaultCTExists = false;
+            bool defaultCTExists = this.defaultContentType.ContainsValue(contentType);
             String extension = partName.Extension.ToLower();
-            if ((extension.Length == 0)
-                    || (this.defaultContentType.ContainsKey(extension) && !(defaultCTExists = this.defaultContentType
-                            .ContainsValue(contentType))))
+            if ((extension.Length == 0) ||
+                // check if content-type and extension do match in both directions
+                // some applications create broken files, e.g. extension "jpg" instead of "jpeg"
+                (this.defaultContentType.ContainsKey(extension) && !defaultCTExists) ||
+                (!this.defaultContentType.ContainsKey(extension) && defaultCTExists))
+            {
                 this.AddOverrideContentType(partName, contentType);
+            }
             else if (!defaultCTExists)
+            {
                 this.AddDefaultContentType(extension, contentType);
+            }
         }
 
         /**
