@@ -14,9 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-using NPOI.OpenXmlFormats.Spreadsheet;
-using NPOI.OpenXmlFormats;
 using NPOI.OOXML.XSSF.UserModel;
+using NPOI.OpenXmlFormats;
+using NPOI.OpenXmlFormats.Spreadsheet;
 namespace NPOI.XSSF.UserModel.Extensions
 {
 
@@ -192,8 +192,14 @@ namespace NPOI.XSSF.UserModel.Extensions
         public override bool Equals(object o)
         {
             if (o is not XSSFCellFill cf) return false;
-
-            return _fill.ToString().Equals(cf.GetCTFill().ToString());
+            // bug 60845
+            // Do not compare the representing strings but the properties
+            // Reason:
+            //   The strings are different if the XMLObject is a fragment (e.g. the ones from cloneStyle)
+            //   even if they are in fact representing the same style
+            return object.Equals(this.GetFillBackgroundColor() , cf.GetFillBackgroundColor())
+                    && object.Equals(this.GetFillForegroundColor(), cf.GetFillForegroundColor())
+                    && (this.GetPatternType() == cf.GetPatternType());
         }
     }
 }

@@ -17,13 +17,12 @@
 
 namespace NPOI.XSSF.UserModel.Extensions
 {
-
-    using NPOI.OpenXmlFormats.Spreadsheet;
-    using System;
-    using NPOI.XSSF.UserModel;
-    using NPOI.XSSF.Model;
-    using NPOI.SS.UserModel;
     using NPOI.OOXML.XSSF.UserModel;
+    using NPOI.OpenXmlFormats.Spreadsheet;
+    using NPOI.SS.UserModel;
+    using NPOI.XSSF.Model;
+    using NPOI.XSSF.UserModel;
+    using System;
 
     /**
 * The enumeration value indicating the side being used for a cell border.
@@ -212,8 +211,23 @@ namespace NPOI.XSSF.UserModel.Extensions
         {
             if (o is not XSSFCellBorder cf) return false;
 
-            //TODO: change the compare logic
-            return border.ToString().Equals(cf.GetCTBorder().ToString());
+            // bug 60845
+            // Do not compare the representing strings but the properties
+            // Reason:
+            //   The strings are different if the XMLObject is a fragment (e.g. the ones from cloneStyle)
+            //   even if they are in fact representing the same style
+            bool equal = true;
+            foreach(BorderSide side in Enum.GetValues(typeof(BorderSide)))
+            {
+                if(!(this.GetBorderColor(side) == cf.GetBorderColor(side))
+                        || !(this.GetBorderStyle(side) == cf.GetBorderStyle(side)))
+                {
+                    equal = false;
+                    break;
+                }
+            }
+
+            return equal;
         }
     }
 }

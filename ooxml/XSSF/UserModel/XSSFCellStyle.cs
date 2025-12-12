@@ -1081,7 +1081,19 @@ namespace NPOI.XSSF.UserModel
             _cellXf.fillId = (uint)idx;
             _cellXf.applyFill = (true);
         }
-
+        /**
+         * Set the foreground fill color as a indexed color value
+         * <br>
+         * <i>Note: Ensure Foreground color is set prior to background color.</i>
+         * @param fg the color to use
+         * @see org.apache.poi.ss.usermodel.IndexedColors
+         */
+        public void SetFillForegroundColor(short fg)
+        {
+            XSSFColor clr = XSSFColor.From(new CT_Color(), _stylesSource.IndexedColors);
+            clr.Indexed = fg;
+            SetFillForegroundColor(clr);
+        }
         /**
          * Get a <b>copy</b> of the currently used CT_Fill, if none is used, return a new instance.
          */

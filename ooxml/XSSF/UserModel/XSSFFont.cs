@@ -551,6 +551,11 @@ namespace NPOI.XSSF.UserModel
          */
         public long RegisterTo(StylesTable styles)
         {
+            return RegisterTo(styles, true);
+        }
+
+        public long RegisterTo(StylesTable styles, bool force)
+        {
             this._themes = styles.Theme;
             this._index = styles.PutFont(this, true);
             return this._index;
@@ -656,7 +661,15 @@ namespace NPOI.XSSF.UserModel
         {
             if (o is not XSSFFont cf) return false;
 
-            return _ctFont.ToString().Equals(cf.GetCTFont().ToString());
+            // BUG 60845
+            return IsItalic == cf.IsItalic && IsBold == cf.IsBold
+                && IsStrikeout == cf.IsStrikeout && Charset == cf.Charset
+                && Color == cf.Color && Family == cf.Family
+                && FontHeight == cf.FontHeight && FontName == cf.FontName
+                && GetScheme() == cf.GetScheme()
+                && GetThemeColor() == cf.GetThemeColor()
+                && Underline == cf.Underline
+                && GetXSSFColor() == cf.GetXSSFColor();
         }
 
         public void CloneStyleFrom(IFont src)

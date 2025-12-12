@@ -28,11 +28,9 @@ using SixLabors.ImageSharp;
 
 namespace TestCases.XSSF.UserModel
 {
-
     [TestFixture]
     public class TestXSSFCellStyle
     {
-
         private StylesTable stylesTable;
         private CT_Border ctBorderA;
         private CT_Fill ctFill;
@@ -53,15 +51,15 @@ namespace TestCases.XSSF.UserModel
             ctBorderA = new CT_Border();
             XSSFCellBorder borderA = new XSSFCellBorder(ctBorderA);
             long borderId = stylesTable.PutBorder(borderA);
-            ClassicAssert.AreEqual(1, borderId);
+            ClassicAssert.AreEqual(0, borderId);
 
             XSSFCellBorder borderB = new XSSFCellBorder();
-            ClassicAssert.AreEqual(1, stylesTable.PutBorder(borderB));
+            ClassicAssert.AreEqual(0, stylesTable.PutBorder(borderB));
 
             ctFill = new CT_Fill();
             XSSFCellFill fill = new XSSFCellFill(ctFill, null);
             long fillId = stylesTable.PutFill(fill);
-            ClassicAssert.AreEqual(2, fillId);
+            ClassicAssert.AreEqual(0, fillId);
 
             ctFont = new CT_Font();
             XSSFFont font = new XSSFFont(ctFont);
@@ -87,7 +85,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(ST_PatternType.darkGray, stylesTable.GetFillAt(1).GetCTFill().patternFill.patternType);
         }
         [Test]
-        [Ignore("TODO FIX CI TESTS")]
+        //[Ignore("TODO FIX CI TESTS")]
         public void TestGetSetBorderBottom()
         {
             //default values
@@ -121,7 +119,9 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(num, stylesTable.GetBorders().Count);
             borderId = (int)cellStyle.GetCoreXf().borderId;
             ctBorder = stylesTable.GetBorderAt(borderId).GetCTBorder();
-            ClassicAssert.IsFalse(ctBorder.IsSetBottom());
+            //none is not the same as "not set", therefore the following doesn't work any more
+            //ClassicAssert.IsFalse(ctBorder.IsSetBottom());
+            ClassicAssert.AreEqual(ctBorder.bottom.style, ST_BorderStyle.none);
         }
         [Test]
         [Ignore("TODO FIX CI TESTS")]
@@ -184,7 +184,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsFalse(ctBorder.IsSetDiagonal());
         }
         [Test]
-        [Ignore("TODO FIX CI TESTS")]
+        //[Ignore("TODO FIX CI TESTS")]
         public void TestGetSetBorderRight()
         {
             //default values
@@ -218,10 +218,11 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(num, stylesTable.GetBorders().Count);
             borderId = cellStyle.GetCoreXf().borderId;
             ctBorder = stylesTable.GetBorderAt((int)borderId).GetCTBorder();
-            ClassicAssert.IsFalse(ctBorder.IsSetRight());
+            //ClassicAssert.IsFalse(ctBorder.IsSetRight());
+            ClassicAssert.AreEqual(ctBorder.right.style, ST_BorderStyle.none);
         }
         [Test]
-        [Ignore("TODO FIX CI TESTS")]
+        //[Ignore("TODO FIX CI TESTS")]
         public void TestGetSetBorderLeft()
         {
             //default values
@@ -255,10 +256,11 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(num, stylesTable.GetBorders().Count);
             borderId = cellStyle.GetCoreXf().borderId;
             ctBorder = stylesTable.GetBorderAt((int)borderId).GetCTBorder();
-            ClassicAssert.IsFalse(ctBorder.IsSetLeft());
+            //ClassicAssert.IsFalse(ctBorder.IsSetLeft());
+            ClassicAssert.AreEqual(ctBorder.left.style, ST_BorderStyle.none);
         }
         [Test]
-        [Ignore("TODO FIX CI TESTS")]
+        //[Ignore("TODO FIX CI TESTS")]
         public void TestGetSetBorderTop()
         {
             //default values
@@ -292,7 +294,8 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(num, stylesTable.GetBorders().Count);
             borderId = cellStyle.GetCoreXf().borderId;
             ctBorder = stylesTable.GetBorderAt((int)borderId).GetCTBorder();
-            ClassicAssert.IsFalse(ctBorder.IsSetTop());
+            //ClassicAssert.IsFalse(ctBorder.IsSetTop());
+            ClassicAssert.AreEqual(ctBorder.top.style, ST_BorderStyle.none);
         }
 
         private void TestGetSetBorderXMLBean(BorderStyle border, ST_BorderStyle expected)
@@ -311,10 +314,13 @@ namespace TestCases.XSSF.UserModel
             cellStyle.BorderTop = BorderStyle.None;
             ClassicAssert.AreEqual(BorderStyle.None, cellStyle.BorderTop);
             int borderId = (int)cellStyle.GetCoreXf().borderId;
-            ClassicAssert.IsTrue(borderId > 0);
+            // The default Style is already "none"
+            // Therefore the new style already exists as Id=0
+            // ClassicAssert.IsTrue(borderId > 0);
+            ClassicAssert.AreEqual(0, borderId);
             //check changes in the underlying xml bean
             CT_Border ctBorder = stylesTable.GetBorderAt(borderId).GetCTBorder();
-            ClassicAssert.IsNull(ctBorder.top);
+            ClassicAssert.IsNotNull(ctBorder.top);
             // no border style and ST_BorderStyle.NONE are equivalent
             // POI prefers to unset the border style than explicitly set it ST_BorderStyle.NONE
         }
@@ -641,7 +647,7 @@ namespace TestCases.XSSF.UserModel
 
             XSSFCellStyle defaultStyle = (XSSFCellStyle)wb.GetCellStyleAt((short)0);
             ClassicAssert.AreEqual(IndexedColors.Automatic.Index, defaultStyle.FillForegroundColor);
-            ClassicAssert.AreEqual(null, defaultStyle.FillForegroundColorColor);
+            ClassicAssert.IsNull(defaultStyle.FillForegroundColorColor);
             ClassicAssert.AreEqual(FillPattern.NoFill, defaultStyle.FillPattern);
 
             XSSFCellStyle customStyle = (XSSFCellStyle)wb.CreateCellStyle();
@@ -672,9 +678,6 @@ namespace TestCases.XSSF.UserModel
         [Test]
         public void TestGetFillPattern()
         {
-            //???
-            //ClassicAssert.AreEqual(STPatternType.INT_DARK_GRAY-1, cellStyle.getFillPattern());
-
             ClassicAssert.AreEqual((int)ST_PatternType.darkGray, (int)cellStyle.FillPattern);
 
             int num = stylesTable.GetFills().Count;
@@ -699,7 +702,6 @@ namespace TestCases.XSSF.UserModel
             FillId = (int)cellStyle.GetCoreXf().fillId;
             ctFill = stylesTable.GetFillAt(FillId).GetCTFill();
             ClassicAssert.IsFalse(ctFill.GetPatternFill().IsSetPatternType());
-
         }
         [Test]
         public void TestGetFont()
@@ -873,13 +875,17 @@ namespace TestCases.XSSF.UserModel
             fmt.GetFormat("MadeUpTwo");
 
             XSSFCellStyle orig = (XSSFCellStyle)wbOrig.CreateCellStyle();
-            orig.Alignment = (HorizontalAlignment.Right);
+            orig.Alignment = HorizontalAlignment.Right;
             orig.SetFont(fnt);
-            orig.DataFormat = (fmt.GetFormat("Test##"));
+            orig.DataFormat = fmt.GetFormat("Test##");
+            orig.FillPattern = FillPattern.SolidForeground;
+            orig.SetFillForegroundColor(IndexedColors.BrightGreen.Index);
 
-            ClassicAssert.IsTrue(HorizontalAlignment.Right == orig.Alignment);
-            ClassicAssert.IsTrue(fnt == orig.GetFont());
-            ClassicAssert.IsTrue(fmt.GetFormat("Test##") == orig.DataFormat);
+            XSSFCellStyle origEmpty = wbOrig.CreateCellStyle() as XSSFCellStyle;
+
+            ClassicAssert.AreEqual(HorizontalAlignment.Right, orig.Alignment);
+            ClassicAssert.AreEqual(fnt, orig.GetFont());
+            ClassicAssert.AreEqual(fmt.GetFormat("Test##"), orig.DataFormat);
 
             ClassicAssert.AreEqual(2, wbOrig.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(3, wbOrig.GetStylesSource().GetNumberFormats().Count);
@@ -897,8 +903,8 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(1, wbClone.NumberOfFontsAsInt);
             ClassicAssert.AreEqual(0, wbClone.GetStylesSource().GetNumberFormats().Count);
 
-            ClassicAssert.IsFalse(HorizontalAlignment.Right == clone.Alignment);
-            ClassicAssert.IsFalse("TestingFont" == clone.GetFont().FontName);
+            ClassicAssert.AreNotEqual(HorizontalAlignment.Right, clone.Alignment);
+            ClassicAssert.AreNotEqual("TestingFont", clone.GetFont().FontName);
 
             clone.CloneStyleFrom(orig);
 
@@ -909,7 +915,9 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(HorizontalAlignment.Right, clone.Alignment);
             ClassicAssert.AreEqual("TestingFont", clone.GetFont().FontName);
             ClassicAssert.AreEqual(fmtClone.GetFormat("Test##"), clone.DataFormat);
-            ClassicAssert.IsFalse(fmtClone.GetFormat("Test##") == fmt.GetFormat("Test##"));
+            ClassicAssert.AreNotEqual(fmtClone.GetFormat("Test##"), fmt.GetFormat("Test##"));
+            ClassicAssert.AreEqual(clone.FillPattern, FillPattern.SolidForeground);
+            ClassicAssert.AreEqual(clone.FillForegroundColor, IndexedColors.BrightGreen.Index);
 
             // Save it and re-check
             XSSFWorkbook wbReload = (XSSFWorkbook)XSSFTestDataSamples.WriteOutAndReadBack(wbClone);
@@ -921,10 +929,21 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(HorizontalAlignment.Right, reload.Alignment);
             ClassicAssert.AreEqual("TestingFont", reload.GetFont().FontName);
             ClassicAssert.AreEqual(fmtClone.GetFormat("Test##"), reload.DataFormat);
-            ClassicAssert.IsFalse(fmtClone.GetFormat("Test##") == fmt.GetFormat("Test##"));
+            ClassicAssert.AreNotEqual(fmtClone.GetFormat("Test##"), fmt.GetFormat("Test##"));
+            ClassicAssert.AreEqual(clone.FillPattern, FillPattern.SolidForeground);
+            ClassicAssert.AreEqual(clone.FillForegroundColor, IndexedColors.BrightGreen.Index);
 
-            ClassicAssert.IsNotNull(XSSFTestDataSamples.WriteOutAndReadBack(wbOrig));
-            ClassicAssert.IsNotNull(XSSFTestDataSamples.WriteOutAndReadBack(wbClone));
+            XSSFWorkbook wbOrig2 = XSSFTestDataSamples.WriteOutAndReadBack(wbOrig);
+            ClassicAssert.IsNotNull(wbOrig2);
+            wbOrig2.Close();
+
+            XSSFWorkbook wbClone2 = XSSFTestDataSamples.WriteOutAndReadBack(wbClone);
+            ClassicAssert.IsNotNull(wbClone2);
+            wbClone2.Close();
+
+            wbReload.Close();
+            wbClone.Close();
+            wbOrig.Close();
         }
 
         /**
@@ -971,7 +990,7 @@ namespace TestCases.XSSF.UserModel
             IRow r = s.GetRow(0);
             ICellStyle cs = r.GetCell(0).CellStyle;
 
-            ClassicAssert.AreEqual(true, cs.ShrinkToFit);
+            ClassicAssert.IsTrue(cs.ShrinkToFit);
 
             // New file
             XSSFWorkbook wbOrig = new XSSFWorkbook();
@@ -990,8 +1009,8 @@ namespace TestCases.XSSF.UserModel
             wb = XSSFTestDataSamples.WriteOutAndReadBack(wbOrig) as XSSFWorkbook;
             s = wb.GetSheetAt(0);
             r = s.GetRow(0);
-            ClassicAssert.AreEqual(false, r.GetCell(0).CellStyle.ShrinkToFit);
-            ClassicAssert.AreEqual(true, r.GetCell(1).CellStyle.ShrinkToFit);
+            ClassicAssert.IsFalse(r.GetCell(0).CellStyle.ShrinkToFit);
+            ClassicAssert.IsTrue(r.GetCell(1).CellStyle.ShrinkToFit);
 
             ClassicAssert.IsNotNull(XSSFTestDataSamples.WriteOutAndReadBack(wb));
             ClassicAssert.IsNotNull(XSSFTestDataSamples.WriteOutAndReadBack(wbOrig));
