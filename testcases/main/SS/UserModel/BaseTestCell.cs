@@ -23,6 +23,7 @@ namespace TestCases.SS.UserModel
     using NPOI.SS.UserModel;
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using System;
+    using System.Globalization;
     using System.Text;
     using TestCases.SS;
 
@@ -1048,6 +1049,60 @@ namespace TestCases.SS.UserModel
             wb.Close();
         }
 
+        [Test]
+        public void Test62216()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ICell instance = wb.CreateSheet().CreateRow(0).CreateCell(0);
+                string formula = "2";
+                instance.SetCellFormula(formula);
+                instance.SetCellErrorValue(FormulaError.NAME.Code);
+
+                ClassicAssert.AreEqual(formula, instance.CellFormula);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+        [Test]
+        public void TestSetNullValues()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ICell cell = wb.CreateSheet("test").CreateRow(0).CreateCell(0);
+
+                cell.SetCellValue((DateTime?) null);
+                ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                ClassicAssert.AreEqual("", cell.StringCellValue);
+
+                //cell.SetCellValue((Date) null);
+                //ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                //ClassicAssert.AreEqual("", cell.StringCellValue);
+
+                cell.SetCellValue((String) null);
+                ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                ClassicAssert.AreEqual("", cell.StringCellValue);
+
+                ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                ClassicAssert.AreEqual("", cell.StringCellValue);
+
+                cell.SetCellValue((IRichTextString) null);
+                ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                ClassicAssert.AreEqual("", cell.StringCellValue);
+
+                cell.SetCellValue((String) null);
+                ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+                ClassicAssert.AreEqual("", cell.StringCellValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
         [Test]
         public void TestFormulaSetValueDoesNotChangeType()
         {

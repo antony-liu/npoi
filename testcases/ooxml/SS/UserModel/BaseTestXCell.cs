@@ -54,21 +54,6 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual("???<>\t\n\u00a0 &\"POI\'\u2122", wb2.GetSheetAt(0).GetRow(0).GetCell(0).StringCellValue);
             wb2.Close();
         }
-
-        [Test]
-        public void TestSetNullValues()
-        {
-            IWorkbook wb = _testDataProvider.CreateWorkbook();
-            ICell cell = wb.CreateSheet("test").CreateRow(0).CreateCell(0);
-
-            //cell.SetCellValue((DateTime?)null);
-            //cell.setCellValue((Date)null);
-            cell.SetCellValue((String)null);
-            cell.SetCellValue((IRichTextString)null);
-            cell.SetCellValue((String)null);
-
-            wb.Close();
-        }
     }
 
 }

@@ -19,14 +19,12 @@ namespace TestCases.HSSF.UserModel
 {
     using System;
     using NPOI.HSSF.Model;
-    using NPOI.HSSF.Util;
     using NPOI.HSSF.UserModel;
 
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using TestCases.HSSF;
     using NPOI.SS.UserModel;
     using NPOI.HSSF.Record;
-    using System.Text;
     using TestCases.SS.UserModel;
 
     /**

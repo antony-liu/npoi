@@ -130,6 +130,7 @@ namespace NPOI.SS.UserModel
         ///  the cell to a numerics cell and set its value.
         /// </param>
         ICell SetCellValue(DateTime value);
+        ICell SetCellValue(DateTime? value);
 
 #if NET6_0_OR_GREATER
         /// <summary>

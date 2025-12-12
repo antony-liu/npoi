@@ -918,14 +918,14 @@ namespace NPOI.XSSF.UserModel
             }
         }
 #endif
-        public void SetCellValue(DateTime? value)
+        public ICell SetCellValue(DateTime? value)
         {
             if (value == null)
             {
                 SetCellType(CellType.Blank);
-                return;
+                return this;
             }
-            SetCellValue(value.Value);
+            return SetCellValue(value.Value);
         }
         /// <summary>
         ///  Set a date value for the cell. Excel treats dates as numeric so you will need to format the cell as a date.

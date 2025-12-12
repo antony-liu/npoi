@@ -516,6 +516,15 @@ namespace NPOI.HSSF.UserModel
         {
             return SetCellValue(DateUtil.GetExcelDate(value, this.book.IsDate1904()));
         }
+        public ICell SetCellValue(DateTime? value)
+        {
+            if(value == null)
+            {
+                SetCellType(CellType.Blank);
+                return this;
+            }
+            return SetCellValue(value.Value);
+        }
 
 #if NET6_0_OR_GREATER
         /// <summary>
