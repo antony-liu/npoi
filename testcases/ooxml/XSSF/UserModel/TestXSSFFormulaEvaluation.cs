@@ -448,27 +448,6 @@ namespace TestCases.XSSF.UserModel
             CellValue value = evaluator.Evaluate(cell);
             ClassicAssert.AreEqual(3750, value.NumberValue, 0.001);
         }
-        [Test]
-        public void TestBug62275()
-        {
-            IWorkbook wb = new XSSFWorkbook();
-            try
-            {
-                ISheet sheet = wb.CreateSheet();
-                IRow row = sheet.CreateRow(0);
-
-                ICell cell = row.CreateCell(0);
-                cell.SetCellFormula("vlookup(A2,B1:B5,2,true)");
-
-                ICreationHelper createHelper = wb.GetCreationHelper();
-                IFormulaEvaluator eval = createHelper.CreateFormulaEvaluator();
-                eval.Evaluate(cell);
-            }
-            catch(Exception)
-            {
-            }
-            finally { wb.Close(); }
-        }
 
         /**
          * see bug 62834, handle when a shared formula range doesn't contain only formula cells

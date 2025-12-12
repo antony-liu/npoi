@@ -26,6 +26,7 @@ namespace TestCases.SS.Formula.Functions
 {
     using NPOI.SS.UserModel;
     using NPOI.XSSF;
+    using NPOI.XSSF.UserModel;
     using NUnit.Framework;
     using NUnit.Framework.Legacy;
 
@@ -46,6 +47,124 @@ namespace TestCases.SS.Formula.Functions
             ClassicAssert.AreEqual(CellType.Error, feval.Evaluate(wb.GetSheetAt(0).GetRow(4).GetCell(1)).CellType, "Lookup should return #N/A");
         }
 
+        [Test]
+        public void Bug62275_true()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("vlookup(A2,B1:B5,2,true)");
+
+                ICreationHelper createHelper = wb.GetCreationHelper();
+                IFormulaEvaluator eval = createHelper.CreateFormulaEvaluator();
+                CellValue value = eval.Evaluate(cell);
+
+                ClassicAssert.IsFalse(value.BooleanValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+        [Test]
+        public void Bug62275_false()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("vlookup(A2,B1:B5,2,false)");
+
+                ICreationHelper crateHelper = wb.GetCreationHelper();
+                IFormulaEvaluator eval = crateHelper.CreateFormulaEvaluator();
+                CellValue value = eval.Evaluate(cell);
+
+                ClassicAssert.IsFalse(value.BooleanValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
+        public void Bug62275_empty_3args()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("vlookup(A2,B1:B5,2,)");
+
+                ICreationHelper crateHelper = wb.GetCreationHelper();
+                IFormulaEvaluator eval = crateHelper.CreateFormulaEvaluator();
+                CellValue value = eval.Evaluate(cell);
+
+                ClassicAssert.IsFalse(value.BooleanValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
+        public void Bug62275_empty_2args()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("vlookup(A2,B1:B5,,)");
+
+                ICreationHelper crateHelper = wb.GetCreationHelper();
+                IFormulaEvaluator eval = crateHelper.CreateFormulaEvaluator();
+                CellValue value = eval.Evaluate(cell);
+
+                ClassicAssert.IsFalse(value.BooleanValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+
+        [Test]
+        public void Bug62275_empty_1arg()
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("vlookup(A2,,,)");
+
+                ICreationHelper crateHelper = wb.GetCreationHelper();
+                IFormulaEvaluator eval = crateHelper.CreateFormulaEvaluator();
+                CellValue value = eval.Evaluate(cell);
+
+                ClassicAssert.IsFalse(value.BooleanValue);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
     }
 }
 
