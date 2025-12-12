@@ -476,6 +476,9 @@ namespace NPOI.OpenXml4Net.OPC
                 //l.writeLock().unlock();
             }
 
+            // ensure all held resources are freed
+            Revert();
+
             // Clear
             this.contentTypeManager.ClearAll();
 
