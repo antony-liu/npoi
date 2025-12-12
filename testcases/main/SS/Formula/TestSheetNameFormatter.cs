@@ -15,12 +15,18 @@
    limitations under the License.
 ==================================================================== */
 
+using NUnit.Framework.Legacy;
+
 namespace TestCases.SS.Formula
 {
 
     using NPOI.SS.Formula;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
+    using NPOI.Util;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
+    using System.IO;
+    using System.Text;
 
     /**
      * Tests for {@link SheetNameFormatter}
@@ -30,12 +36,6 @@ namespace TestCases.SS.Formula
     [TestFixture]
     public class TestSheetNameFormatter
     {
-
-        private static void ConfirmFormat(String rawSheetName, String expectedSheetNameEncoding)
-        {
-            ClassicAssert.AreEqual(expectedSheetNameEncoding, SheetNameFormatter.Format(rawSheetName));
-        }
-
         /**
          * Tests main public method 'format' 
          */
@@ -57,6 +57,108 @@ namespace TestCases.SS.Formula
             ConfirmFormat("my_3rd_sheet", "my_3rd_sheet"); // underscores and digits OK
             ConfirmFormat("A12220", "'A12220'");
             ConfirmFormat("TAXRETURN19980415", "TAXRETURN19980415");
+
+            ConfirmFormat(null, "#REF");
+        }
+
+        private static void ConfirmFormat(string rawSheetName, string expectedSheetNameEncoding)
+        {
+            // test all variants
+
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, SheetNameFormatter.Format(rawSheetName));
+
+            StringBuilder sb = new StringBuilder();
+            SheetNameFormatter.AppendFormat(sb, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sb.ToString());
+            sb = new StringBuilder();
+            SheetNameFormatter.AppendFormat(sb, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sb.ToString());
+
+            StringBuilder sbf = new StringBuilder();
+            //noinspection deprecation
+            SheetNameFormatter.AppendFormat(sbf, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sbf.ToString());
+        }
+
+        [Test]
+        public void TestFormatWithWorkbookName()
+        {
+
+            confirmFormat("abc", "abc", "[abc]abc");
+            confirmFormat("abc", "123", "'[abc]123'");
+
+            confirmFormat("abc", "my sheet", "'[abc]my sheet'"); // space
+            confirmFormat("abc", "A:MEM", "'[abc]A:MEM'"); // colon
+
+            confirmFormat("abc", "O'Brian", "'[abc]O''Brian'"); // single quote Gets doubled
+
+            confirmFormat("abc", "3rdTimeLucky", "'[abc]3rdTimeLucky'"); // digit in first pos
+            confirmFormat("abc", "_", "[abc]_"); // plain underscore OK
+            confirmFormat("abc", "my_3rd_sheet", "[abc]my_3rd_sheet"); // underscores and digits OK
+            confirmFormat("abc", "A12220", "'[abc]A12220'");
+            confirmFormat("abc", "TAXRETURN19980415", "[abc]TAXRETURN19980415");
+
+            confirmFormat("abc", null, "[abc]#REF");
+            confirmFormat(null, "abc", "[#REF]abc");
+            confirmFormat(null, null, "[#REF]#REF");
+        }
+
+        private static void confirmFormat(string workbookName, string rawSheetName, string expectedSheetNameEncoding)
+        {
+            // test all variants
+
+            StringBuilder sb = new StringBuilder();
+            SheetNameFormatter.AppendFormat(sb, workbookName, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sb.ToString());
+
+            sb = new StringBuilder();
+            SheetNameFormatter.AppendFormat(sb, workbookName, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sb.ToString());
+
+            StringBuilder sbf = new StringBuilder();
+            //noinspection deprecation
+            SheetNameFormatter.AppendFormat(sbf, workbookName, rawSheetName);
+            ClassicAssert.AreEqual(expectedSheetNameEncoding, sbf.ToString());
+        }
+
+        [Test]
+        public void TestFormatException()
+        {
+            //        Appendable mock = new Appendable() {
+
+            //        public Appendable append(CharSequence csq)
+            //    {
+            //        throw new IOException("Test exception");
+            //    }
+            //    public Appendable append(CharSequence csq, int start, int end)
+            //    {
+            //        throw new IOException("Test exception");
+            //    }
+            //    public Appendable append(char c)
+            //    {
+            //        throw new IOException("Test exception");
+            //    }
+            //};
+
+            //try
+            //{
+            //    SheetNameFormatter.AppendFormat(mock, null, null);
+            //    ClassicAssert.Fail("Should catch exception here");
+            //}
+            //catch(RuntimeException e)
+            //{
+            //    // expected here
+            //}
+
+            //try
+            //{
+            //    SheetNameFormatter.AppendFormat(mock, null);
+            //    ClassicAssert.Fail("Should catch exception here");
+            //}
+            //catch(RuntimeException e)
+            //{
+            //    // expected here
+            //}
         }
         [Test]
         public void TestBooleanLiterals()

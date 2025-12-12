@@ -16,33 +16,33 @@
 ==================================================================== */
 
 using NPOI;
+using NUnit.Framework;
 
 namespace TestCases.HSSF.UserModel
 {
-    using System;
-    using System.IO;
-    using System.Text;
-    using System.Collections;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
-
-    using TestCases.HSSF;
-
-    using NPOI.HSSF.UserModel;
+    using NPOI.HPSF;
+    using NPOI.HSSF;
+    using NPOI.HSSF.Extractor;
+    using NPOI.HSSF.Model;
     using NPOI.HSSF.Record;
     using NPOI.HSSF.Record.Aggregates;
+    using NPOI.HSSF.Record.Crypto;
+    using NPOI.HSSF.UserModel;
+    using NPOI.POIFS.FileSystem;
+    using NPOI.SS.Formula.PTG;
+    using NPOI.SS.UserModel;
     using NPOI.SS.Util;
     using NPOI.Util;
-    using NPOI.SS.UserModel;
-    using NPOI.HSSF.Model;
-    using System.Collections.Generic;
-    using NPOI.SS.Formula.PTG;
-    using NPOI.POIFS.FileSystem;
-    using NPOI.HSSF.Extractor;
-    using NPOI.HSSF.Record.Crypto;
-    using NPOI.HSSF;
-    using System.Net;
+    using NUnit.Framework;
+using NUnit.Framework.Legacy;
     using SixLabors.ImageSharp;
-    using NPOI.HPSF;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
+    using System.Text;
+    using TestCases.HSSF;
 
     /**
      * Testcases for bugs entered in bugzilla
@@ -3510,9 +3510,61 @@ namespace TestCases.HSSF.UserModel
                         new PropertySet(new DocumentInputStream(entry));
             });
         }
-
-        // follow https://svn.apache.org/viewvc?view=revision&revision=1896552 to write a unit test for this fix.
         [Test]
+        public void Test51262()
+        {
+            HSSFWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("51262.xls");
+            try {
+                ISheet sheet = wb.GetSheetAt(0);
+                IRow row = sheet.GetRow(2);
+
+                ICell cell = row.GetCell(1);
+                ICellStyle style = cell.CellStyle;
+                ClassicAssert.AreEqual(26, style.FontIndexAsInt);
+
+                row = sheet.GetRow(3);
+                cell = row.GetCell(1);
+                style = cell.CellStyle;
+                ClassicAssert.AreEqual(28, style.FontIndexAsInt);
+
+                // check the two fonts
+                HSSFFont font = wb.GetFontAt(26) as HSSFFont;
+                ClassicAssert.IsTrue(font.IsBold);
+                ClassicAssert.AreEqual(10, font.FontHeightInPoints);
+                ClassicAssert.AreEqual("\uFF2D\uFF33 \uFF30\u30B4\u30B7\u30C3\u30AF", font.FontName);
+
+                font = wb.GetFontAt(28) as HSSFFont;
+                ClassicAssert.IsTrue(font.IsBold);
+                ClassicAssert.AreEqual(10, font.FontHeightInPoints);
+                ClassicAssert.AreEqual("\uFF2D\uFF33 \uFF30\u30B4\u30B7\u30C3\u30AF", font.FontName);
+            }
+            finally {
+                wb.Close();
+            }
+        }
+
+        [Test]
+        public void Test60460()
+        {
+            IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("60460.xls");
+
+            ClassicAssert.AreEqual(2, wb.GetAllNames().Count);
+
+            IName rangedName = wb.GetAllNames()[0];
+            ClassicAssert.IsFalse(rangedName.IsFunctionName);
+            ClassicAssert.AreEqual("'[\\\\HEPPC3\\gt$\\Teaching\\Syn\\physyn.xls]#REF'!$AK$70:$AL$70",
+                // replace '/' to make test work equally on Windows and Linux
+                rangedName.RefersToFormula.Replace("/", "\\"));
+
+            rangedName = wb.GetAllNames()[1];
+            ClassicAssert.IsFalse(rangedName.IsFunctionName);
+            ClassicAssert.AreEqual("Questionnaire!$A$1:$L$65", rangedName.RefersToFormula);
+
+            wb.Close();
+        }
+
+    // follow https://svn.apache.org/viewvc?view=revision&revision=1896552 to write a unit test for this fix.
+    [Test]
         public void Test52447()
         {
             IWorkbook wb = null;

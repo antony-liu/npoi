@@ -86,8 +86,8 @@ namespace NPOI.SS.Formula
 
         private static bool AnySheetNameNeedsEscaping(string firstSheetName, string lastSheetName)
         {
-            bool anySheetNameNeedsDelimiting = firstSheetName != null && SheetNameFormatter.NeedsDelimiting(firstSheetName);
-            anySheetNameNeedsDelimiting |= lastSheetName != null && SheetNameFormatter.NeedsDelimiting(lastSheetName);
+            bool anySheetNameNeedsDelimiting = SheetNameFormatter.NeedsDelimiting(firstSheetName);
+            anySheetNameNeedsDelimiting |= SheetNameFormatter.NeedsDelimiting(lastSheetName);
             return anySheetNameNeedsDelimiting;
         }
     }

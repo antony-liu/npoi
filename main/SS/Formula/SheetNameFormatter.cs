@@ -53,7 +53,7 @@ namespace NPOI.SS.Formula
          */
         public static String Format(String rawSheetName)
         {
-            StringBuilder sb = new StringBuilder(rawSheetName.Length + 2);
+            StringBuilder sb = new StringBuilder(rawSheetName == null ? 0 : rawSheetName.Length + 2);
             AppendFormat(sb, rawSheetName);
             return sb.ToString();
         }
@@ -65,56 +65,99 @@ namespace NPOI.SS.Formula
          */
         public static void AppendFormat(StringBuilder out1, String rawSheetName)
         {
-            bool needsQuotes = NeedsDelimiting(rawSheetName);
-            if (needsQuotes)
+            try
             {
-                out1.Append(DELIMITER);
-                AppendAndEscape(out1, rawSheetName);
-                out1.Append(DELIMITER);
+                bool needsQuotes = NeedsDelimiting(rawSheetName);
+                if(needsQuotes)
+                {
+                    out1.Append(DELIMITER);
+                    AppendAndEscape(out1, rawSheetName);
+                    out1.Append(DELIMITER);
+                }
+                else
+                {
+                    AppendAndEscape(out1, rawSheetName);
+                }
             }
-            else
+            catch(Exception e)
             {
-                out1.Append(rawSheetName);
-            }
-        }
-        public static void AppendFormat(StringBuilder out1, String workbookName, String rawSheetName)
-        {
-            bool needsQuotes = NeedsDelimiting(workbookName) || NeedsDelimiting(rawSheetName);
-            if (needsQuotes)
-            {
-                out1.Append(DELIMITER);
-                out1.Append('[');
-                AppendAndEscape(out1, workbookName.Replace('[', '(').Replace(']', ')'));
-                out1.Append(']');
-                AppendAndEscape(out1, rawSheetName);
-                out1.Append(DELIMITER);
-            }
-            else
-            {
-                out1.Append('[');
-                out1.Append(workbookName);
-                out1.Append(']');
-                out1.Append(rawSheetName);
+                throw new RuntimeException(e);
             }
         }
 
+        public static void AppendFormat(StringBuilder out1, String workbookName, String rawSheetName)
+        {
+            try
+            {
+                bool needsQuotes = NeedsDelimiting(workbookName) || NeedsDelimiting(rawSheetName);
+                if(needsQuotes)
+                {
+                    out1.Append(DELIMITER);
+                    out1.Append('[');
+                    AppendAndEscape(out1, workbookName.Replace('[', '(').Replace(']', ')'));
+                    out1.Append(']');
+                    AppendAndEscape(out1, rawSheetName);
+                    out1.Append(DELIMITER);
+                }
+                else
+                {
+                    out1.Append('[');
+                    AppendOrREF(out1, workbookName);
+                    out1.Append(']');
+                    AppendOrREF(out1, rawSheetName);
+                }
+            }
+            catch(Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static void AppendOrREF(StringBuilder out1, String name)
+        {
+		    if(name == null)
+            {
+			    out1.Append("#REF");
+            }
+            else
+            {
+			    out1.Append(name);
+            }
+	    }
+
         public static void AppendAndEscape(StringBuilder sb, String rawSheetName)
         {
-            int len = rawSheetName.Length;
-            for (int i = 0; i < len; i++)
+            try
             {
-                char ch = rawSheetName[i];
-                if (ch == DELIMITER)
+                if(rawSheetName == null)
                 {
-                    // single quotes (') are encoded as ('')
-                    sb.Append(DELIMITER);
+                    sb.Append("#REF");
+                    return;
                 }
-                sb.Append(ch);
+                int len = rawSheetName.Length;
+                for(int i = 0; i < len; i++)
+                {
+                    char ch = rawSheetName[i];
+                    if(ch == DELIMITER)
+                    {
+                        // single quotes (') are encoded as ('')
+                        sb.Append(DELIMITER);
+                    }
+                    sb.Append(ch);
+                }
+            }
+            catch(Exception e)
+            {
+                throw new RuntimeException(e);
             }
         }
 
         public static bool NeedsDelimiting(String rawSheetName)
         {
+            if(rawSheetName == null)
+            {
+                return false;
+            }
             int len = rawSheetName.Length;
             if (len < 1)
             {
