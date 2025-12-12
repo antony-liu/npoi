@@ -280,6 +280,21 @@ namespace NPOI.XSSF.Streaming
                     }
                 case CellType.Formula:
                     {
+                        switch(cell.CachedFormulaResultType)
+                        {
+                            case CellType.Numeric:
+                                WriteAttribute("t", "n");
+                                break;
+                            case CellType.String:
+                                WriteAttribute("t", ST_CellType.s.ToString());
+                                break;
+                            case CellType.Boolean:
+                                WriteAttribute("t", "b");
+                                break;
+                            case CellType.Error:
+                                WriteAttribute("t", "e");
+                                break;
+                        }
                         _out.Write("><f>");
                         OutputQuotedString(cell.CellFormula);
                         _out.Write("</f>");
@@ -295,6 +310,29 @@ namespace NPOI.XSSF.Streaming
                                     _out.Write("</v>");
                                 }
                                 break;
+                            case CellType.String:
+                                String value = cell.StringCellValue;
+                                if(!string.IsNullOrEmpty(value))
+                                {
+                                    _out.Write("<v>");
+                                    _out.Write(value);
+                                    _out.Write("</v>");
+                                }
+                                break;
+                            case CellType.Boolean:
+                                _out.Write("><v>");
+                                _out.Write(cell.BooleanCellValue ? "1" : "0");
+                                _out.Write("</v>");
+                                break;
+                            case CellType.Error:
+                            {
+                                FormulaError error = FormulaError.ForInt(cell.ErrorCellValue);
+
+                                _out.Write("><v>");
+                                _out.Write(error.String);
+                                _out.Write("</v>");
+                                break;
+                            }
                             default:
                                 break;
                         }

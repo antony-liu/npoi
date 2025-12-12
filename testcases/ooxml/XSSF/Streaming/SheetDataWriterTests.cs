@@ -245,7 +245,7 @@ namespace TestCases.XSSF.Streaming
             var lines = File.ReadAllLines(_objectToTest.TemporaryFilePath());
 
             ClassicAssert.True(lines.Length == 1);
-            ClassicAssert.AreEqual("<c r=\"A1\"><f>SUM(A1:A3)</f><v>1</v></c>", lines[0]);
+            ClassicAssert.AreEqual("<c r=\"A1\" t=\"n\"><f>SUM(A1:A3)</f><v>1</v></c>", lines[0]);
 
         }
 

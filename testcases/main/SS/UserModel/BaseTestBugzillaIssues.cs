@@ -749,79 +749,79 @@ namespace TestCases.SS.UserModel
             // First up, check that TRUE and ISLOGICAL both behave
             cf.CellFormula = (/*setter*/"TRUE()");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISLOGICAL(TRUE())");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISLOGICAL(4)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
 
             // Now, check ISNUMBER / ISTEXT / ISNONTEXT
             cf.CellFormula = (/*setter*/"ISNUMBER(A1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNUMBER(B1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNUMBER(C1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNUMBER(D1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNUMBER(E1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
 
             cf.CellFormula = (/*setter*/"ISTEXT(A1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISTEXT(B1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISTEXT(C1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISTEXT(D1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISTEXT(E1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
 
             cf.CellFormula = (/*setter*/"ISNONTEXT(A1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNONTEXT(B1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNONTEXT(C1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNONTEXT(D1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.CellFormula = (/*setter*/"ISNONTEXT(E1)");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue); // Blank and Null the same
+            ClassicAssert.IsTrue(cf.BooleanCellValue); // Blank and Null the same
 
 
             // Next up, SEARCH on its own
@@ -845,11 +845,11 @@ namespace TestCases.SS.UserModel
             // Finally, bring it all together
             cf.SetCellFormula("ISNUMBER(SEARCH(\"am\", A1))");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.SetCellFormula("ISNUMBER(SEARCH(\"am\", B1))");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(true, cf.BooleanCellValue);
+            ClassicAssert.IsTrue(cf.BooleanCellValue);
 
             cf.SetCellFormula("ISNUMBER(SEARCH(\"am\", C1))");
             cf = EvaluateCell(wb, cf);
@@ -857,11 +857,11 @@ namespace TestCases.SS.UserModel
 
             cf.SetCellFormula("ISNUMBER(SEARCH(\"am\", D1))");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
 
             cf.SetCellFormula("ISNUMBER(SEARCH(\"am\", E1))");
             cf = EvaluateCell(wb, cf);
-            ClassicAssert.AreEqual(false, cf.BooleanCellValue);
+            ClassicAssert.IsFalse(cf.BooleanCellValue);
         }
         private ICell EvaluateCell(IWorkbook wb, ICell c)
         {
@@ -1282,19 +1282,31 @@ namespace TestCases.SS.UserModel
             // Check read ok, and re-evaluate fine
             cell = row.GetCell(5);
             ClassicAssert.AreEqual("ab", cell.StringCellValue);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(A1<>\"\",MID(A1,1,2),\" \")", cell.CellFormula);
             ev.EvaluateFormulaCell(cell);
             ClassicAssert.AreEqual("ab", cell.StringCellValue);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(A1<>\"\",MID(A1,1,2),\" \")", cell.CellFormula);
+
 
             cell = row.GetCell(6);
             ClassicAssert.AreEqual("empty", cell.StringCellValue);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(B1<>\"\",MID(A1,1,2),\"empty\")", cell.CellFormula);
             ev.EvaluateFormulaCell(cell);
             ClassicAssert.AreEqual("empty", cell.StringCellValue);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(B1<>\"\",MID(A1,1,2),\"empty\")", cell.CellFormula);
 
             cell = row.GetCell(7);
             ClassicAssert.AreEqual("ab", cell.StringCellValue);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(A1<>\"\",IF(C1<>\"\",MID(A1,1,2),\"c1\"),\"c2\")", cell.CellFormula);
             ev.EvaluateFormulaCell(cell);
             ClassicAssert.AreEqual("ab", cell.StringCellValue);
-
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual("IF(A1<>\"\",IF(C1<>\"\",MID(A1,1,2),\"c1\"),\"c2\")", cell.CellFormula);
         }
 
         [Test]

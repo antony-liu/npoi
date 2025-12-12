@@ -17,7 +17,9 @@
 
 namespace TestCases.SS.UserModel
 {
+    using NPOI.SS;
     using NPOI.SS.UserModel;
+    using NPOI.SS.Util;
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using SixLabors.Fonts;
     using System;
@@ -737,6 +739,87 @@ namespace TestCases.SS.UserModel
             {
                 wb.Close();
             }
+        }
+
+        [Test]
+        public void TestFormulaEvaluatorEvaluateSimpleFormulaCell()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                IRow row = wb.CreateSheet().CreateRow(0);
+                ICell a1 = row.CreateCell(0, CellType.Numeric);
+                a1.SetCellValue(1.0);
+                ICell a2 = row.CreateCell(1, CellType.Numeric);
+                a2.SetCellValue(2.0);
+                ICell a3 = row.CreateCell(2, CellType.Formula);
+                string formula = "SUM(A1:B1)";
+                a3.SetCellFormula(formula);
+                IFormulaEvaluator evaluator = wb.GetCreationHelper().CreateFormulaEvaluator();
+                CellType resultType = evaluator.EvaluateFormulaCell(a3);
+                ClassicAssert.AreEqual(CellType.Numeric, resultType);
+
+                double result = a3.NumericCellValue;
+                // result is correct
+                ClassicAssert.IsTrue(result > 2.0, String.Format("Expected {0} to be greater than {1}", result, 2.0));
+                ClassicAssert.IsTrue(result < 4.0, String.Format("Expected {0} to be less than {1}", result, 4.0));
+
+                // ensure that this works for SUM
+                ClassicAssert.AreEqual(CellType.Formula, a3.CellType);
+                ClassicAssert.AreEqual(formula, a3.CellFormula);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
+        [Test]
+        public void TestFormulaEvaluatorEvaluateVlookupFormulaCell()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ISheet mainSheet = wb.CreateSheet("main");
+                ISheet otherSheet = wb.CreateSheet("other");
+                IRow otherRow1 = otherSheet.CreateRow(0);
+                ICell label1 = otherRow1.CreateCell(0, CellType.String);
+                label1.SetCellValue("Thing One");
+                ICell id1 = otherRow1.CreateCell(1, CellType.String);
+                id1.SetCellValue("1");
+                IRow otherRow2 = otherSheet.CreateRow(1);
+                ICell label2 = otherRow2.CreateCell(0, CellType.String);
+                label2.SetCellValue("Thing Two");
+                ICell id2 = otherRow2.CreateCell(1, CellType.String);
+                id2.SetCellValue("2");
+                IDataValidationHelper dvHelper = mainSheet.GetDataValidationHelper();
+                int maxRows = SpreadsheetVersion.EXCEL2007.MaxRows - 1;
+                CellRangeAddressList addressList = new CellRangeAddressList(0, maxRows, 0, 0);
+                string constraint = "'other'!$A:$A";
+                IDataValidationConstraint dvConstraint = dvHelper.CreateFormulaListConstraint(constraint);
+                IDataValidation dataValidation = dvHelper.CreateValidation(dvConstraint, addressList);
+                dataValidation.ShowErrorBox = true;
+                mainSheet.AddValidationData(dataValidation);
+                wb.SetSheetHidden(wb.GetSheetIndex(otherSheet), SheetVisibility.Hidden);
+                IRow row = mainSheet.CreateRow(0);
+                ICell a1 = row.CreateCell(0, CellType.String);
+                a1.SetCellValue("Thing Two");
+                ICell a2 = row.CreateCell(1, CellType.Formula);
+                string formula = "VLOOKUP(A1,other!A:B,2,FALSE)";
+                a2.SetCellFormula(formula);
+
+                IFormulaEvaluator evaluator = wb.GetCreationHelper().CreateFormulaEvaluator();
+                CellType resultType = evaluator.EvaluateFormulaCell(a2);
+                ClassicAssert.AreEqual(CellType.String, resultType);
+
+                // result is correct
+                string result = a2.StringCellValue;
+                ClassicAssert.AreEqual("2", result);
+
+                // ensure that this works for vlookup as well
+                ClassicAssert.AreEqual(CellType.Formula, a2.CellType);
+                ClassicAssert.AreEqual(formula, a2.CellFormula);
+            }
+            finally { wb.Close(); }
         }
 
         public void BaseTestNPOIIssue_1057(string paramsFile, string installFile)

@@ -14,8 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 ==================================================================== */
-using System;
-using System.IO;
+using EnumsNET;
 using NPOI.SS;
 using NPOI.SS.Formula.Eval;
 using NPOI.SS.UserModel;
@@ -24,7 +23,7 @@ using NPOI.Util;
 using NPOI.XSSF.Streaming.Properties;
 using NPOI.XSSF.Streaming.Values;
 using NPOI.XSSF.UserModel;
-using Value = NPOI.XSSF.Streaming.Values.Value;
+using System;
 
 namespace NPOI.XSSF.Streaming
 {
@@ -407,12 +406,17 @@ namespace NPOI.XSSF.Streaming
                     case CellType.Blank:
                         return "";
                     case CellType.Formula:
+                    {
+                        FormulaValue fv=(FormulaValue)_value;
+                        if(fv.GetFormulaType() !=CellType.String)
+                            throw typeMismatch(CellType.String, CellType.Formula, false);
+                        if(_value is RichTextStringFormulaValue) {
+                            return ((RichTextStringFormulaValue) _value).GetPreEvaluatedValue().String;
+                        } else
                         {
-                            FormulaValue fv = (FormulaValue)_value;
-                            if (fv.GetFormulaType() != CellType.String)
-                                throw typeMismatch(CellType.String, CellType.Formula, false);
-                            return ((StringFormulaValue)_value).PreEvaluatedValue;
+                            return ((StringFormulaValue) _value).PreEvaluatedValue;
                         }
+                    }
                     case CellType.String:
                     {
                         if (((StringValue) _value).IsRichText())
@@ -553,8 +557,14 @@ namespace NPOI.XSSF.Streaming
 
                 if (xvalue.HasFormatting())
                     logger.Log(POILogger.WARN, "SXSSF doesn't support Shared Strings, rich text formatting information has be lost");
-
-                ((RichTextValue)_value).Value = xvalue;
+                
+                if(_value is RichTextStringFormulaValue)
+                {
+                    ((RichTextStringFormulaValue) _value).SetPreEvaluatedValue(xvalue);
+                } else
+                {
+                    ((RichTextValue) _value).Value = xvalue;
+                }
             }
             else
             {
@@ -714,9 +724,18 @@ namespace NPOI.XSSF.Streaming
 
         private void EnsureRichTextStringType()
         {
-            if (_value.GetType() != CellType.String
-               || !((StringValue)_value).IsRichText())
+            // don't change cell type for formulas
+            if(_value.GetType() == CellType.Formula)
+            {
+                String formula = ((FormulaValue)_value).Value;
+                _value = new RichTextStringFormulaValue();
+                ((RichTextStringFormulaValue) _value).Value = formula;
+            }
+            else if(_value.GetType()!=CellType.String ||
+                    !((StringValue) _value).IsRichText())
+            {
                 _value = new RichTextValue();
+            }
         }
 
         private void EnsureType(CellType type)

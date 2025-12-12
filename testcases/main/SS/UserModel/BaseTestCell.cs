@@ -61,10 +61,10 @@ namespace TestCases.SS.UserModel
                     CellType.Formula, CellType.Error);
 
             cell.SetCellValue(false);
-            ClassicAssert.AreEqual(false, cell.BooleanCellValue);
+            ClassicAssert.IsFalse(cell.BooleanCellValue);
             ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
             cell.SetCellValue(true);
-            ClassicAssert.AreEqual(true, cell.BooleanCellValue);
+            ClassicAssert.IsTrue(cell.BooleanCellValue);
             AssertProhibitedValueAccess(cell, CellType.Numeric, CellType.String,
                     CellType.Formula, CellType.Error);
 
@@ -154,14 +154,14 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(0, c.RowIndex);
             ClassicAssert.AreEqual(1, c.ColumnIndex);
             c.SetCellValue(true);
-            ClassicAssert.AreEqual(true, c.BooleanCellValue, "B1 value");
+            ClassicAssert.IsTrue(c.BooleanCellValue, "B1 value");
 
             // C1
             c = r.CreateCell(2);
             ClassicAssert.AreEqual(0, c.RowIndex);
             ClassicAssert.AreEqual(2, c.ColumnIndex);
             c.SetCellValue(false);
-            ClassicAssert.AreEqual(false, c.BooleanCellValue, "C1 value");
+            ClassicAssert.IsFalse(c.BooleanCellValue, "C1 value");
 
             // Make sure values are saved and re-read correctly.
             IWorkbook wb2 = _testDataProvider.WriteOutAndReadBack(wb1);
@@ -175,13 +175,13 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(0, c.RowIndex);
             ClassicAssert.AreEqual(1, c.ColumnIndex);
             ClassicAssert.AreEqual(CellType.Boolean, c.CellType);
-            ClassicAssert.AreEqual(true, c.BooleanCellValue, "B1 value");
+            ClassicAssert.IsTrue(c.BooleanCellValue, "B1 value");
 
             c = r.GetCell(2);
             ClassicAssert.AreEqual(0, c.RowIndex);
             ClassicAssert.AreEqual(2, c.ColumnIndex);
             ClassicAssert.AreEqual(CellType.Boolean, c.CellType);
-            ClassicAssert.AreEqual(false, c.BooleanCellValue, "C1 value");
+            ClassicAssert.IsFalse(c.BooleanCellValue, "C1 value");
 
             wb2.Close();
         }
@@ -295,7 +295,7 @@ namespace TestCases.SS.UserModel
 
 
             // create date-formatted cell
-            DateTime c = new DateTime(2010, 01, 02, 00, 00, 00);
+            DateTime c = new DateTime(2010, 02, 02, 00, 00, 00);
             r.CreateCell(7).SetCellValue(c);
             ICellStyle dateStyle = wb1.CreateCellStyle();
             short formatId = wb1.GetCreationHelper().CreateDataFormat().GetFormat("dd-MMM-yyyy"); // m/d/yy h:mm any date format will do
@@ -431,7 +431,7 @@ namespace TestCases.SS.UserModel
             cell.SetCellType(CellType.Boolean);
 
             ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
-            ClassicAssert.AreEqual(true, cell.BooleanCellValue);
+            ClassicAssert.IsTrue(cell.BooleanCellValue);
             cell.SetCellType(CellType.String);
             ClassicAssert.AreEqual("TRUE", cell.RichStringCellValue.String);
 
@@ -439,7 +439,7 @@ namespace TestCases.SS.UserModel
             cell.SetCellValue("FALSE");
             cell.SetCellType(CellType.Boolean);
             ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
-            ClassicAssert.AreEqual(false, cell.BooleanCellValue);
+            ClassicAssert.IsFalse(cell.BooleanCellValue);
             cell.SetCellType(CellType.String);
             ClassicAssert.AreEqual("FALSE", cell.RichStringCellValue.String);
 
@@ -485,7 +485,7 @@ namespace TestCases.SS.UserModel
             cell.SetCellErrorValue(FormulaError.NAME.Code);
             cell.SetCellValue(true);
             // Identify bug 46479c
-            ClassicAssert.AreEqual(true, cell.BooleanCellValue);
+            ClassicAssert.IsTrue(cell.BooleanCellValue);
             wb.Close();
         }
 
@@ -545,7 +545,7 @@ namespace TestCases.SS.UserModel
             fe.ClearAllCachedResultValues();
             fe.EvaluateFormulaCell(cellA1);
             ConfirmCannotReadString(cellA1);
-            ClassicAssert.AreEqual(true, cellA1.BooleanCellValue);
+            ClassicAssert.IsTrue(cellA1.BooleanCellValue);
             cellA1.SetCellType(CellType.String);
             ClassicAssert.AreEqual("TRUE", cellA1.StringCellValue);
 
@@ -577,7 +577,7 @@ namespace TestCases.SS.UserModel
             cell.SetCellValue(true);
             cell.SetCellType(CellType.Boolean);
             ClassicAssert.IsTrue(cell.BooleanCellValue, "Identified bug 46479d");
-            ClassicAssert.AreEqual(true, cell.BooleanCellValue);
+            ClassicAssert.IsTrue(cell.BooleanCellValue);
 
             wb.Close();
         }
@@ -632,7 +632,9 @@ namespace TestCases.SS.UserModel
             cell.CellFormula = ("B1&C1");
             try
             {
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
                 cell.SetCellValue(wb.GetCreationHelper().CreateRichTextString("hello"));
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
             }
             catch (InvalidCastException)
             {
@@ -727,7 +729,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(0, style.FontIndexAsInt);
             ClassicAssert.AreEqual(HorizontalAlignment.General, style.Alignment);
             ClassicAssert.AreEqual(0, style.DataFormat);
-            ClassicAssert.AreEqual(false, style.WrapText);
+            ClassicAssert.IsFalse(style.WrapText);
 
             ICellStyle style2 = wb.CreateCellStyle();
             ClassicAssert.IsTrue(style2.IsLocked);
@@ -1046,6 +1048,42 @@ namespace TestCases.SS.UserModel
             wb.Close();
         }
 
+        [Test]
+        public void TestFormulaSetValueDoesNotChangeType()
+        {
+            IWorkbook wb = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ISheet sheet = wb.CreateSheet();
+                IRow row = sheet.CreateRow(0);
+                ICell cell = row.CreateCell(0);
+                cell.SetCellFormula("SQRT(-1)");
+
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                cell.SetCellValue(new DateTime());
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                //cell.SetCellValue(GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.ROOT));
+                //ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                cell.SetCellValue(1.0);
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                cell.SetCellValue("test");
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                cell.SetCellValue(wb.GetCreationHelper().CreateRichTextString("test"));
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+                cell.SetCellValue(false);
+                ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            }
+            finally
+            {
+                wb.Close();
+            }
+        }
         [Test]
         public void PrimitiveToEnumReplacementDoesNotBreakBackwardsCompatibility()
         {
