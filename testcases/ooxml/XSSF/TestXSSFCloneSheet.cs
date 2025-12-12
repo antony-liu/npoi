@@ -80,6 +80,16 @@ namespace TestCases.XSSF
 
             wb.Close();
         }
-    }
 
+        [Test]
+        public void Test61605() 
+        {
+            IWorkbook template_wb = XSSFTestDataSamples.OpenSampleWorkbook("61605.xlsx");
+
+            ISheet template_sh = template_wb.GetSheetAt(0);
+            ClassicAssert.IsNotNull(template_sh);
+            ISheet source_sh = template_wb.CloneSheet(0);
+            ClassicAssert.IsNotNull(source_sh);
+        }
+    }
 }
