@@ -193,5 +193,15 @@ namespace TestCases.POIFS.FileSystem
             DirectoryEntry fdAA = (DirectoryEntry)fdA.GetEntry(dirAA.Name);
             ClassicAssert.AreEqual(true, fdAA.HasEntry(eAA.Name));
         }
+
+        [Test]
+        public void TestNullDirectory()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                new FilteringDirectoryNode(null, null);
+            });
+            
+        }
     }
 }

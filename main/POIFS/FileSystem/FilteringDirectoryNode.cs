@@ -40,6 +40,10 @@ namespace NPOI.POIFS.FileSystem
         /// <param name="excludes">The Entries to exclude</param>
         public FilteringDirectoryNode(DirectoryEntry directory, ICollection<String> excludes)
         {
+            if(directory == null)
+            {
+                throw new ArgumentException("directory cannot be null");
+            }
             this.directory = directory;
 
             // Process the excludes
