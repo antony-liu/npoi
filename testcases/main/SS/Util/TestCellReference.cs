@@ -15,13 +15,15 @@
    limitations under the License.
 ==================================================================== */
 
-using NPOI.SS.Util;
-using NUnit.Framework;using NUnit.Framework.Legacy;
-using TestCases.HSSF.Record;
-
-using System.IO;
-using System;
 using NPOI.SS;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NSubstitute;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
+using System;
+using System.IO;
+using TestCases.HSSF.Record;
 
 namespace TestCases.SS.Util
 {
@@ -56,6 +58,27 @@ namespace TestCases.SS.Util
 
             cellReference = new CellReference(sheet, row, col, absRow, absCol);
             ClassicAssert.AreEqual("Sheet1!A$1", cellReference.FormatAsString());
+
+            cellReference = new CellReference(sheet+"!$A1");
+            ClassicAssert.IsFalse(cellReference.IsRowAbsolute);
+            ClassicAssert.IsTrue(cellReference.IsColAbsolute);
+
+            cellReference = new CellReference(sheet+"!A$1");
+            ClassicAssert.IsTrue(cellReference.IsRowAbsolute);
+            ClassicAssert.IsFalse(cellReference.IsColAbsolute);
+        }
+
+        [Test]
+        public void TestCtorFromCell()
+        {
+            var cell = Substitute.For<ICell>();
+            cell.Sheet.SheetName.Returns("sheet");
+            CellReference result = new CellReference(cell);
+            ClassicAssert.AreEqual("sheet", result.SheetName);
+            ClassicAssert.AreEqual(cell.RowIndex, result.Row);
+            ClassicAssert.AreEqual(cell.ColumnIndex, result.Col);
+            ClassicAssert.IsFalse(result.IsRowAbsolute);
+            ClassicAssert.IsFalse(result.IsColAbsolute);
         }
 
         [Test]

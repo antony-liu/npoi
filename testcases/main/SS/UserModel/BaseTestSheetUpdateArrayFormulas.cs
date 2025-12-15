@@ -83,7 +83,7 @@ namespace TestCases.SS.UserModel
             }
             catch (InvalidOperationException e)
             {
-                ClassicAssert.AreEqual("Cell A1 is not part of an array formula.", e.Message);
+                ClassicAssert.AreEqual("Cell Sheet0!A1 is not part of an array formula.", e.Message);
             }
 
             // row 3 does not yet exist
@@ -181,7 +181,7 @@ namespace TestCases.SS.UserModel
             }
             catch (InvalidOperationException e)
             {
-                ClassicAssert.AreEqual("Cell A1 is not part of an array formula.", e.Message);
+                ClassicAssert.AreEqual("Cell Sheet0!A1 is not part of an array formula.", e.Message);
             }
 
             try
@@ -191,7 +191,7 @@ namespace TestCases.SS.UserModel
             }
             catch (ArgumentException e)
             {
-                ClassicAssert.AreEqual("Cell A1 is not part of an array formula.", e.Message);
+                ClassicAssert.AreEqual("Cell Sheet0!A1 is not part of an array formula.", e.Message);
             }
 
             workbook.Close();

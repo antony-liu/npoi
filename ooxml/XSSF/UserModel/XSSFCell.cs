@@ -1391,7 +1391,7 @@ namespace NPOI.XSSF.UserModel
                 XSSFCell cell = ((XSSFSheet)Sheet).GetFirstCellInArrayFormula(this);
                 if (cell == null)
                 {
-                    throw new InvalidOperationException("Cell " + GetReference()
+                    throw new InvalidOperationException("Cell " + new CellReference(this).FormatAsString()
                             + " is not part of an array formula.");
                 }
                 String formulaRef = cell._cell.f.@ref;

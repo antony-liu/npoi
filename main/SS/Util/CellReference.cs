@@ -117,7 +117,8 @@ namespace NPOI.SS.Util
                 _rowIndex = rowRefNumber - 1; // -1 to convert 1-based to zero-based
             }
         }
-        public CellReference(ICell cell):this(cell.RowIndex, cell.ColumnIndex, false, false)
+        public CellReference(ICell cell) 
+            : this(cell.Sheet.SheetName, cell.RowIndex, cell.ColumnIndex, false, false)
         {
             
         }
