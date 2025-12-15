@@ -1167,6 +1167,71 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
+        public void SetStringCellValue_ifThrows_shallNotChangeCell()
+        {
+            IWorkbook workbook = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ICell cell = workbook.CreateSheet().CreateRow(0).CreateCell(0);
+
+                double value = 2.78;
+                cell.SetCellValue(value);
+                ClassicAssert.AreEqual(CellType.Numeric, cell.CellType);
+
+                int badLength = cell.Sheet.Workbook.SpreadsheetVersion.MaxTextLength + 1;
+                string badStringValue = Encoding.UTF8.GetString(new byte[badLength]);
+
+                try
+                {
+                    cell.SetCellValue(badStringValue);
+                }
+                catch(ArgumentException e)
+                {
+                    // no-op, expected to throw but we need to assert something more
+                }
+
+                ClassicAssert.AreEqual(CellType.Numeric, cell.CellType);
+                ClassicAssert.AreEqual(value, cell.NumericCellValue, 0);
+            }
+            finally {
+                workbook.Close();
+            }
+        }
+
+        [Test]
+        public void SetStringCellValueWithRichTextString_ifThrows_shallNotChangeCell()
+        {
+            IWorkbook workbook = _testDataProvider.CreateWorkbook();
+            try
+            {
+                ICell cell = workbook.CreateSheet().CreateRow(0).CreateCell(0);
+
+                double value = 2.78;
+                cell.SetCellValue(value);
+                ClassicAssert.AreEqual(CellType.Numeric, cell.CellType);
+
+                int badLength = cell.Sheet.Workbook.SpreadsheetVersion.MaxTextLength + 1;
+                IRichTextString badStringValue = cell.Sheet.Workbook.GetCreationHelper().
+                    CreateRichTextString(Encoding.UTF8.GetString(new byte[badLength]));
+
+                try
+                {
+                    cell.SetCellValue(badStringValue);
+                }
+                catch(ArgumentException e)
+                {
+                    // no-op, expected to throw but we need to assert something more
+                }
+
+                ClassicAssert.AreEqual(CellType.Numeric, cell.CellType);
+                ClassicAssert.AreEqual(value, cell.NumericCellValue, 0);
+            }
+            finally
+            {
+                workbook.Close();
+            }
+        }
+        [Test]
         public void PrimitiveToEnumReplacementDoesNotBreakBackwardsCompatibility()
         {
             // bug 59836

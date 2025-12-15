@@ -505,24 +505,20 @@ namespace NPOI.XSSF.Streaming
         {
             if (value != null)
             {
-                EnsureTypeOrFormulaType(CellType.String);
-
                 if (value.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
                 {
                     throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
                 }
+                EnsureTypeOrFormulaType(CellType.String);
 
-                if (_value.GetType() == CellType.Formula)
-                    if (_value is NumericFormulaValue formulaValue)
-                    {
-                        formulaValue.PreEvaluatedValue = Double.Parse(value);
-                    }
-                    else
-                    {
-                        ((StringFormulaValue)_value).PreEvaluatedValue = value;
-                    }
+                if(_value.GetType() == CellType.Formula)
+                {
+                    ((StringFormulaValue) _value).PreEvaluatedValue = value;
+                }
                 else
-                    ((PlainStringValue)_value).Value = value;
+                {
+                    ((PlainStringValue) _value).Value = value;
+                }
             }
             else
             {
@@ -543,27 +539,21 @@ namespace NPOI.XSSF.Streaming
         }
 
         public ICell SetCellValue(IRichTextString value)
-        {
-            XSSFRichTextString xvalue = (XSSFRichTextString)value;
-            
-            if (xvalue != null && xvalue.String != null)
+        {         
+            if (value != null && value.String != null)
             {
+                if(value.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
+                {
+                    throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
+                }
                 EnsureRichTextStringType();
 
-                if (xvalue.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
-                {
-                    throw new InvalidOperationException("The maximum length of cell contents (text) is 32,767 characters");
-                }
-
-                if (xvalue.HasFormatting())
-                    logger.Log(POILogger.WARN, "SXSSF doesn't support Shared Strings, rich text formatting information has be lost");
-                
                 if(_value is RichTextStringFormulaValue)
                 {
-                    ((RichTextStringFormulaValue) _value).SetPreEvaluatedValue(xvalue);
+                    ((RichTextStringFormulaValue) _value).SetPreEvaluatedValue(value);
                 } else
                 {
-                    ((RichTextValue) _value).Value = xvalue;
+                    ((RichTextValue) _value).Value = value;
                 }
             }
             else
