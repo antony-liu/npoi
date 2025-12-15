@@ -161,7 +161,7 @@ namespace NPOI.SS.Formula
             int len = rawSheetName.Length;
             if (len < 1)
             {
-                throw new Exception("Zero Length string is an invalid sheet name");
+                return false; // some cases we get missing external references, resulting in empty sheet names
             }
             if (Char.IsDigit(rawSheetName[0]))
             {

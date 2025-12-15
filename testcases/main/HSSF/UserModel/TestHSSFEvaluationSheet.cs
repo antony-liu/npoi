@@ -43,7 +43,7 @@ namespace TestCases.HSSF.UserModel
         [Test]
         public void TestMissingExternalName()
         {
-            HSSFWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("external_name.xls") as HSSFWorkbook;
+            HSSFWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("external_name.xls");
             foreach(IName name in wb.GetAllNames())
             {
                 // this sometimes causes exceptions
