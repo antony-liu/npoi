@@ -19,13 +19,18 @@
 
 namespace TestCases.XSSF.Streaming
 {
+    using MathNet.Numerics;
     using NPOI.OpenXmlFormats.Spreadsheet;
+    using NPOI.SS;
     using NPOI.SS.UserModel;
+    using NPOI.SS.Util;
     using NPOI.XSSF;
     using NPOI.XSSF.Streaming;
     using NPOI.XSSF.UserModel;
+    using NSubstitute;
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using System;
+    using System.Text;
     using TestCases.SS.UserModel;
 
     /**
@@ -83,6 +88,74 @@ namespace TestCases.XSSF.Streaming
                     }
                 }
             }
+        }
+
+        [Test]
+        public void GetCellTypeEnumDelegatesToGetCellType()
+        {
+            var instance = Substitute.ForPartsOf<SXSSFCell>(null, CellType.Blank);
+            //SXSSFCell instance = spy(new SXSSFCell(null, CellType.Blank));
+            CellType result = instance.CellType;
+            _ = instance.Received().CellType;
+            ClassicAssert.AreEqual(CellType.Blank, result);
+        }
+
+        [Test]
+        public void GetCachedFormulaResultTypeEnum_delegatesTo_getCachedFormulaResultType()
+        {
+            var instance = Substitute.ForPartsOf<SXSSFCell>(null, CellType.Blank);
+            instance.SetCellFormula("");
+            _ = instance.Received().CachedFormulaResultType;
+        }
+
+        [Test]
+        public void GetCachedFormulaResultType_throwsISE_whenNotAFormulaCell()
+        {
+            Assert.Throws<InvalidOperationException>(() => {
+                SXSSFCell instance = new SXSSFCell(null, CellType.Blank);
+                _ = instance.CachedFormulaResultType;
+            });
+            
+        }
+
+
+        [Test]
+        public void SetCellValue_withTooLongRichTextString_throwsIAE()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                ICell cell = Substitute.ForPartsOf<SXSSFCell>();
+                cell.CellType.Returns(CellType.Blank);
+                int length = SpreadsheetVersion.EXCEL2007.MaxTextLength + 1;
+                string string1 = Encoding.UTF8.GetString(new byte[length]).Replace("\0", "x");
+                IRichTextString richTextString = new XSSFRichTextString(string1);
+                cell.SetCellValue(richTextString);
+            });
+        }
+
+        [Test]
+        public void GetArrayFormulaRange_returnsNull()
+        {
+            ICell cell = new SXSSFCell(null, CellType.Blank);
+            CellRangeAddress result = cell.ArrayFormulaRange;
+            ClassicAssert.IsNull(result);
+        }
+
+        [Test]
+        public void IsPartOfArrayFormulaGroup_returnsFalse()
+        {
+            ICell cell = new SXSSFCell(null, CellType.Blank);
+            bool result = cell.IsPartOfArrayFormulaGroup;
+            ClassicAssert.IsFalse(result);
+        }
+
+        [Test]
+        public void GetErrorCellValue_returns0_onABlankCell()
+        {
+            ICell cell = new SXSSFCell(null, CellType.Blank);
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+            byte result = cell.ErrorCellValue;
+            ClassicAssert.AreEqual(0, result);
         }
     }
 }

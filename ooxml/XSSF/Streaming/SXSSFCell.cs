@@ -46,7 +46,7 @@ namespace NPOI.XSSF.Streaming
         {
             get
             {
-                throw new NotImplementedException();
+                return null;
             }
         }
 

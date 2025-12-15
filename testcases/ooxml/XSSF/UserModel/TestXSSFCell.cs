@@ -802,6 +802,16 @@ namespace TestCases.XSSF.UserModel
                 wb.Close();
             }
         }
+
+        [Test]
+        public void GetErrorCellValue_throwsISE_onABlankCell()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                ICell cell = new XSSFWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
+                _ = cell.ErrorCellValue;
+            });
+        }
     }
 
 }

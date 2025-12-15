@@ -66,7 +66,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
             cell.SetCellValue(true);
             ClassicAssert.IsTrue(cell.BooleanCellValue);
-            AssertProhibitedValueAccess(cell, CellType.Numeric, CellType.String, CellType.Boolean,
+            AssertProhibitedValueAccess(cell, CellType.Numeric, CellType.String,
                     CellType.Formula, CellType.Error);
 
             cell.SetCellValue(factory.CreateRichTextString("Foo"));
@@ -1146,6 +1146,24 @@ namespace TestCases.SS.UserModel
             ICell cell = _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
             ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
             ClassicAssert.AreEqual(0, cell.NumericCellValue, 0);
+        }
+
+        [Test]
+        public void GetDateCellValue_returnsNull_onABlankCell()
+        {
+            ICell cell = _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+            DateTime? result = cell.DateCellValue;
+            ClassicAssert.IsNull(result);
+        }
+
+        [Test]
+        public void GetBooleanCellValue_returnsFalse_onABlankCell()
+        {
+            ICell cell = _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+            bool result = cell.BooleanCellValue;
+            ClassicAssert.IsFalse(result);
         }
 
         [Test]

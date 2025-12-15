@@ -521,6 +521,16 @@ namespace TestCases.HSSF.UserModel
         }
 
         [Test]
+        public void GetErrorCellValue_throwsISE_onABlankCell()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                ICell cell = new HSSFWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
+                _ = cell.ErrorCellValue;
+            });
+        }
+
+        [Test]
         public void TestGetDateTimeCellValue()
         {
             HSSFWorkbook wb = new HSSFWorkbook();
