@@ -66,7 +66,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
             cell.SetCellValue(true);
             ClassicAssert.IsTrue(cell.BooleanCellValue);
-            AssertProhibitedValueAccess(cell, CellType.Numeric, CellType.String,
+            AssertProhibitedValueAccess(cell, CellType.Numeric, CellType.String, CellType.Boolean,
                     CellType.Formula, CellType.Error);
 
             cell.SetCellValue(factory.CreateRichTextString("Foo"));
@@ -1139,6 +1139,15 @@ namespace TestCases.SS.UserModel
                 wb.Close();
             }
         }
+
+        [Test]
+        public void TestGetNumericCellValueOnABlankCellReturnsZero()
+        {
+            ICell cell = _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+            ClassicAssert.AreEqual(0, cell.NumericCellValue, 0);
+        }
+
         [Test]
         public void PrimitiveToEnumReplacementDoesNotBreakBackwardsCompatibility()
         {

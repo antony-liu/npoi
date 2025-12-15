@@ -305,12 +305,11 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                CellType cellType = CellType;
-                switch (cellType)
+                CellType valueType = IsFormulaCell ? CachedFormulaResultType : CellType;
+                switch (valueType)
                 {
                     case CellType.Blank:
                         return 0.0;
-                    case CellType.Formula:
                     case CellType.Numeric:
                         if (_cell.IsSetV())
                         {
@@ -329,8 +328,10 @@ namespace NPOI.XSSF.UserModel
                         {
                             return 0.0;
                         }
+                    case CellType.Formula:
+                        throw new Exception();
                     default:
-                        throw TypeMismatch(CellType.Numeric, cellType, false);
+                        throw TypeMismatch(CellType.Numeric, valueType, false);
                 }
             }
         }
