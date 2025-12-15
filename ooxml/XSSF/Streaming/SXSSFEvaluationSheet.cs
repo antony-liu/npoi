@@ -22,12 +22,10 @@ namespace NPOI.XSSF.Streaming
     public class SXSSFEvaluationSheet : IEvaluationSheet //XSSFEvaluationSheet
     {
         private readonly SXSSFSheet _xs;
-        private int _lastDefinedRow = -1;
 
         public SXSSFEvaluationSheet(SXSSFSheet sheet)
         {
             _xs = sheet;
-            _lastDefinedRow = _xs.LastRowNum;
         }
 
         public SXSSFSheet GetSXSSFSheet()
@@ -43,7 +41,7 @@ namespace NPOI.XSSF.Streaming
         {
             get
             {
-                return _lastDefinedRow;
+                return _xs.LastRowNum;
             }
         }
 
@@ -72,7 +70,6 @@ namespace NPOI.XSSF.Streaming
 
         public void ClearAllCachedResultValues()
         {
-            _lastDefinedRow = _xs.LastRowNum;
         }
     }
 }

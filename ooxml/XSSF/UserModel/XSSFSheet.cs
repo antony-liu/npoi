@@ -453,6 +453,10 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
+                // _rows.getLastKey() (O(logN)) or caching last row (O(1))?
+                // A test with 1_000_000 rows shows that querying getLastRowNum with lastKey() implementation takes ~40 ms,
+                // and ~1.2 ms with cached implementation. 40 ms is negligible compared to the time of evaluation a million
+                // cells, and the lastKey implementation is much more elegant and less error prone than caching.
                 return _rows.Count == 0 ? 0 : XSSFSheet.GetLastKey(_rows.Keys);
             }
         }
@@ -3679,7 +3683,7 @@ namespace NPOI.XSSF.UserModel
                 }
             }
 
-            string ref1 = ((XSSFCell) cell).GetCTCell().r;
+            string ref1 = new CellReference(cell).FormatAsString();
             throw new ArgumentException(
                 "Cell " + ref1 + " is not part of an array formula.");
         }

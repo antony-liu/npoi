@@ -33,12 +33,10 @@ namespace NPOI.XSSF.UserModel
 
         private readonly XSSFSheet _xs;
         private Dictionary<CellKey, IEvaluationCell> _cellCache;
-        private int _lastDefinedRow = -1;
 
         public XSSFEvaluationSheet(ISheet sheet)
         {
             _xs = (XSSFSheet)sheet;
-            _lastDefinedRow = _xs.LastRowNum;
         }
 
         public XSSFEvaluationSheet()
@@ -54,14 +52,13 @@ namespace NPOI.XSSF.UserModel
         {
             get
             {
-                return _lastDefinedRow;
+                return _xs.LastRowNum;
             }
         }
 
         public void ClearAllCachedResultValues()
         {
             _cellCache = null;
-            _lastDefinedRow = _xs.LastRowNum;
         }
 
         public XSSFSheet XSSFSheet => _xs;
@@ -70,7 +67,7 @@ namespace NPOI.XSSF.UserModel
         {
             // shortcut evaluation if reference is outside the bounds of existing data
             // see issue #61841 for impact on VLOOKUP in particular
-            if(rowIndex > _lastDefinedRow)
+            if(rowIndex > LastRowNum)
                 return null;
 
             // cache for performance: ~30% speedup due to caching

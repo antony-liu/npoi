@@ -15,14 +15,19 @@
    limitations under the License.
 ==================================================================== */
 
+using NPOI.SS.Formula;
+using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
+using System.Collections.Generic;
+using TestCases.SS.UserModel;
 
 namespace TestCases.XSSF.UserModel
 {
 
     [TestFixture]
-    public class TestXSSFEvaluationSheet
+    public class TestXSSFEvaluationSheet : BaseTestXEvaluationSheet
     {
 
         [Test]
@@ -56,6 +61,12 @@ namespace TestCases.XSSF.UserModel
 
             // other things
             ClassicAssert.AreEqual(sheet, evalsheet.XSSFSheet);
+        }
+
+        protected override KeyValuePair<ISheet, IEvaluationSheet> GetInstance()
+        {
+            XSSFSheet sheet = new XSSFWorkbook().CreateSheet() as XSSFSheet;
+            return new KeyValuePair<ISheet, IEvaluationSheet>(sheet, new XSSFEvaluationSheet(sheet));
         }
     }
 }

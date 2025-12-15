@@ -29,12 +29,10 @@ namespace NPOI.HSSF.UserModel
     {
 
         private readonly HSSFSheet _hs;
-        private int _lastDefinedRow = -1;
 
         public HSSFEvaluationSheet(HSSFSheet hs)
         {
             _hs = hs;
-            _lastDefinedRow = _hs.LastRowNum;
         }
 
         public HSSFSheet HSSFSheet
@@ -53,10 +51,9 @@ namespace NPOI.HSSF.UserModel
         {
             get
             {
-                return _lastDefinedRow;
+                return _hs.LastRowNum;
             }
         }
-
         public IEvaluationCell GetCell(int rowIndex, int columnIndex)
         {
             HSSFRow row = (HSSFRow)_hs.GetRow(rowIndex);
@@ -74,7 +71,6 @@ namespace NPOI.HSSF.UserModel
 
         public void ClearAllCachedResultValues()
         {
-            _lastDefinedRow = _hs.LastRowNum;
         }
     }
 }
