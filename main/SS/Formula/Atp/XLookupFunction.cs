@@ -28,7 +28,16 @@ namespace NPOI.SS.Formula.Atp
         {
             return _evaluate(args, srcRowIndex, srcColumnIndex, false);
         }
-
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, evalFunc);
+        }
         private static String LaxValueToString(ValueEval eval)
         {
             return (eval is MissingArgEval) ? "" : OperandResolver.CoerceValueToString(eval);

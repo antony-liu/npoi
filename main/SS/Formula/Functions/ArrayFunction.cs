@@ -34,6 +34,27 @@ namespace NPOI.SS.Formula.Functions
         /// <param name="srcColumnIndex">column index of the cell containing the formula under evaluation</param>
         /// <returns> The evaluated result, possibly an ErrorEval, never <code>null</code></returns>
         ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex);
+
+        /**
+         * Evaluate an array function with two arguments.
+         *
+         * @param arg0 the first function argument. Empty values are represented with
+         *        {@link BlankEval} or {@link MissingArgEval}, never <code>null</code>
+         * @param arg1 the first function argument. Empty values are represented with
+         *      @link BlankEval} or {@link MissingArgEval}, never <code>null</code>
+         *
+         * @param srcRowIndex row index of the cell containing the formula under evaluation
+         * @param srcColumnIndex column index of the cell containing the formula under evaluation
+         * @return The evaluated result, possibly an {@link ErrorEval}, never <code>null</code>.
+         * <b>Note</b> - Excel uses the error code <i>#NUM!</i> instead of IEEE <i>NaN</i>, so when
+         * numeric functions evaluate to {@link Double#NaN} be sure to translate the result to {@link
+         * ErrorEval#NUM_ERROR}.
+         */
+        ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc);
+
+        ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc);
     }
 
     public class ArrayFunction

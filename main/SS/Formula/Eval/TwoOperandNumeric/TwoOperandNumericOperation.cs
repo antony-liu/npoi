@@ -18,8 +18,32 @@ namespace NPOI.SS.Formula.Eval
             {
                 return ErrorEval.VALUE_INVALID;
             }
-            Func<double, double, double> func = this.Evaluate;
-            return new ArrayEval(func).Evaluate(srcRowIndex, srcColumnIndex, args[0], args[1]);
+            //Func<double, double, double> func = this.Evaluate;
+            //return new ArrayEval(func).Evaluate(srcRowIndex, srcColumnIndex, args[0], args[1]);
+            return EvaluateTwoArrayArgs(args[0], args[1], srcRowIndex, srcColumnIndex,
+                (vA, vB)=> {
+                try
+                {
+                    double d0 = OperandResolver.CoerceValueToDouble(vA);
+                    double d1 = OperandResolver.CoerceValueToDouble(vB);
+                    double result = Evaluate(d0, d1);
+                    return new NumberEval(result);
+                }
+                catch(EvaluationException e)
+                {
+                    return e.GetErrorEval();
+                }
+            });
+        }
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, evalFunc);
         }
 
         public override ValueEval Evaluate(int srcRowIndex, int srcColumnIndex, ValueEval arg0, ValueEval arg1)

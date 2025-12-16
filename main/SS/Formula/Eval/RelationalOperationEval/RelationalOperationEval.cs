@@ -137,101 +137,24 @@ namespace NPOI.SS.Formula.Eval
             ValueEval arg0 = args[0];
             ValueEval arg1 = args[1];
 
-            int w1, w2, h1, h2;
-            int a1FirstCol = 0, a1FirstRow = 0;
-            if (arg0 is AreaEval eval)
-            {
-                w1 = eval.Width;
-                h1 = eval.Height;
-                a1FirstCol = eval.FirstColumn;
-                a1FirstRow = eval.FirstRow;
-            }
-            else if (arg0 is RefEval ref1)
-            {
-                w1 = 1;
-                h1 = 1;
-                a1FirstCol = ref1.Column;
-                a1FirstRow = ref1.Row;
-            }
-            else
-            {
-                w1 = 1;
-                h1 = 1;
-            }
-            int a2FirstCol = 0, a2FirstRow = 0;
-            if (arg1 is AreaEval ae)
-            {
-                w2 = ae.Width;
-                h2 = ae.Height;
-                a2FirstCol = ae.FirstColumn;
-                a2FirstRow = ae.FirstRow;
-            }
-            else if (arg1 is RefEval ref1)
-            {
-                w2 = 1;
-                h2 = 1;
-                a2FirstCol = ref1.Column;
-                a2FirstRow = ref1.Row;
-            }
-            else
-            {
-                w2 = 1;
-                h2 = 1;
-            }
-
-            int width = Math.Max(w1, w2);
-            int height = Math.Max(h1, h2);
-
-            ValueEval[] vals = new ValueEval[height * width];
-
-            int idx = 0;
-            for (int i = 0; i < height; i++)
-            {
-                for (int j = 0; j < width; j++)
-                {
-                    ValueEval vA;
-                    try
-                    {
-                        vA = OperandResolver.GetSingleValue(arg0, a1FirstRow + i, a1FirstCol + j);
-                    }
-                    catch (EvaluationException e)
-                    {
-                        vA = e.GetErrorEval();
-                    }
-                    ValueEval vB;
-                    try
-                    {
-                        vB = OperandResolver.GetSingleValue(arg1, a2FirstRow + i, a2FirstCol + j);
-                    }
-                    catch (EvaluationException e)
-                    {
-                        vB = e.GetErrorEval();
-                    }
-                    if (vA is ErrorEval)
-                    {
-                        vals[idx++] = vA;
-                    }
-                    else if (vB is ErrorEval)
-                    {
-                        vals[idx++] = vB;
-                    }
-                    else
-                    {
-                        int cmpResult = DoCompare(vA, vB);
-                        bool result = ConvertComparisonResult(cmpResult);
-                        vals[idx++] = BoolEval.ValueOf(result);
-                    }
-
-                }
-            }
-
-            if (vals.Length == 1)
-            {
-                return vals[0];
-            }
-
-            return new CacheAreaEval(srcRowIndex, srcColumnIndex, srcRowIndex + height - 1, srcColumnIndex + width - 1, vals);
+            return EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, (vA, vB) => {
+                int cmpResult = DoCompare(vA, vB);
+                bool result = ConvertComparisonResult(cmpResult);
+                return BoolEval.ValueOf(result);
+            });
         }
+
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, evalFunc);
+        }
+
         public abstract bool ConvertComparisonResult(int cmpResult);
 
 

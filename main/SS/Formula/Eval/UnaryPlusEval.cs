@@ -18,11 +18,13 @@
 namespace NPOI.SS.Formula.Eval
 {
     using NPOI.SS.Formula.Functions;
+    using System;
+
     /**
      * @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
      *  
      */
-    public class UnaryPlusEval : Fixed1ArgFunction
+    public class UnaryPlusEval : Fixed1ArgFunction, IArrayFunction
     {
 
         public static Function instance = new UnaryPlusEval();
@@ -54,6 +56,24 @@ namespace NPOI.SS.Formula.Eval
                 return e.GetErrorEval();
             }
             return new NumberEval(+d);
+        }
+
+        public ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
+        {
+            return EvaluateOneArrayArg(args, srcRowIndex, srcColumnIndex, (valA)=>
+                    Evaluate(srcRowIndex, srcColumnIndex, valA)
+            );
+        }
+
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, evalFunc);
         }
     }
 }

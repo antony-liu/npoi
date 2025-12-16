@@ -669,19 +669,28 @@ namespace NPOI.SS.Formula
                            }
                            else
                            {
-                               int dist = attrPtg.Data;
-                               i += CountTokensToBeSkipped(ptgs, i, dist);
-                               Ptg nextPtg = ptgs[i + 1];
-                               if (ptgs[i] is AttrPtg && nextPtg is FuncVarPtg varPtg &&
-                                   // in order to verify that there is no third param, we need to check 
-                                   // if we really have the IF next or some other FuncVarPtg as third param, e.g. ROW()/COLUMN()!
-                                   varPtg.FunctionIndex == FunctionMetadataRegistry.FUNCTION_INDEX_IF)
-                               {
-                                   // this is an if statement without a false param (as opposed to MissingArgPtg as the false param)
-                                   //i++;
-                                   stack.Push(arg0);
-                                   stack.Push(BoolEval.FALSE);
-                               }
+                                int dist = attrPtg.Data;
+                                Ptg currPtg = ptgs[i+1];
+                                i += CountTokensToBeSkipped(ptgs, i, dist);
+                                Ptg nextPtg = ptgs[i + 1];
+                                if (ptgs[i] is AttrPtg && nextPtg is FuncVarPtg varPtg &&
+                                    // in order to verify that there is no third param, we need to check 
+                                    // if we really have the IF next or some other FuncVarPtg as third param, e.g. ROW()/COLUMN()!
+                                    varPtg.FunctionIndex == FunctionMetadataRegistry.FUNCTION_INDEX_IF)
+                                {
+                                    // this is an if statement without a false param (as opposed to MissingArgPtg as the false param)
+                                    //i++;
+                                    stack.Push(arg0);
+                                    if(currPtg is AreaPtg)
+                                    {
+                                        // IF in array mode. See Bug 62904
+                                        ValueEval currEval = GetEvalForPtg(currPtg, ec);
+                                        stack.Push(currEval);
+                                    } else
+                                    {
+                                        stack.Push(BoolEval.FALSE);
+                                    }
+                                }
                            }
                         }
                         continue;
@@ -1013,7 +1022,7 @@ namespace NPOI.SS.Formula
                 return EvaluateNameFormula(nameRecord.NameDefinition, ec);
             }
 
-            throw new Exception("Don't now how to Evalate name '" + nameRecord.NameText + "'");
+            throw new Exception("Don't now how to evaluate name '" + nameRecord.NameText + "'");
         }
         
         internal ValueEval EvaluateNameFormula(Ptg[] ptgs, OperationEvaluationContext ec)
