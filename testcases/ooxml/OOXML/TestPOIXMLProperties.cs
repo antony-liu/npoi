@@ -19,6 +19,7 @@ namespace TestCases.OOXML
 {
     using NPOI.OOXML;
     using NPOI.OpenXmlFormats;
+    using NPOI.SS.UserModel;
     using NPOI.Util;
     using NPOI.XSSF;
     using NPOI.XSSF.UserModel;
@@ -92,7 +93,7 @@ namespace TestCases.OOXML
 
             ClassicAssert.AreEqual(application, newProperties.Application);
             ClassicAssert.AreEqual(appVersion, newProperties.AppVersion);
-        
+
 
             CT_ExtendedProperties
                     newCtProps = newProperties.GetUnderlyingProperties();
@@ -122,7 +123,7 @@ namespace TestCases.OOXML
                 customProps.AddProperty("test-3", 36.6);
                 Assert.Fail("expected exception");
             }
-            catch (ArgumentException e)
+            catch(ArgumentException e)
             {
                 ClassicAssert.AreEqual("A property with this name already exists in the custom properties", e.Message);
             }
@@ -272,13 +273,81 @@ namespace TestCases.OOXML
 
         private static string ZeroPad(long i)
         {
-            if (i >= 0 && i <= 9)
+            if(i >= 0 && i <= 9)
             {
                 return "0" + i;
             }
             else
             {
                 return i.ToString();
+            }
+        }
+
+        [Test]
+        public void TestBug60977()
+        {
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            try
+            {
+                ISheet sheet = workbook.CreateSheet("sheet");
+                IRow row = sheet.CreateRow(0);
+                NPOI.SS.UserModel.ICell cell = row.CreateCell(0);
+                cell.SetCellValue("cell");
+
+                POIXMLProperties properties = workbook.GetProperties();
+                CustomProperties customProperties = properties.CustomProperties;
+                string propName = "Project";
+                string propValue = "Some name";
+                customProperties.AddProperty(propName, propValue);
+
+                // in the unit-test just try to write out the file more than once and see if we can still parse it
+                XSSFWorkbook wbBack = XSSFTestDataSamples.WriteOutAndReadBack(workbook);
+                ClassicAssert.IsNotNull(wbBack);
+                // properties documents are read lazily, so we have to access them to verify they parse properly
+                ClassicAssert.IsNotNull(wbBack.GetProperties(), "First writeOutAndReadBack");
+                ClassicAssert.AreEqual(propValue, wbBack.GetProperties().CustomProperties.GetProperty(propName).GetLpwstr(), "First prop check");
+
+                customProperties.AddProperty(propName + "1", propValue);
+                wbBack = XSSFTestDataSamples.WriteOutAndReadBack(workbook);
+                ClassicAssert.IsNotNull(wbBack);
+                // properties documents are read lazily, so we have to access them to verify they parse properly
+                ClassicAssert.IsNotNull(wbBack.GetProperties(), "Second writeOutAndReadBack");
+                ClassicAssert.AreEqual(propValue, wbBack.GetProperties().CustomProperties.GetProperty(propName).GetLpwstr(), "Second prop check");
+                ClassicAssert.AreEqual(propValue, wbBack.GetProperties().CustomProperties.GetProperty(propName + "1").GetLpwstr(), "Second prop check1");
+
+                wbBack = XSSFTestDataSamples.WriteOutAndReadBack(workbook);
+                ClassicAssert.IsNotNull(wbBack);
+                // properties documents are read lazily, so we have to access them to verify they parse properly
+                ClassicAssert.IsNotNull(wbBack.GetProperties(), "Third writeOutAndReadBack");
+                ClassicAssert.AreEqual(propValue, wbBack.GetProperties().CustomProperties.GetProperty(propName).GetLpwstr(), "Third prop check");
+                ClassicAssert.AreEqual(propValue, wbBack.GetProperties().CustomProperties.GetProperty(propName + "1").GetLpwstr(), "Third prop check1");
+
+                /* Manual test to write out the file more than once:
+                File test1 = File.CreateTempFile("test1", ".xlsx", new File("C:\\temp"));
+                File test2 = File.CreateTempFile("test2", ".xlsx", new File("C:\\temp"));
+                try (final java.io.FileOutputStream fs = new java.io.FileOutputStream(test1)) {
+                    workbook.write(fs);
+                }
+                try (final XSSFWorkbook wb = new XSSFWorkbook(test1)) {
+                    ClassicAssert.IsNotNull(wb.Properties);
+                } catch (InvalidFormatException e) {
+                    ClassicAssert.Fail("Test1 copy Assert.Failed: " + e.Message);
+                }
+
+                try (final java.io.FileOutputStream fs = new java.io.FileOutputStream(test2)) {
+                    workbook.write(fs);
+                }
+
+                try (final XSSFWorkbook wb = new XSSFWorkbook(test2)) {
+                    ClassicAssert.IsNotNull(wb.Properties);
+                } catch (InvalidFormatException e) {
+                    ClassicAssert.Fail("Test2 copy Assert.Failed: " + e.Message);
+                }
+                 */
+            }
+            finally
+            {
+                workbook.Close();
             }
         }
     }

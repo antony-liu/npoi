@@ -315,7 +315,7 @@ namespace NPOI.OpenXmlFormats
 
         public string GetLpwstr()
         {
-            throw new NotImplementedException();
+            return itemField?.ToString();
         }
 
         [XmlIgnore]
