@@ -15,17 +15,21 @@
    limitations under the License.
 ==================================================================== */
 
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace TestCases.HSSF.UserModel
 {
+    using NPOI.HSSF.Record;
+    using NPOI.HSSF.UserModel;
+    using NPOI.HSSF.Util;
+    using NPOI.SS.UserModel;
+    using NPOI.Util;
+    using NUnit.Framework;
+    using NUnit.Framework.Legacy;
     using System;
     using System.IO;
-    using NPOI.HSSF.UserModel;
-
     using TestCases.HSSF;
-    using NUnit.Framework;using NUnit.Framework.Legacy;
-    using NPOI.HSSF.Record;
-    using NPOI.Util;
-    using NPOI.SS.UserModel;
 
     /**
      * @author aviks
@@ -37,58 +41,90 @@ namespace TestCases.HSSF.UserModel
      * fixed, so that they are then run automatically.
      */
     [TestFixture]
+    [Ignore("UnfixedBugs")]
     public class TestUnfixedBugs
     {
-        //In POI bugzilla, this bug is taged as "RESOLVED WON'T FIX"
         [Test]
-        [Ignore("WON'T FIX")]
-        public void Test43493()
+        public void TestFormulaRecordAggregate_1()
         {
-            // Has crazy corrupt sub-records on
-            // a EmbeddedObjectRefSubRecord
-            try
+            // Assert.Fails at formula "=MEHRFACH.OPERATIONEN(E$3;$B$5;$D4)"
+            IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("44958_1.xls");
+            for(int i = 0; i < wb.NumberOfSheets; i++)
             {
-                HSSFTestDataSamples.OpenSampleWorkbook("43493.xls");
-            }
-            catch (RecordFormatException e)
-            {
-                if (e.InnerException.InnerException is IndexOutOfRangeException)
+                ISheet sheet = wb.GetSheetAt(i);
+                ClassicAssert.IsNotNull(wb.GetSheet(sheet.SheetName));
+                sheet.GroupColumn((short) 4, (short) 5);
+                sheet.SetColumnGroupCollapsed(4, true);
+                sheet.SetColumnGroupCollapsed(4, false);
+
+                foreach(IRow row in sheet)
                 {
-                    throw new AssertionException("Identified bug 43493");
+                    foreach(ICell cell in row)
+                    {
+                        try
+                        {
+                            ClassicAssert.IsNotNull(cell.ToString());
+                        }
+                        catch(Exception e)
+                        {
+                            throw new Exception("While handling: " + sheet.SheetName + "/" + row.RowNum + "/" + cell.ColumnIndex, e);
+                        }
+                    }
                 }
-                throw e;
+            }
+        }
+
+
+        [Test]
+        public void TestFormulaRecordAggregate()
+        {
+            // Assert.Fails at formula "=MEHRFACH.OPERATIONEN(E$3;$B$5;$D4)"
+            IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("44958.xls");
+            {
+                for(int i = 0; i < wb.NumberOfSheets; i++)
+                {
+                    ISheet sheet = wb.GetSheetAt(i);
+                    ClassicAssert.IsNotNull(wb.GetSheet(sheet.SheetName));
+                    sheet.GroupColumn((short) 4, (short) 5);
+                    sheet.SetColumnGroupCollapsed(4, true);
+                    sheet.SetColumnGroupCollapsed(4, false);
+
+                    foreach(IRow row in sheet)
+                    {
+                        foreach(ICell cell in row)
+                        {
+                            try
+                            {
+                                ClassicAssert.IsNotNull(cell.ToString());
+                            }
+                            catch(Exception e)
+                            {
+                                throw new Exception("While handling: " + sheet.SheetName + "/" + row.RowNum + "/" + cell.ColumnIndex, e);
+                            }
+                        }
+                    }
+                }
             }
         }
 
         [Test]
-        [Ignore("TestUnfixedBugs")] 
-        public void Test49612()
+        public void TestBug57074()
         {
-            IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("49612.xls");
-            ISheet sh = wb.GetSheetAt(0);
-            IRow row = sh.GetRow(0);
-            ICell c1 = row.GetCell(2);
-            ICell d1 = row.GetCell(3);
-            ICell e1 = row.GetCell(2);
+            IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("57074.xls");
+            ISheet sheet = wb.GetSheet("Sheet1");
+            IRow row = sheet.GetRow(0);
+            ICell cell = row.GetCell(0);
 
-            ClassicAssert.AreEqual("SUM(BOB+JIM)", c1.CellFormula);
+            HSSFColor bgColor = (HSSFColor) cell.CellStyle.FillBackgroundColorColor;
+            string bgColorStr = bgColor.GetTriplet()[0]+", "+bgColor.GetTriplet()[1]+", "+bgColor.GetTriplet()[2];
+            //Console.WriteLine(bgColorStr);
+            ClassicAssert.AreEqual("215, 228, 188", bgColorStr);
 
-            // Problem 1: java.lang.ArrayIndexOutOfBoundsException in NPOI.HSSF.Model.LinkTable$ExternalBookBlock.GetNameText
-            ClassicAssert.AreEqual("SUM('49612.xls'!BOB+'49612.xls'!JIM)", d1.CellFormula);
-
-            //Problem 2
-            //junit.framework.ComparisonFailure:
-            //Expected :SUM('49612.xls'!BOB+'49612.xls'!JIM)
-            //Actual   :SUM(BOB+JIM)
-            ClassicAssert.AreEqual("SUM('49612.xls'!BOB+'49612.xls'!JIM)", e1.CellFormula);
-
-            HSSFFormulaEvaluator eval = new HSSFFormulaEvaluator(wb);
-            ClassicAssert.AreEqual(30.0, eval.Evaluate(c1).NumberValue, "Evaluating c1");
-
-            //Problem 3:  java.lang.Exception: Unexpected arg eval type (NPOI.HSSF.Record.Formula.Eval.NameXEval)
-            ClassicAssert.AreEqual(30, eval.Evaluate(d1).NumberValue, "Evaluating d1");
-
-            ClassicAssert.AreEqual(30, eval.Evaluate(e1).NumberValue, "Evaluating e1");
+            HSSFColor fontColor = (HSSFColor) cell.CellStyle.FillForegroundColorColor;
+            string fontColorStr = fontColor.GetTriplet()[0]+", "+fontColor.GetTriplet()[1]+", "+fontColor.GetTriplet()[2];
+            //Console.WriteLine(fontColorStr);
+            ClassicAssert.AreEqual("0, 128, 128", fontColorStr);
+            wb.Close();
         }
     }
 }

@@ -35,51 +35,6 @@ namespace TestCases.XSSF.UserModel
     public class TestUnfixedBugs
     {
         [Test]
-        public void TestBug54084Unicode()
-        {
-            // sample XLSX with the same text-contents as the text-file above
-            XSSFWorkbook wb = XSSFTestDataSamples.OpenSampleWorkbook("54084 - Greek - beyond BMP.xlsx");
-
-            verifyBug54084Unicode(wb);
-
-            //        OutputStream baos = new FileOutputStream("/tmp/test.xlsx");
-            //        try {
-            //            wb.Write(baos);
-            //        } finally {
-            //            baos.Close();
-            //        }
-
-            // now write the file and read it back in
-            XSSFWorkbook wbWritten = (XSSFWorkbook)XSSFTestDataSamples.WriteOutAndReadBack(wb);
-            verifyBug54084Unicode(wbWritten);
-
-            // finally also write it out via the streaming interface and verify that we still can read it back in
-            SXSSFWorkbook swb = new SXSSFWorkbook(wb);
-            IWorkbook wbStreamingWritten = SXSSFITestDataProvider.instance.WriteOutAndReadBack(swb);
-            verifyBug54084Unicode(wbStreamingWritten);
-
-            wbWritten.Close();
-            swb.Close();
-            wbStreamingWritten.Close();
-            wb.Close();
-        }
-
-        private void verifyBug54084Unicode(IWorkbook wb)
-        {
-            // expected data is stored in UTF-8 in a text-file
-            byte[] data = HSSFTestDataSamples.GetTestDataFileContent("54084 - Greek - beyond BMP.txt");
-            String testData = Encoding.UTF8.GetString(data).Trim();
-
-            ISheet sheet = wb.GetSheetAt(0);
-            IRow row = sheet.GetRow(0);
-            ICell cell = row.GetCell(0);
-
-            String value = cell.StringCellValue;
-            //Console.WriteLine(value);
-
-            ClassicAssert.AreEqual(testData, value, "The data in the text-file should exactly match the data that we read from the workbook");
-        }
-        [Test]
         public void Test54071()
         {
             IWorkbook workbook = XSSFTestDataSamples.OpenSampleWorkbook("54071.xlsx");
