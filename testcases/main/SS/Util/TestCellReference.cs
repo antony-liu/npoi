@@ -15,6 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
+using NPOI.HSSF.UserModel;
 using NPOI.SS;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -22,8 +23,6 @@ using NSubstitute;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using System;
-using System.IO;
-using TestCases.HSSF.Record;
 
 namespace TestCases.SS.Util
 {
@@ -114,7 +113,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(0, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("1", parts[1]);
             ClassicAssert.AreEqual("A", parts[2]);
 
@@ -123,7 +122,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(26, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("1", parts[1]);
             ClassicAssert.AreEqual("AA", parts[2]);
 
@@ -132,7 +131,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(26, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("100", parts[1]);
             ClassicAssert.AreEqual("AA", parts[2]);
 
@@ -141,7 +140,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(702, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("300", parts[1]);
             ClassicAssert.AreEqual("AAA", parts[2]);
 
@@ -150,7 +149,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(26 * 26 + 25, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("100521", parts[1]);
             ClassicAssert.AreEqual("ZZ", parts[2]);
 
@@ -159,7 +158,7 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(26 * 26 * 26 + 25 * 26 + 24 - 1, cellReference.Col);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("987", parts[1]);
             ClassicAssert.AreEqual("ZYX", parts[2]);
 
@@ -167,7 +166,7 @@ namespace TestCases.SS.Util
             cellReference = new CellReference(cellRef);
             parts = cellReference.CellRefParts;
             ClassicAssert.IsNotNull(parts);
-            ClassicAssert.AreEqual(null, parts[0]);
+            ClassicAssert.IsNull(parts[0]);
             ClassicAssert.AreEqual("10065", parts[1]);
             ClassicAssert.AreEqual("AABC", parts[2]);
         }
@@ -326,8 +325,8 @@ namespace TestCases.SS.Util
         [Test]
         public void GetSheetName()
         {
-            ClassicAssert.AreEqual(null, new CellReference("A5").SheetName);
-            ClassicAssert.AreEqual(null, new CellReference(null, 0, 0, false, false).SheetName);
+            ClassicAssert.IsNull(new CellReference("A5").SheetName);
+            ClassicAssert.IsNull(new CellReference(null, 0, 0, false, false).SheetName);
             // FIXME: CellReference is inconsistent
             ClassicAssert.AreEqual("", new CellReference("", 0, 0, false, false).SheetName);
             ClassicAssert.AreEqual("Sheet1", new CellReference("Sheet1!A5").SheetName);
@@ -349,9 +348,9 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(ref1, ref2, "equals");
             ClassicAssert.AreEqual(ref1.GetHashCode(), ref2.GetHashCode(), "hash code");
 
-            ClassicAssert.IsFalse(ref1.Equals(null), "null");
-            ClassicAssert.IsFalse(ref1.Equals(new CellReference("A5")), "3D vs 2D");
-            ClassicAssert.IsFalse(ref1.Equals(0), "type");
+            ClassicAssert.AreNotEqual(null, ref1, "null");
+            ClassicAssert.AreNotEqual(ref1, new CellReference("A5"), "3D vs 2D");
+            ClassicAssert.AreNotEqual(ref1, 0, "type");
         }
 
         [Test]
@@ -455,6 +454,21 @@ namespace TestCases.SS.Util
             }); 
         }
 
+        [Test]
+        public void Test62828()
+        {
+            IWorkbook wb = new HSSFWorkbook();
+            ISheet sheet = wb.CreateSheet("Ctor test");
+            String sheetName = sheet.SheetName;
+            IRow row = sheet.CreateRow(0);
+            ICell cell = row.CreateCell(0);
+            CellReference goodCellRef = new CellReference(sheetName, cell.RowIndex, cell.ColumnIndex, true,
+                    true);
+            CellReference badCellRef = new CellReference(cell);
+
+            ClassicAssert.AreEqual("'Ctor test'!$A$1", goodCellRef.FormatAsString());
+            ClassicAssert.AreEqual("'Ctor test'!A1", badCellRef.FormatAsString());
+        }
     }
 
 }

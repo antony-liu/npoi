@@ -32,7 +32,6 @@ using NPOI.SS.Formula;
 
 namespace TestCases.XSSF.UserModel
 {
-
     /**
      * @author Yegor Kozlov
      */
@@ -226,7 +225,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(cell.ToString(), "a");
             //Gnumeric produces spreadsheets without styles
             //make sure we return null for that instead of throwing OutOfBounds
-            ClassicAssert.AreEqual(null, cell.CellStyle);
+            ClassicAssert.IsNull(cell.CellStyle);
 
             //try a numeric cell
             cell = sh.GetRow(1).GetCell(0);
@@ -235,7 +234,7 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(cell.ToString(), "1");
             //Gnumeric produces spreadsheets without styles
             //make sure we return null for that instead of throwing OutOfBounds
-            ClassicAssert.AreEqual(null, cell.CellStyle);
+            ClassicAssert.IsNull(cell.CellStyle);
         }
 
         [Test]
@@ -611,7 +610,7 @@ namespace TestCases.XSSF.UserModel
             // Old cell value should not have been overwritten
             ClassicAssert.AreNotEqual(CellType.Blank, destCell.CellType);
             ClassicAssert.AreEqual(CellType.Boolean, destCell.CellType);
-            ClassicAssert.AreEqual(true, destCell.BooleanCellValue);
+            ClassicAssert.IsTrue(destCell.BooleanCellValue);
         }
 
 
@@ -626,12 +625,7 @@ namespace TestCases.XSSF.UserModel
             link.Address = ("http://poi.apache.org/");
             srcCell.Hyperlink = (link);
             // Set link cell style (optional)
-            ICellStyle hlinkStyle = wb.CreateCellStyle();
-            IFont hlinkFont = wb.CreateFont();
-            hlinkFont.Underline = FontUnderlineType.Single;
-            hlinkFont.Color = (IndexedColors.Blue.Index);
-            hlinkStyle.SetFont(hlinkFont);
-            srcCell.CellStyle = (hlinkStyle);
+            SetLinkCellStyle(wb, srcCell);
             // Copy hyperlink
             CellCopyPolicy policy = new CellCopyPolicy.Builder().CopyHyperlink(true).MergeHyperlink(false).Build();
             destCell.CopyCellFrom(srcCell, policy);
@@ -648,6 +642,16 @@ namespace TestCases.XSSF.UserModel
             wb.Close();
         }
 
+        private void SetLinkCellStyle(IWorkbook wb, XSSFCell srcCell)
+        {
+            ICellStyle hlinkStyle = wb.CreateCellStyle();
+            IFont hlinkFont = wb.CreateFont();
+            hlinkFont.Underline = FontUnderlineType.Single;
+            hlinkFont.Color = (IndexedColors.Blue.Index);
+            hlinkStyle.SetFont(hlinkFont);
+            srcCell.CellStyle = (hlinkStyle);
+        }
+
         [Test]
         public void TestCopyCellFrom_CellCopyPolicy_mergeHyperlink()
         {
@@ -659,12 +663,7 @@ namespace TestCases.XSSF.UserModel
             link.Address = ("http://poi.apache.org/");
             destCell.Hyperlink = (link);
             // Set link cell style (optional)
-            ICellStyle hlinkStyle = wb.CreateCellStyle();
-            IFont hlinkFont = wb.CreateFont();
-            hlinkFont.Underline = FontUnderlineType.Single;
-            hlinkFont.Color = (IndexedColors.Blue.Index);
-            hlinkStyle.SetFont(hlinkFont);
-            destCell.CellStyle = (hlinkStyle);
+            SetLinkCellStyle(wb, srcCell);
 
             // Pre-condition assumptions. This test is broken if either of these Assert.Fail.
             ClassicAssert.AreSame(srcCell.Sheet, destCell.Sheet,

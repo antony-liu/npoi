@@ -344,7 +344,7 @@ namespace TestCases.XSSF.UserModel
             ftr = (XSSFOddFooter)s1.Footer;
 
             ClassicAssert.AreEqual("&Ctestdoc&Rtest phrase", hdr.Text);
-            ClassicAssert.AreEqual(null, ftr.Text);
+            ClassicAssert.IsNull(ftr.Text);
 
             ClassicAssert.AreEqual("", hdr.Left);
             ClassicAssert.AreEqual("testdoc", hdr.Center);
@@ -361,7 +361,7 @@ namespace TestCases.XSSF.UserModel
             hdr = (XSSFOddHeader)s2.Header;
             ftr = (XSSFOddFooter)s2.Footer;
 
-            ClassicAssert.AreEqual(null, hdr.Text);
+            ClassicAssert.IsNull(hdr.Text);
             ClassicAssert.AreEqual("&L&F", ftr.Text);
 
             ClassicAssert.AreEqual("", hdr.Left);
@@ -831,58 +831,58 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(8, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(7).max); // 1 based
@@ -891,58 +891,58 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(8, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(7).max); // 1 based
@@ -952,65 +952,65 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(9, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.IsTrue(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).collapsed);
+            ClassicAssert.False(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
@@ -1018,65 +1018,65 @@ namespace TestCases.XSSF.UserModel
             // expand columns - 1
             sheet1.SetColumnGroupCollapsed(5, false);
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).collapsed);
+            ClassicAssert.False(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
@@ -1086,72 +1086,72 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(10, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(9).IsSetCollapsed());
-            ClassicAssert.AreEqual(true, cols.GetColArray(9).collapsed);
+            ClassicAssert.False(cols.GetColArray(9).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(9).IsSetCollapsed());
+            ClassicAssert.IsTrue(cols.GetColArray(9).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(9).outlineLevel);
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).min); // 1 based
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).max); // 1 based
@@ -1161,72 +1161,72 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(10, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).collapsed);
+            ClassicAssert.False(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(9).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).collapsed);
+            ClassicAssert.False(cols.GetColArray(9).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(9).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(9).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(9).outlineLevel);
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).min); // 1 based
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).max); // 1 based
@@ -1237,72 +1237,72 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.AreEqual(10, cols.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(true, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.IsTrue(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(true, cols.GetColArray(8).collapsed);
+            ClassicAssert.False(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.IsTrue(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(9).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).collapsed);
+            ClassicAssert.False(cols.GetColArray(9).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(9).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(9).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(9).outlineLevel);
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).min); // 1 based
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).max); // 1 based
@@ -1310,72 +1310,72 @@ namespace TestCases.XSSF.UserModel
             //expand - 3
             sheet1.SetColumnGroupCollapsed(10, false);
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(0).collapsed);
+            ClassicAssert.False(cols.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(1).collapsed);
+            ClassicAssert.False(cols.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(2).collapsed);
+            ClassicAssert.False(cols.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(3).collapsed);
+            ClassicAssert.False(cols.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(4).collapsed);
+            ClassicAssert.False(cols.GetColArray(4).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(5).collapsed);
+            ClassicAssert.False(cols.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(6).collapsed);
+            ClassicAssert.False(cols.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(7).collapsed);
+            ClassicAssert.False(cols.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(8).collapsed);
+            ClassicAssert.False(cols.GetColArray(8).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols.GetColArray(8).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).IsSetHidden());
-            ClassicAssert.AreEqual(true, cols.GetColArray(9).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols.GetColArray(9).collapsed);
+            ClassicAssert.False(cols.GetColArray(9).IsSetHidden());
+            ClassicAssert.IsTrue(cols.GetColArray(9).IsSetCollapsed());
+            ClassicAssert.False(cols.GetColArray(9).collapsed);
             ClassicAssert.AreEqual(0, cols.GetColArray(9).outlineLevel);
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).min); // 1 based
             ClassicAssert.AreEqual(13 + 1, cols.GetColArray(9).max); // 1 based
@@ -1388,72 +1388,72 @@ namespace TestCases.XSSF.UserModel
             var cols2 = sheet2.GetCTWorksheet().GetColsArray(0);
             ClassicAssert.AreEqual(10, cols2.sizeOfColArray());
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(0).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(0).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(0).collapsed);
+            ClassicAssert.False(cols2.GetColArray(0).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(0).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(0).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(0).outlineLevel);
             ClassicAssert.AreEqual(4 + 1, cols2.GetColArray(0).min); // 1 based
             ClassicAssert.AreEqual(4 + 1, cols2.GetColArray(0).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(1).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(1).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(1).collapsed);
+            ClassicAssert.False(cols2.GetColArray(1).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(1).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(1).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(1).outlineLevel);
             ClassicAssert.AreEqual(5 + 1, cols2.GetColArray(1).min); // 1 based
             ClassicAssert.AreEqual(5 + 1, cols2.GetColArray(1).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(2).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(2).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(2).collapsed);
+            ClassicAssert.False(cols2.GetColArray(2).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(2).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(2).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(2).outlineLevel);
             ClassicAssert.AreEqual(6 + 1, cols2.GetColArray(2).min); // 1 based
             ClassicAssert.AreEqual(6 + 1, cols2.GetColArray(2).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(3).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(3).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(3).collapsed);
+            ClassicAssert.False(cols2.GetColArray(3).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(3).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(3).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(3).outlineLevel);
             ClassicAssert.AreEqual(7 + 1, cols2.GetColArray(3).min); // 1 based
             ClassicAssert.AreEqual(7 + 1, cols2.GetColArray(3).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(4).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(4).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(4).collapsed);
+            ClassicAssert.False(cols2.GetColArray(4).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(4).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(4).collapsed);
             ClassicAssert.AreEqual(0, cols2.GetColArray(4).outlineLevel);
             ClassicAssert.AreEqual(8 + 1, cols2.GetColArray(4).min); // 1 based
             ClassicAssert.AreEqual(8 + 1, cols2.GetColArray(4).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(5).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(5).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(5).collapsed);
+            ClassicAssert.False(cols2.GetColArray(5).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(5).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(5).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(5).outlineLevel);
             ClassicAssert.AreEqual(9 + 1, cols2.GetColArray(5).min); // 1 based
             ClassicAssert.AreEqual(9 + 1, cols2.GetColArray(5).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(6).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(6).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(6).collapsed);
+            ClassicAssert.False(cols2.GetColArray(6).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(6).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(6).collapsed);
             ClassicAssert.AreEqual(2, cols2.GetColArray(6).outlineLevel);
             ClassicAssert.AreEqual(10 + 1, cols2.GetColArray(6).min); // 1 based
             ClassicAssert.AreEqual(10 + 1, cols2.GetColArray(6).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(7).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(7).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(7).collapsed);
+            ClassicAssert.False(cols2.GetColArray(7).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(7).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(7).collapsed);
             ClassicAssert.AreEqual(2, cols2.GetColArray(7).outlineLevel);
             ClassicAssert.AreEqual(11 + 1, cols2.GetColArray(7).min); // 1 based
             ClassicAssert.AreEqual(11 + 1, cols2.GetColArray(7).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(8).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(8).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(8).collapsed);
+            ClassicAssert.False(cols2.GetColArray(8).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(8).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(8).collapsed);
             ClassicAssert.AreEqual(1, cols2.GetColArray(8).outlineLevel);
             ClassicAssert.AreEqual(12 + 1, cols2.GetColArray(8).min); // 1 based
             ClassicAssert.AreEqual(12 + 1, cols2.GetColArray(8).max); // 1 based
 
-            ClassicAssert.AreEqual(false, cols2.GetColArray(9).IsSetHidden());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(9).IsSetCollapsed());
-            ClassicAssert.AreEqual(false, cols2.GetColArray(9).collapsed);
+            ClassicAssert.False(cols2.GetColArray(9).IsSetHidden());
+            ClassicAssert.False(cols2.GetColArray(9).IsSetCollapsed());
+            ClassicAssert.False(cols2.GetColArray(9).collapsed);
             ClassicAssert.AreEqual(0, cols2.GetColArray(9).outlineLevel);
             ClassicAssert.AreEqual(13 + 1, cols2.GetColArray(9).min); // 1 based
             ClassicAssert.AreEqual(13 + 1, cols2.GetColArray(9).max); // 1 based
@@ -2101,7 +2101,7 @@ namespace TestCases.XSSF.UserModel
 
             // Set
             sheet.ForceFormulaRecalculation = true;
-            ClassicAssert.AreEqual(true, sheet.ForceFormulaRecalculation);
+            ClassicAssert.IsTrue(sheet.ForceFormulaRecalculation);
 
             // calcMode="manual" is unset when forceFormulaRecalculation=true
             CT_CalcPr calcPr = wb1.GetCTWorkbook().AddNewCalcPr();
@@ -2111,7 +2111,7 @@ namespace TestCases.XSSF.UserModel
 
             // Check
             sheet.ForceFormulaRecalculation = false;
-            ClassicAssert.AreEqual(false, sheet.ForceFormulaRecalculation);
+            ClassicAssert.False(sheet.ForceFormulaRecalculation);
 
             // Save, re-load, and re-check
             XSSFWorkbook wb2 = XSSFTestDataSamples.WriteOutAndReadBack(wb1);
