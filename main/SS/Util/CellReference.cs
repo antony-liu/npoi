@@ -552,7 +552,14 @@ namespace NPOI.SS.Util
         /// <param name="ssVersion">the spreadsheet version</param>
         /// <returns></returns>
         public static bool IsRowWithinRange(String rowStr, SpreadsheetVersion ssVersion)
-            => IsRowWithinRange(rowStr.AsSpan(), ssVersion);
+        {
+            long rowNum = long.Parse(rowStr.ToString()) - 1;
+            if(rowNum > int.MaxValue)
+            {
+                return false;
+            }
+            return IsRowWithinRange((int) rowNum, ssVersion);
+        }
 
         public static bool IsRowWithinRange(ReadOnlySpan<char> rowStr, SpreadsheetVersion ssVersion)
         {

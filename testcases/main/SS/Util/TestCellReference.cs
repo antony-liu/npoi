@@ -368,18 +368,21 @@ namespace TestCases.SS.Util
             ClassicAssert.IsFalse(CellReference.IsRowWithinRange(1048576, ss), "1 beyond last row");
         }
 
-        [Test] //(expected= NumberFormatException.class)
+        [Test]
         public void IsRowWithinRangeNonInteger_BigNumber()
         {
             String rowNum = "4000000000";
-            CellReference.IsRowWithinRange(rowNum, SpreadsheetVersion.EXCEL2007);
+            ClassicAssert.IsFalse(CellReference.IsRowWithinRange(rowNum, SpreadsheetVersion.EXCEL2007));
         }
 
         [Test] //(expected= NumberFormatException.class)
         public void IsRowWithinRangeNonInteger_Alpha()
         {
-            String rowNum = "NotANumber";
-            CellReference.IsRowWithinRange(rowNum, SpreadsheetVersion.EXCEL2007);
+            Assert.Throws<FormatException>(() =>
+            {
+                String rowNum = "NotANumber";
+                CellReference.IsRowWithinRange(rowNum, SpreadsheetVersion.EXCEL2007);
+            });
          }
 
         [Test]
