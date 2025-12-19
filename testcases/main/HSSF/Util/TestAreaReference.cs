@@ -19,8 +19,6 @@ namespace TestCases.HSSF.Util
 {
     using System;
     using System.IO;
-    using NPOI.HSSF.Util;
-    //using NPOI.HSSF.Model;
     using NPOI.SS;
     using NPOI.HSSF.Record;
     using NPOI.HSSF.UserModel;

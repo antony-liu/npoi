@@ -19,8 +19,9 @@ namespace NPOI.SS.Util
 {
 
     using System;
-    using System.Text;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Text;
 
     public class AreaReference
     {
@@ -106,6 +107,8 @@ namespace NPOI.SS.Util
             bool swapCols = topLeft.Col > botRight.Col;
             if (swapRows || swapCols)
             {
+                String firstSheet;
+                String lastSheet;
                 int firstRow;
                 int lastRow;
                 int firstColumn;
@@ -130,20 +133,24 @@ namespace NPOI.SS.Util
                 }
                 if (swapCols)
                 {
+                    firstSheet = botRight.SheetName;
                     firstColumn = botRight.Col;
                     firstColAbs = botRight.IsColAbsolute;
+                    lastSheet = topLeft.SheetName;
                     lastColumn = topLeft.Col;
                     lastColAbs = topLeft.IsColAbsolute;
                 }
                 else
                 {
+                    firstSheet = topLeft.SheetName;
                     firstColumn = topLeft.Col;
                     firstColAbs = topLeft.IsColAbsolute;
+                    lastSheet = botRight.SheetName;
                     lastColumn = botRight.Col;
                     lastColAbs = botRight.IsColAbsolute;
                 }
-                _firstCell = new CellReference(firstRow, firstColumn, firstRowAbs, firstColAbs);
-                _lastCell = new CellReference(lastRow, lastColumn, lastRowAbs, lastColAbs);
+                _firstCell = new CellReference(firstSheet, firstRow, firstColumn, firstRowAbs, firstColAbs);
+                _lastCell = new CellReference(lastSheet, lastRow, lastColumn, lastRowAbs, lastColAbs);
             }
             else
             {
@@ -301,7 +308,7 @@ namespace NPOI.SS.Util
         /// <returns></returns>
         public static AreaReference[] GenerateContiguous(SpreadsheetVersion version, String reference)
         {
-            ArrayList refs = new ArrayList();
+            List<AreaReference> refs = [];
             String st = reference;
             string[] token = st.Split(',');
             foreach (string t in token)
@@ -310,7 +317,7 @@ namespace NPOI.SS.Util
                         new AreaReference(t, version)
                 );
             }
-            return (AreaReference[])refs.ToArray(typeof(AreaReference));
+            return [.. refs];
         }
 
         /**
@@ -359,7 +366,7 @@ namespace NPOI.SS.Util
             int maxCol = Math.Max(_firstCell.Col, _lastCell.Col);
             String sheetName = _firstCell.SheetName;
 
-            ArrayList refs = new ArrayList();
+            List<CellReference> refs = [];
             for (int row = minRow; row <= maxRow; row++)
             {
                 for (int col = minCol; col <= maxCol; col++)
@@ -368,7 +375,7 @@ namespace NPOI.SS.Util
                     refs.Add(ref1);
                 }
             }
-            return (CellReference[])refs.ToArray(typeof(CellReference));
+            return [.. refs];
         }
 
         /**

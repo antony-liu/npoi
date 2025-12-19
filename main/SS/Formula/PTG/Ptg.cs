@@ -172,6 +172,7 @@ namespace NPOI.SS.Formula.PTG
                 case MissingArgPtg.sid: return MissingArgPtg.instance;  // 0x16
 
                 case StringPtg.sid: return new StringPtg(in1);       // 0x17
+                // not implemented yet: case SxNamePtg.sid:       return new SxNamePtg(in);       // 0x18
                 case AttrPtg.sid: return new AttrPtg(in1); // 0x19
                 case ErrPtg.sid: return new ErrPtg(in1);          // 0x1c
                 case BoolPtg.sid: return new BoolPtg(in1);         // 0x1d

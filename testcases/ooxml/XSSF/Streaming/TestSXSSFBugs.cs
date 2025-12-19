@@ -42,8 +42,8 @@ namespace TestCases.XSSF.Streaming
             s1.RepeatingRows = (cra);
 
             IPrintSetup ps1 = s1.PrintSetup;
-            ClassicAssert.AreEqual(false, ps1.ValidSettings);
-            ClassicAssert.AreEqual(false, ps1.Landscape);
+            ClassicAssert.IsFalse(ps1.ValidSettings);
+            ClassicAssert.IsFalse(ps1.Landscape);
 
 
             // Had valid print settings before repeating
@@ -51,14 +51,14 @@ namespace TestCases.XSSF.Streaming
             IPrintSetup ps2 = s2.PrintSetup;
 
             ps2.Landscape = (false);
-            ClassicAssert.AreEqual(true, ps2.ValidSettings);
-            ClassicAssert.AreEqual(false, ps2.Landscape);
+            ClassicAssert.IsTrue(ps2.ValidSettings);
+            ClassicAssert.IsFalse(ps2.Landscape);
             s2.RepeatingColumns = (cra);
             s2.RepeatingRows = (cra);
 
             ps2 = s2.PrintSetup;
-            ClassicAssert.AreEqual(true, ps2.ValidSettings);
-            ClassicAssert.AreEqual(false, ps2.Landscape);
+            ClassicAssert.IsTrue(ps2.ValidSettings);
+            ClassicAssert.IsFalse(ps2.Landscape);
 
             wb1.Close();
             wb2.Close();
@@ -120,7 +120,7 @@ namespace TestCases.XSSF.Streaming
             ICell cell = row.CreateCell(colIndex++);
             cell.SetCellType(CellType.String);
             cell.SetCellValue("multiple");
-            cell = row.CreateCell(colIndex++);
+            cell = row.CreateCell(colIndex);
             cell.SetCellType(CellType.String);
             cell.SetCellValue("unique");
 
@@ -129,7 +129,7 @@ namespace TestCases.XSSF.Streaming
             WriteRow(sheet, rowIndex++, 30d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B3, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
             WriteRow(sheet, rowIndex++, 2d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B4, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
             WriteRow(sheet, rowIndex++, 30d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B5, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
-            WriteRow(sheet, rowIndex++, 2d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B6, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
+            WriteRow(sheet, rowIndex, 2d, "IFERROR(INDEX(A2:A7, MATCH(1, (COUNTIF(B2:B6, A2:A7) = 0) * (NOT(ISBLANK(A2:A7))), 0)), \"\")");
 
             /*FileOutputStream fileOut = new FileOutputStream(filename);
             wb.write(fileOut);

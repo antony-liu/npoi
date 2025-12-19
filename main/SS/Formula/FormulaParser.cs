@@ -158,7 +158,7 @@ namespace NPOI.SS.Formula
         {
             Ptg[] arr = FormulaParser.Parse(tableText, workbook, 0, 0, rowIndex);
             if (arr.Length != 1 || arr[0] is not Area3DPxg ) {
-                throw new InvalidOperationException("Illegal structured reference");
+                throw new InvalidOperationException("Illegal structured reference, had length: " + arr.Length);
             }
             return (Area3DPxg)arr[0];
         }
@@ -167,8 +167,8 @@ namespace NPOI.SS.Formula
         private void GetChar()
         {
             // The intersection operator is a space.  We track whether the run of 
-            // whitespace preceeding "look" counts as an intersection operator.  
-            if (IsWhite(look))
+            // whitespace preceding "look" counts as an intersection operator.
+            if(IsWhite(look))
             {
                 if (look == ' ')
                 {
@@ -182,7 +182,8 @@ namespace NPOI.SS.Formula
             // Check To see if we've walked off the end of the string.
             if (_pointer > _formulaLength)
             {
-                throw new Exception("too far");
+                throw new RuntimeException("Parsed past the end of the formula, pos: " + _pointer +
+                    ", length: " + _formulaLength + ", formula: " + _formulaString);
             }
             if (_pointer < _formulaLength)
             {
@@ -662,11 +663,11 @@ namespace NPOI.SS.Formula
             return ParseNonRange(savePointer);
         }
 
-        private static readonly String specHeaders = "Headers";
-        private static readonly String specAll = "All";
-        private static readonly String specData = "Data";
-        private static readonly String specTotals = "Totals";
-        private static readonly String specThisRow = "This Row";
+        private const String specHeaders = "Headers";
+        private const String specAll = "All";
+        private const String specData = "Data";
+        private const String specTotals = "Totals";
+        private const String specThisRow = "This Row";
 
         /**
          * Parses a structured reference, returns it as area reference.
@@ -734,29 +735,25 @@ namespace NPOI.SS.Formula
                     ResetPointer(savePtr1);
                     break;
                 }
-                if (specName.Equals(specAll))
+                switch(specName)
                 {
-                    isAllSpec = true;
-                }
-                else if (specName.Equals(specData))
-                {
-                    isDataSpec = true;
-                }
-                else if (specName.Equals(specHeaders))
-                {
-                    isHeadersSpec = true;
-                }
-                else if (specName.Equals(specThisRow))
-                {
-                    isThisRowSpec = true;
-                }
-                else if (specName.Equals(specTotals))
-                {
-                    isTotalsSpec = true;
-                }
-                else
-                {
-                    throw new FormulaParseException("Unknown special quantifier " + specName);
+                    case specAll:
+                        isAllSpec = true;
+                        break;
+                    case specData:
+                        isDataSpec = true;
+                        break;
+                    case specHeaders:
+                        isHeadersSpec = true;
+                        break;
+                    case specThisRow:
+                        isThisRowSpec = true;
+                        break;
+                    case specTotals:
+                        isTotalsSpec = true;
+                        break;
+                    default:
+                        throw new FormulaParseException("Unknown special quantifier " + specName);
                 }
                 nSpecQuantifiers++;
                 if (look == ',')
@@ -819,29 +816,25 @@ namespace NPOI.SS.Formula
                     String name = ParseAsSpecialQuantifier();
                     if (name != null)
                     {
-                        if (name.Equals(specAll))
+                        switch(name)
                         {
-                            isAllSpec = true;
-                        }
-                        else if (name.Equals(specData))
-                        {
-                            isDataSpec = true;
-                        }
-                        else if (name.Equals(specHeaders))
-                        {
-                            isHeadersSpec = true;
-                        }
-                        else if (name.Equals(specThisRow))
-                        {
-                            isThisRowSpec = true;
-                        }
-                        else if (name.Equals(specTotals))
-                        {
-                            isTotalsSpec = true;
-                        }
-                        else
-                        {
-                            throw new FormulaParseException("Unknown special quantifier " + name);
+                            case specAll:
+                                isAllSpec = true;
+                                break;
+                            case specData:
+                                isDataSpec = true;
+                                break;
+                            case specHeaders:
+                                isHeadersSpec = true;
+                                break;
+                            case specThisRow:
+                                isThisRowSpec = true;
+                                break;
+                            case specTotals:
+                                isTotalsSpec = true;
+                                break;
+                            default:
+                                throw new FormulaParseException("Unknown special quantifier " + name);
                         }
                         nSpecQuantifiers++;
                     }

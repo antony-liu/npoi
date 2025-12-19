@@ -24,6 +24,7 @@ namespace NPOI.HSSF.UserModel
     using NPOI.HSSF.Record;
     using NPOI.SS.UserModel;
     using NPOI.SS;
+    using NPOI.SS.UserModel.Helpers;
 
     /// <summary>
     /// High level representation of a row of a spReadsheet.
@@ -779,10 +780,7 @@ namespace NPOI.HSSF.UserModel
          */
         public void ShiftCellsRight(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
         {
-            if(step < 0)
-                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
-            if(firstShiftColumnIndex > lastShiftColumnIndex)
-                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
+            RowShifter.ValidateShiftParameters(firstShiftColumnIndex, lastShiftColumnIndex, step);
             //if(lastShiftColumnIndex + step + 1> cells.Count)
             //    extend(lastShiftColumnIndex + step + 1);
             for(int columnIndex = lastShiftColumnIndex; columnIndex >= firstShiftColumnIndex; columnIndex--)
@@ -809,12 +807,7 @@ namespace NPOI.HSSF.UserModel
          */
         public void ShiftCellsLeft(int firstShiftColumnIndex, int lastShiftColumnIndex, int step)
         {
-            if(step < 0)
-                throw new ArgumentOutOfRangeException("Shifting step may not be negative ");
-            if(firstShiftColumnIndex > lastShiftColumnIndex)
-                throw new ArgumentOutOfRangeException(String.Format("Incorrect shifting range : {0}-{1}", firstShiftColumnIndex, lastShiftColumnIndex));
-            if(firstShiftColumnIndex - step < 0)
-                throw new InvalidOperationException("Column index less than zero : " + (firstShiftColumnIndex + step).ToString());
+            RowShifter.ValidateShiftLeftParameters(firstShiftColumnIndex, lastShiftColumnIndex, step);
             for(int columnIndex = firstShiftColumnIndex; columnIndex <= lastShiftColumnIndex; columnIndex++)
             {
                 HSSFCell cell = GetCell(columnIndex) as HSSFCell;

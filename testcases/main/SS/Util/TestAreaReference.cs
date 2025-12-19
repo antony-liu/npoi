@@ -1,6 +1,9 @@
-﻿using NPOI.SS;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.SS;
+using NPOI.SS.UserModel;
 using NPOI.SS.Util;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +52,23 @@ namespace TestCases.SS.Util
             ClassicAssert.AreEqual(0, newStyle.FirstCell.Row);
             ClassicAssert.AreEqual(SpreadsheetVersion.EXCEL2007.LastColumnIndex, newStyle.LastCell.Col);
             ClassicAssert.AreEqual(1, newStyle.LastCell.Row);
+        }
+
+        [Test]
+        public void Test62810()
+        {
+            IWorkbook wb = new HSSFWorkbook();
+            ISheet sheet = wb.CreateSheet("Ctor test");
+            String sheetName = sheet.SheetName;
+            CellReference topLeft = new CellReference(sheetName, 1, 1, true, true);
+            CellReference bottomRight = new CellReference(sheetName, 5, 10, true, true);
+            AreaReference goodAreaRef = new AreaReference(topLeft, bottomRight, SpreadsheetVersion.EXCEL2007);
+            AreaReference badAreaRef = new AreaReference(bottomRight, topLeft, SpreadsheetVersion.EXCEL2007);
+
+            ClassicAssert.AreEqual("'Ctor test'!$B$2", topLeft.FormatAsString());
+            ClassicAssert.AreEqual("'Ctor test'!$K$6", bottomRight.FormatAsString());
+            ClassicAssert.AreEqual("'Ctor test'!$B$2:$K$6", goodAreaRef.FormatAsString());
+            ClassicAssert.AreEqual("'Ctor test'!$B$2:$K$6", badAreaRef.FormatAsString());
         }
     }
 }
