@@ -16,17 +16,23 @@
 ==================================================================== */
 
 using NPOI.OpenXmlFormats.Spreadsheet;
+using NPOI.SS.Formula;
+using NPOI.SS.Formula.Eval;
+using NPOI.SS.Formula.Functions;
+using NPOI.SS.Formula.UDF;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.Util;
 using NPOI.XSSF;
 using NPOI.XSSF.Streaming;
 using NPOI.XSSF.UserModel;
-using NUnit.Framework;using NUnit.Framework.Legacy;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
 using TestCases.HSSF;
 
 namespace TestCases.XSSF.UserModel
@@ -43,19 +49,19 @@ namespace TestCases.XSSF.UserModel
             IRow title = sheet.GetRow(0);
 
             DateTime? prev = null;
-            for (int row = 1; row < rows; row++)
+            for(int row = 1; row < rows; row++)
             {
                 IRow rowObj = sheet.GetRow(row);
-                for (int col = 0; col < 1; col++)
+                for(int col = 0; col < 1; col++)
                 {
                     String titleName = title.GetCell(col).ToString();
                     ICell cell = rowObj.GetCell(col);
-                    if (titleName.StartsWith("time"))
+                    if(titleName.StartsWith("time"))
                     {
                         // here the output will produce ...59 or ...58 for the rows, probably POI is
                         // doing some different rounding or some other small difference...
                         //Console.WriteLine("==Time:" + cell.DateCellValue);
-                        if (prev != null)
+                        if(prev != null)
                         {
                             ClassicAssert.AreEqual(prev, cell.DateCellValue);
                             prev = cell.DateCellValue;
@@ -127,7 +133,7 @@ namespace TestCases.XSSF.UserModel
             ICell cell = row.CreateCell(0);
 
             IRichTextString str = new XSSFRichTextString("Test rich text string");
-            str.ApplyFont(2, 4, (short)0);
+            str.ApplyFont(2, 4, (short) 0);
             ClassicAssert.AreEqual(3, str.NumFormattingRuns);
             cell.SetCellValue(str);
 
@@ -154,10 +160,10 @@ namespace TestCases.XSSF.UserModel
             {
                 ISheet sheet = wb.CreateSheet("test");
 
-                for (int i = 0; i < 4; i++)
+                for(int i = 0; i < 4; i++)
                 {
                     IRow row = sheet.CreateRow(i);
-                    for (int j = 0; j < 2; j++)
+                    for(int j = 0; j < 2; j++)
                     {
                         ICell cell = row.CreateCell(j);
                         cell.CellStyle = (wb.CreateCellStyle());
@@ -276,7 +282,7 @@ namespace TestCases.XSSF.UserModel
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             try
             {
-                ((XSSFSheet)testSheet).Write(stream);
+                ((XSSFSheet) testSheet).Write(stream);
             }
             finally
             {
@@ -347,10 +353,69 @@ namespace TestCases.XSSF.UserModel
             foreach(CT_Row ctRow in sheet.GetCTWorksheet().sheetData.GetRowArray())
             {
                 long rowNum = ctRow.r; //1-based
-                ClassicAssert.IsTrue(rowNum > maxSeenRowNum, 
+                ClassicAssert.IsTrue(rowNum > maxSeenRowNum,
                     "Row " + rowNum + " (1-based) is not in ascending order; previously saw " + maxSeenRowNum);
                 maxSeenRowNum = rowNum;
             }
+        }
+
+        [Test]
+        [Ignore("unfixed bug")]
+        public void TestBug60355()
+        {
+            IWorkbook workbook = XSSFTestDataSamples.OpenSampleWorkbook("HsGetVal.xlsx");
+            try
+            {
+
+                ISheet sheet = workbook.GetSheetAt(workbook.ActiveSheetIndex);
+                //System.out.println("cell_4_1 formula:" + sheet.getRow(4).getCell(1).getCellFormula());
+                //System.out.println("cell_4_2 formula:" + sheet.getRow(4).getCell(2).getCellFormula());
+
+                // hard code HsGetValue test values for formulas on the sheet
+                Dictionary<CellAddress, String> cellToValueTable = new Dictionary<CellAddress, String>();
+                CellAddress cell4_1 = new CellAddress(4, 1);
+                cellToValueTable.Add(cell4_1, "678.0");
+                CellAddress cell4_2 = new CellAddress(4, 2);
+                cellToValueTable.Add(cell4_2, "123.0");
+
+                String[] functionNames = {HsGetValue.name};
+                FreeRefFunction[] functionImpls = {new HsGetValue(cellToValueTable)};
+                UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
+                UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
+                workbook.AddToolPack(udfToolpack);
+
+                IFormulaEvaluator formulaEvaluator = workbook.GetCreationHelper().CreateFormulaEvaluator();
+                formulaEvaluator.IgnoreMissingWorkbooks = true;
+                formulaEvaluator.EvaluateAll();
+            }
+            finally
+            {
+                workbook.Close();
+            }
+        }
+
+        public class HsGetValue : FreeRefFunction
+        {
+            public static String name = "HsGetValue";
+
+            private Dictionary<CellAddress, String> cellValues;
+
+            public HsGetValue(Dictionary<CellAddress, String> cellValues)
+                            : base()
+            {
+                this.cellValues = cellValues;
+            }
+
+            public ValueEval Evaluate(ValueEval[] args, OperationEvaluationContext evaluationContext)
+            {
+                int row = evaluationContext.RowIndex;
+                int column = evaluationContext.ColumnIndex;
+                CellAddress cell = new CellAddress(row, column);
+
+                String value = cellValues[cell];
+                return new NumberEval(double.Parse(value));
+            }
+
         }
     }
 }
