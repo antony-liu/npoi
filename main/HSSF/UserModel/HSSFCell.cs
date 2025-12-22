@@ -1468,11 +1468,6 @@ namespace NPOI.HSSF.UserModel
             throw new NotImplementedException();
         }
 
-        public override ICell SetBlank()
-        {
-            return SetCellType(CellType.Blank);
-        }
-
         public override bool IsMergedCell
         {
             get

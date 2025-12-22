@@ -954,10 +954,5 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 #endif
-
-        public override ICell SetBlank()
-        {
-            return SetCellType(CellType.Blank);
-        }
     }
 }

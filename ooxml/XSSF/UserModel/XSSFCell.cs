@@ -1023,10 +1023,6 @@ namespace NPOI.XSSF.UserModel
             if (_cell.IsSetS()) blank.s=(_cell.s);
             _cell.Set(blank);
         }
-        public override ICell SetBlank()
-        {
-            return SetCellType(CellType.Blank);
-        }
 
         /// <summary>
         /// Sets column index of this cell

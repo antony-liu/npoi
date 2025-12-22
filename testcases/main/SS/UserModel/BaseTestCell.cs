@@ -20,6 +20,7 @@ namespace TestCases.SS.UserModel
     using NPOI.HSSF.UserModel;
     using NPOI.HSSF.Util;
     using NPOI.SS;
+    using NSubstitute;
     using NPOI.SS.UserModel;
     using NPOI.SS.Util;
     using NUnit.Framework;using NUnit.Framework.Legacy;
@@ -1396,6 +1397,17 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(CellType.Boolean, cell.CachedFormulaResultType);
             ClassicAssert.IsTrue(cell.BooleanCellValue);
         }
+
+        [Test]
+        public void SetBlank_delegatesTo_setCellType_BLANK()
+        {
+            var cell = Substitute.For<CellBase>();
+            cell.When(x => x.SetBlank()).DoNotCallBase();
+            cell.SetBlank();
+            _ = cell.IsPartOfArrayFormulaGroup;
+            cell.Received().SetCellType(CellType.Blank);
+        }
+
         private ICell getInstance()
         {
             return _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);

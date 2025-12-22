@@ -97,6 +97,11 @@ namespace NPOI.SS.UserModel
         /// <param name="cellType"></param>
         ICell SetCellType(CellType cellType);
 
+        /**
+         * Removes formula and value from the cell, and sets its type to {@link CellType#BLANK}.
+         * Preserves comments and hyperlinks.
+         * While {@link #setCellType(CellType)} exists, is an alias for {@code setCellType(CellType.BLANK)}.
+         */
         ICell SetBlank();
         /// <summary>
         /// Only valid for formula cells

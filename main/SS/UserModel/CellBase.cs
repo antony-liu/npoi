@@ -229,7 +229,11 @@ namespace NPOI.SS.UserModel
         [Removal(Version = "4.2")]
         public abstract CellType GetCachedFormulaResultTypeEnum();
 
-        public abstract ICell SetBlank();
+        public virtual ICell SetBlank()
+        {
+            SetCellType(CellType.Blank);
+            return this;
+        }
 
         public abstract ICell SetCellValue(double value);
 
