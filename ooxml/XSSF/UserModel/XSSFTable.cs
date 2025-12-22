@@ -797,7 +797,7 @@ namespace NPOI.XSSF.UserModel
                         XSSFCell cell = row.GetCell(cellRef.Col) as XSSFCell;
                         if(cell != null)
                         {
-                            cell.SetCellType(CellType.Blank);
+                            cell.SetBlank();
                             cell.CellStyle = null;
                         }
                     }

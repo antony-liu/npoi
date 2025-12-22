@@ -140,7 +140,7 @@ namespace NPOI.HSSF.Util
                     newCell.SetCellValue(oldCell.NumericCellValue);
                     break;
                 case CellType.Blank:
-                    newCell.SetCellType(CellType.Blank);
+                    newCell.SetBlank();
                     break;
                 case CellType.Boolean:
                     newCell.SetCellValue(oldCell.BooleanCellValue);

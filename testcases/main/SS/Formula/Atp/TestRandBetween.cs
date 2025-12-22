@@ -134,7 +134,7 @@ namespace TestCases.SS.Formula.Atp
         {
 
             bottomValueCell.SetCellValue(-1);
-            topValueCell.SetCellType(CellType.Blank);
+            topValueCell.SetBlank();
             formulaCell.CellFormula = ("RANDBETWEEN($A$1,$B$1)");
             Evaluator.ClearAllCachedResultValues();
             Evaluator.EvaluateFormulaCell(formulaCell);
@@ -193,7 +193,7 @@ namespace TestCases.SS.Formula.Atp
             ClassicAssert.AreEqual(CellType.Error, formulaCell.CachedFormulaResultType);
             ClassicAssert.AreEqual(ErrorEval.NUM_ERROR.ErrorCode, formulaCell.ErrorCellValue);
             bottomValueCell.SetCellValue(1);
-            topValueCell.SetCellType(CellType.Blank);
+            topValueCell.SetBlank();
             formulaCell.CellFormula = ("RANDBETWEEN($A$1,$B$1)");
             Evaluator.ClearAllCachedResultValues();
             Evaluator.EvaluateFormulaCell(formulaCell);

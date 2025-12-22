@@ -97,7 +97,7 @@ namespace NPOI.SS.Formula.Eval.Forked
         {
             switch (_cellType)
             {
-                case CellType.Blank: destCell.SetCellType(CellType.Blank); return;
+                case CellType.Blank: destCell.SetBlank();return;
                 case CellType.Numeric: destCell.SetCellValue(_numberValue); return;
                 case CellType.Boolean: destCell.SetCellValue(_boolValue); return;
                 case CellType.String: destCell.SetCellValue(_stringValue); return;

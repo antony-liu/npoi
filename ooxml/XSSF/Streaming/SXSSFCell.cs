@@ -542,7 +542,7 @@ namespace NPOI.XSSF.Streaming
             }
             else
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
             }
 
             return this;
@@ -578,7 +578,7 @@ namespace NPOI.XSSF.Streaming
             }
             else
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
             }
 
             return this;
@@ -588,7 +588,7 @@ namespace NPOI.XSSF.Streaming
         {
             if (value == null)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
 
@@ -946,7 +946,7 @@ namespace NPOI.XSSF.Streaming
         {
             if (!value.HasValue)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
             

@@ -709,7 +709,7 @@ namespace TestCases.XSSF.UserModel
 
             XSSFTestDataSamples.WriteOutAndReadBack(wb1).Close();
 
-            sheet.GetRow(6).GetCell(0).SetCellType(CellType.Blank);  // go
+            sheet.GetRow(6).GetCell(0).SetBlank();  // go
 
             XSSFTestDataSamples.WriteOutAndReadBack(wb1).Close();
             sheet.GetRow(7).GetCell(0).SetCellValue((String)null);  // go

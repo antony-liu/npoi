@@ -483,7 +483,7 @@ namespace TestCases.HSSF.UserModel
             HSSFRow row = sheet.CreateRow(0) as HSSFRow;
             HSSFCell cell = row.CreateCell(0) as HSSFCell;
 
-            cell.SetCellType(CellType.Blank);
+            cell.SetBlank();
             ClassicAssert.IsNull(cell.DateCellValue);
             ClassicAssert.IsFalse(cell.BooleanCellValue);
             ClassicAssert.AreEqual("", cell.ToString());

@@ -2254,7 +2254,7 @@ namespace NPOI.HSSF.UserModel
             // clear all cells in the range
             foreach (ICell c in result)
             {
-                c.SetCellType(CellType.Blank);
+                c.SetBlank();
             }
             return result;
         }

@@ -3676,7 +3676,7 @@ namespace NPOI.XSSF.UserModel
                     ICellRange<ICell> cr = GetCellRange(range);
                     foreach(ICell c in cr)
                     {
-                        c.SetCellType(CellType.Blank);
+                        c.SetBlank();
                     }
 
                     return cr;
@@ -6285,7 +6285,7 @@ namespace NPOI.XSSF.UserModel
                     newCell.SetCellValue(oldCell.NumericCellValue);
                     break;
                 case CellType.Blank:
-                    newCell.SetCellType(CellType.Blank);
+                    newCell.SetBlank();
                     break;
                 case CellType.Boolean:
                     newCell.SetCellValue(oldCell.BooleanCellValue);

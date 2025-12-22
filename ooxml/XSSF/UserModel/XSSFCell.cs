@@ -485,7 +485,7 @@ namespace NPOI.XSSF.UserModel
         {
             if (str == null || str.String == null)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
 
@@ -917,7 +917,7 @@ namespace NPOI.XSSF.UserModel
         {
             if (value == null)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
             return SetCellValue(value.Value);
@@ -944,7 +944,7 @@ namespace NPOI.XSSF.UserModel
         {
             if (value == null)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
             

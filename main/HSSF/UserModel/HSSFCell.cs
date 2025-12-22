@@ -516,7 +516,7 @@ namespace NPOI.HSSF.UserModel
         {
             if(value == null)
             {
-                SetCellType(CellType.Blank);
+                SetBlank();
                 return this;
             }
             return SetCellValue(value.Value);

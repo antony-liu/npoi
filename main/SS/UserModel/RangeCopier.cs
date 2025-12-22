@@ -163,7 +163,7 @@ namespace NPOI.SS.UserModel
                     destCell.SetCellValue(srcCell.NumericCellValue);
                     break;
                 case CellType.Blank:
-                    destCell.SetCellType(CellType.Blank);
+                    destCell.SetBlank();
                     break;
                 case CellType.Boolean:
                     destCell.SetCellValue(srcCell.BooleanCellValue);

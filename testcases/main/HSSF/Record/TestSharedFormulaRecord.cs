@@ -214,7 +214,7 @@ namespace TestCases.HSSF.Record
 
             ClassicAssert.AreEqual("A$1*2", sheet.GetRow(ROW_IX).GetCell(1).CellFormula);
             cell = sheet.GetRow(ROW_IX).GetCell(1);
-            cell.SetCellType(CellType.Blank);
+            cell.SetBlank();
             ClassicAssert.AreEqual(3, countSharedFormulas(sheet));
 
             wb = HSSFTestDataSamples.WriteOutAndReadBack(wb);

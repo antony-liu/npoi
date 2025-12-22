@@ -656,7 +656,7 @@ namespace TestCases.SS.UserModel
             ICell cell = wb.CreateSheet("Sheet1").CreateRow(0).CreateCell(0);
             cell.CellStyle = (style);
             int i1 = cell.CellStyle.Index;
-            cell.SetCellType(CellType.Blank);
+            cell.SetBlank();
             int i2 = cell.CellStyle.Index;
             ClassicAssert.AreEqual(i1, i2);
         }
@@ -1252,7 +1252,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsTrue(cell.IsPartOfArrayFormulaGroup);
             ClassicAssert.AreEqual("1", cell.CellFormula);
 
-            cell.SetCellType(CellType.Blank);
+            cell.SetBlank();
 
             ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
             ClassicAssert.IsFalse(cell.IsPartOfArrayFormulaGroup);
@@ -1265,7 +1265,7 @@ namespace TestCases.SS.UserModel
                 ICell cell = getInstance();
                 cell.Sheet.SetArrayFormula("1", CellRangeAddress.ValueOf("A1:B1"));
                 cell.SetCellValue("foo");
-                cell.SetCellType(CellType.Blank);
+                cell.SetBlank();
             });
             
         }
