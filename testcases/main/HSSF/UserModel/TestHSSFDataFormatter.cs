@@ -213,7 +213,6 @@ namespace TestCases.HSSF.UserModel
             { // formula cell
                 row = sheet.CreateRow(7);
                 ICell cell = row.CreateCell(0);
-                cell.SetCellType(CellType.Formula);
                 cell.CellFormula = (/*setter*/"SUM(12.25,12.25)/100");
                 ICellStyle cellStyle = wb.CreateCellStyle();
                 cellStyle.DataFormat = (/*setter*/format.GetFormat("##.00%;"));

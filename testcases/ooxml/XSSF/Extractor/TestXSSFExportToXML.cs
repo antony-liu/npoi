@@ -526,18 +526,14 @@ namespace TestCases.XSSF.Extractor
 
             ICell cString = row.CreateCell(0);
             cString.SetCellValue("somestring");
-            cString.SetCellType(CellType.String);
 
             ICell cBoolean = row.CreateCell(1);
             cBoolean.SetCellValue(true);
-            cBoolean.SetCellType(CellType.Boolean);
 
             ICell cError = row.CreateCell(2);
-            cError.SetCellType(CellType.Error);
 
             ICell cFormulaString = row.CreateCell(3);
             cFormulaString.CellFormula = (/*setter*/"A1");
-            cFormulaString.SetCellType(CellType.Formula);
 
             ICell cFormulaNumeric = row.CreateCell(4);
             cFormulaNumeric.CellFormula = (/*setter*/"F1");

@@ -161,38 +161,44 @@ namespace TestCases.XSSF.Streaming
 
         [Test]
         [Ignore("Stub")]
-        public override void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
+        public new void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
         {
 
         }
         [Test]
         [Ignore("Stub")]
-        public override void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public new void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
 
         }
         [Test]
         [Ignore("Stub")]
-        public override void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public new void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
 
         }
         [Test]
         [Ignore("Stub")]
-        public override void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
+        public new void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
         {
 
         }
 
         [Test]
         [Ignore("Stub")]
-        public override void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
+        public new void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
         {
         }
 
         [Test]
         [Ignore("Stub")]
         public void SetCellFormula_isExceptionSafe_onBlankCell()
+        {
+        }
+
+        [Test]
+        [Ignore("Stub")]
+        public new void SetCellType_FORMULA_onAnArrayFormulaCell_doesNothing()
         {
         }
     }

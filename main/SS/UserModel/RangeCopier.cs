@@ -108,9 +108,7 @@ namespace NPOI.SS.UserModel
                         destRow = destSheet.CreateRow(rowNo + deltaY);
 
                     ICell newCell = destRow.GetCell(columnIndex + deltaX);
-                    if(newCell != null)
-                        newCell.SetCellType(sourceCell.CellType);
-                    else
+                    if(newCell == null)
                         newCell = destRow.CreateCell(columnIndex + deltaX, sourceCell.CellType);
 
                     cloneCellContent(sourceCell, newCell, null);

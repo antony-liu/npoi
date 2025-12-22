@@ -459,7 +459,7 @@ namespace NPOI.XSSF.UserModel
             String valueFieldName, string valueFormat)
         {
             CheckColumnIndex(columnIndex);
-            AreaReference pivotArea = GetPivotArea();
+
             CT_DataFields dataFields;
             if (pivotTableDefinition.dataFields != null)
             {
@@ -471,9 +471,6 @@ namespace NPOI.XSSF.UserModel
             }
             CT_DataField dataField = dataFields.AddNewDataField();
             dataField.subtotal = (ST_DataConsolidateFunction)(function.Value);
-            ICell cell = GetDataSheet().GetRow(pivotArea.FirstCell.Row)
-                .GetCell(pivotArea.FirstCell.Col + columnIndex);
-            cell.SetCellType(CellType.String);
             dataField.name = (/*setter*/valueFieldName);
             dataField.fld = (uint)columnIndex;
             if(valueFormat != null && !"".Equals(valueFormat.Trim()))

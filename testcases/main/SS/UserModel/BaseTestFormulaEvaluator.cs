@@ -408,12 +408,10 @@ namespace TestCases.SS.UserModel
 
                 // sheet1 A2 formulae
                 cell = sheet1.CreateRow(1).CreateCell(0);
-                cell.SetCellType(CellType.Formula);
                 cell.CellFormula = (/*setter*/"SUM(Sheet1:Sheet3!A1)");
 
                 // sheet1 A3 formulae
                 cell = sheet1.CreateRow(2).CreateCell(0);
-                cell.SetCellType(CellType.Formula);
                 cell.CellFormula = (/*setter*/"SUM(Sheet1:Sheet3!A1:B1)");
 
                 wb.GetCreationHelper().CreateFormulaEvaluator().EvaluateAll();

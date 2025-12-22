@@ -251,10 +251,6 @@ namespace NPOI.HSSF.UserModel
         /// <param name="styleIndex">Index of the style.</param>
         private void SetCellType(CellType cellType, bool setValue, int row, int col, short styleIndex)
         {
-            if (cellType > CellType.Error)
-            {
-                throw new Exception("I have no idea what type that Is!");
-            }
             switch (cellType)
             {
 
@@ -268,14 +264,15 @@ namespace NPOI.HSSF.UserModel
                     else
                     {
                         frec = (FormulaRecordAggregate)_record;
+                        frec.Column = col;
+                        frec.Row = row;
                     }
-                    frec.Column = col;
-                    if (setValue)
+
+                    if(CellType == CellType.Blank)
                     {
-                        frec.FormulaRecord.Value = NumericCellValue;
+                        frec.FormulaRecord.Value = 0;
                     }
                     frec.XFIndex = styleIndex;
-                    frec.Row = row;
                     _record = frec;
                     break;
 

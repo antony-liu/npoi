@@ -78,7 +78,18 @@ namespace NPOI.SS.UserModel
             {
                 throw new ArgumentException("cellType shall not be null nor _NONE");
             }
-
+            if(cellType == CellType.Formula)
+            {
+                if(CellType != CellType.Formula)
+                {
+                    throw new ArgumentException("Calling Cell.setCellType(CellType.FORMULA) is illegal. " +
+                            "Use setCellFormula(String) directly.");
+                }
+                else
+                {
+                    return this;
+                }
+            }
             TryToDeleteArrayFormulaIfSet();
 
             return SetCellTypeImpl(cellType);

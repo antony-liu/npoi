@@ -95,6 +95,8 @@ namespace NPOI.SS.UserModel
         /// Set the cells type (numeric, formula or string)
         /// </summary>
         /// <param name="cellType"></param>
+        [Obsolete("This method is deprecated and will be removed in POI 5.0.Use explicit SetCellFormula, SetCellValue or SetBlank to get the desired result.")]
+        [Removal(Version = "5.0")]
         ICell SetCellType(CellType cellType);
 
         /**

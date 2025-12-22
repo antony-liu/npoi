@@ -1223,8 +1223,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsTrue(value == null || value.Length == 0, "HSSF will currently return empty string, XSSF/SXSSF will return null, but had: " + value);
 
             cell = row.CreateCell(1);
-            // also verify that setting formulas to null works  
-            cell.SetCellType(CellType.Formula);
+            cell.SetCellFormula("0");
             cell.SetCellValue((String)null);
 
             wb.GetCreationHelper().CreateFormulaEvaluator().EvaluateAll();

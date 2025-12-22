@@ -345,9 +345,9 @@ namespace NPOI.XSSF.UserModel
 
             XSSFCell xcell = new XSSFCell(this, ctCell);
             xcell.SetCellNum(columnIndex);
-            if (type != CellType.Blank)
+            if (type != CellType.Blank && type != CellType.Formula)
             {
-                xcell.SetCellType(type);
+                SetDefaultValue(xcell, type);
             }
 
             if (IsFormatted)
@@ -359,6 +359,26 @@ namespace NPOI.XSSF.UserModel
             return xcell;
         }
 
+        private static void SetDefaultValue(XSSFCell cell, CellType type)
+        {
+            switch(type)
+            {
+                case CellType.Numeric:
+                    cell.SetCellValue(0);
+                    break;
+                case CellType.String:
+                    cell.SetCellValue("");
+                    break;
+                case CellType.Boolean:
+                    cell.SetCellValue(false);
+                    break;
+                case CellType.Error:
+                    cell.SetCellErrorValue(FormulaError._NO_ERROR);
+                    break;
+                default:
+                    throw new AssertFailedException("");
+            }
+        }
         /// <summary>
         /// Returns the cell at the given (0 based) index,
         /// with the <see cref="MissingCellPolicy"/> from the parent Workbook.

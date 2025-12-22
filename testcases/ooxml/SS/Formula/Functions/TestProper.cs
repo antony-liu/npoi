@@ -55,7 +55,6 @@ namespace TestCases.SS.Formula.Functions
         {
             ISheet sheet = wb.CreateSheet("new sheet");
             cell11 = sheet.CreateRow(0).CreateCell(0);
-            cell11.SetCellType(CellType.Formula);
 
             Confirm("PROPER(\"hi there\")", "Hi There"); //simple case
             Confirm("PROPER(\"what's up\")", "What'S Up"); //apostrophes are treated as word breaks

@@ -669,7 +669,7 @@ namespace TestCases.XSSF.UserModel
          *  the calcChain entry.
          */
         [Test]
-        public void Test49966()
+        public void Bug49966()
         {
             XSSFWorkbook wb1 = XSSFTestDataSamples.OpenSampleWorkbook("shared_formulas.xlsx");
             XSSFSheet sheet = wb1.GetSheetAt(0) as XSSFSheet;
@@ -694,7 +694,7 @@ namespace TestCases.XSSF.UserModel
             // Otherwise should go
             sheet.GetRow(1).GetCell(0).SetCellFormula("A1"); // stay
             sheet.GetRow(2).GetCell(0).SetCellFormula(null);  // go
-            sheet.GetRow(3).GetCell(0).SetCellType(CellType.Formula); // stay
+            sheet.GetRow(3).GetCell(0).SetCellFormula("14"); // stay
 
             XSSFTestDataSamples.WriteOutAndReadBack(wb1).Close();
             sheet.GetRow(4).GetCell(0).SetCellType(CellType.String);  // go

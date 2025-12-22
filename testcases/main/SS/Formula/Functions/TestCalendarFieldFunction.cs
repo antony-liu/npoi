@@ -39,7 +39,6 @@ namespace TestCases.SS.Formula.Functions
             HSSFWorkbook wb = new HSSFWorkbook();
             ISheet sheet = wb.CreateSheet("new sheet");
             cell11 = sheet.CreateRow(0).CreateCell(0);
-            cell11.SetCellType(CellType.Formula);
             Evaluator = new HSSFFormulaEvaluator(wb);
         }
         [Test]

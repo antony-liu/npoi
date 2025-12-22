@@ -1243,7 +1243,7 @@ namespace TestCases.SS.UserModel
             });
         }
         [Test]
-        public virtual void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
+        public void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
         {
             ICell cell = getInstance();
 
@@ -1258,7 +1258,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsFalse(cell.IsPartOfArrayFormulaGroup);
         }
         [Test]
-        public virtual void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
@@ -1271,7 +1271,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public virtual void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
@@ -1317,7 +1317,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public virtual void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
+        public void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
         {
             ICell cell = getInstance();
 
@@ -1381,7 +1381,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public virtual void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
+        public void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
         {
             ICell cell = getInstance();
             cell.Sheet.SetArrayFormula("\"foo\"", CellRangeAddress.ValueOf("A1"));
@@ -1396,6 +1396,45 @@ namespace TestCases.SS.UserModel
             ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
             ClassicAssert.AreEqual(CellType.Boolean, cell.CachedFormulaResultType);
             ClassicAssert.IsTrue(cell.BooleanCellValue);
+        }
+
+        [Test]
+        public void SetCellType_FORMULA_onANonFormulaCell_throwsIllegalArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                ICell cell = getInstance();
+                cell.SetCellType(CellType.Formula);
+            });
+            
+        }
+
+        [Test]
+        public void SetCellType_FORMULA_onAFormulaCell_doesNothing()
+        {
+            ICell cell = getInstance();
+            cell.SetCellFormula("3");
+            cell.SetCellValue("foo");
+
+            cell.SetCellType(CellType.Formula);
+
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual(CellType.String, cell.CachedFormulaResultType);
+            ClassicAssert.AreEqual("foo", cell.StringCellValue);
+        }
+
+        [Test]
+        public void SetCellType_FORMULA_onAnArrayFormulaCell_doesNothing()
+        {
+            ICell cell = getInstance();
+            cell.Sheet.SetArrayFormula("3", CellRangeAddress.ValueOf("A1:A2"));
+            cell.SetCellValue("foo");
+
+            cell.SetCellType(CellType.Formula);
+
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+            ClassicAssert.AreEqual(CellType.String, cell.CachedFormulaResultType);
+            ClassicAssert.AreEqual("foo", cell.StringCellValue);
         }
 
         [Test]
