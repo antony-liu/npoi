@@ -21,6 +21,7 @@ namespace TestCases.SS.UserModel
     using NPOI.HSSF.Util;
     using NPOI.SS;
     using NPOI.SS.UserModel;
+    using NPOI.SS.Util;
     using NUnit.Framework;using NUnit.Framework.Legacy;
     using System;
     using System.Globalization;
@@ -1230,6 +1231,110 @@ namespace TestCases.SS.UserModel
             {
                 workbook.Close();
             }
+        }
+
+        [Test]
+        public void SetCellType_NONE_throwsIAE()
+        {
+            Assert.Throws<ArgumentException>(()=>{
+                ICell cell = getInstance();
+                cell.SetCellType(CellType._None);
+            });
+        }
+        [Test]
+        public virtual void SetCellType_BLANK_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
+        {
+            ICell cell = getInstance();
+
+            cell.Sheet.SetArrayFormula("1", CellRangeAddress.ValueOf("A1"));
+            cell.SetCellValue("foo");
+            ClassicAssert.IsTrue(cell.IsPartOfArrayFormulaGroup);
+            ClassicAssert.AreEqual("1", cell.CellFormula);
+
+            cell.SetCellType(CellType.Blank);
+
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+            ClassicAssert.IsFalse(cell.IsPartOfArrayFormulaGroup);
+        }
+        [Test]
+        public virtual void SetCellType_BLANK_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        {
+            ICell cell = getInstance();
+            cell.Sheet.SetArrayFormula("1", CellRangeAddress.ValueOf("A1:B1"));
+            cell.SetCellValue("foo");
+            cell.SetCellType(CellType.Blank);
+        }
+
+        [Test]
+        public virtual void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        {
+            ICell cell = getInstance();
+
+            cell.Sheet.SetArrayFormula("1", CellRangeAddress.ValueOf("A1:B1"));
+            ClassicAssert.IsTrue(cell.IsPartOfArrayFormulaGroup);
+            ClassicAssert.AreEqual(CellType.Formula, cell.CellType);
+
+            cell.SetCellFormula("1");
+        }
+
+        [Test]
+        public void RemoveFormula_preservesValue()
+        {
+            ICell cell = getInstance();
+
+            cell.SetCellFormula("#DIV/0!");
+            cell.SetCellValue(true);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Boolean, cell.CellType);
+            ClassicAssert.IsTrue(cell.BooleanCellValue);
+
+            cell.SetCellFormula("#DIV/0!");
+            cell.SetCellValue(2);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Numeric, cell.CellType);
+            ClassicAssert.AreEqual(2, cell.NumericCellValue, 0);
+
+            cell.SetCellFormula("#DIV/0!");
+            cell.SetCellValue("foo");
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.String, cell.CellType);
+            ClassicAssert.AreEqual("foo", cell.StringCellValue);
+
+            cell.SetCellFormula("#DIV/0!");
+            cell.SetCellErrorValue(FormulaError.NUM.Code);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Error, cell.CellType);
+            ClassicAssert.AreEqual(FormulaError.NUM.Code, cell.ErrorCellValue);
+        }
+
+        [Test]
+        public virtual void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
+        {
+            ICell cell = getInstance();
+
+            cell.Sheet.SetArrayFormula("#DIV/0!", CellRangeAddress.ValueOf("A1"));
+            cell.SetCellValue(true);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+
+            cell.Sheet.SetArrayFormula("#DIV/0!", CellRangeAddress.ValueOf("A1"));
+            cell.SetCellValue(2);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+
+            cell.Sheet.SetArrayFormula("#DIV/0!", CellRangeAddress.ValueOf("A1"));
+            cell.SetCellValue(true);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+
+            cell.Sheet.SetArrayFormula("#DIV/0!", CellRangeAddress.ValueOf("A1"));
+            cell.SetCellErrorValue(FormulaError.NUM.Code);
+            cell.RemoveFormula();
+            ClassicAssert.AreEqual(CellType.Blank, cell.CellType);
+        }
+        private ICell getInstance()
+        {
+            return _testDataProvider.CreateWorkbook().CreateSheet().CreateRow(0).CreateCell(0);
         }
         [Test]
         public void PrimitiveToEnumReplacementDoesNotBreakBackwardsCompatibility()

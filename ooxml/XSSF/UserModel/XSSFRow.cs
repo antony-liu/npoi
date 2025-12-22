@@ -414,7 +414,7 @@ namespace NPOI.XSSF.UserModel
             XSSFCell xcell = (XSSFCell)cell;
             if (xcell.IsPartOfArrayFormulaGroup)
             {
-                xcell.NotifyArrayFormulaChanging();
+                xcell.SetCellFormula(null); // to remove the array formula
             }
 
             if (cell.CellType == CellType.Formula)

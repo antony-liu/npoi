@@ -27,7 +27,7 @@ using System;
 
 namespace NPOI.XSSF.Streaming
 {
-    public class SXSSFCell : ICell
+    public class SXSSFCell : CellBase
     {
         private static readonly POILogger logger = POILogFactory.GetLogger(typeof(SXSSFCell));
 
@@ -42,7 +42,7 @@ namespace NPOI.XSSF.Streaming
             SetType(cellType);
         }
 
-        public CellRangeAddress ArrayFormulaRange
+        public override CellRangeAddress ArrayFormulaRange
         {
             get
             {
@@ -50,7 +50,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public bool BooleanCellValue
+        public override bool BooleanCellValue
         {
             get
             {
@@ -82,7 +82,7 @@ namespace NPOI.XSSF.Streaming
         //    return string.Format("Cannot get a {0} value from a {1} {2} cell", expectedTypeCode, actualTypeCode,(isFormulaCell ? "formula " : ""));
         //}
 
-        public CellType CachedFormulaResultType
+        public override CellType CachedFormulaResultType
         {
             get
             {
@@ -97,12 +97,12 @@ namespace NPOI.XSSF.Streaming
 
         [Obsolete("Will be removed at NPOI 2.8, Use CachedFormulaResultType instead.")]
         [Removal(Version = "4.2")]
-        public CellType GetCachedFormulaResultTypeEnum()
+        public override CellType GetCachedFormulaResultTypeEnum()
         {
             return CachedFormulaResultType;
         }
 
-        public IComment CellComment
+        public override IComment CellComment
         {
             get
             {
@@ -115,7 +115,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public string CellFormula
+        public override string CellFormula
         {
             get
             {
@@ -136,7 +136,7 @@ namespace NPOI.XSSF.Streaming
                 ((FormulaValue)_value).Value = value;
             }
         }
-        public void RemoveFormula()
+        protected override void RemoveFormulaImpl()
         {
             if (CellType != CellType.Formula)
             {
@@ -168,7 +168,7 @@ namespace NPOI.XSSF.Streaming
                     throw new InvalidOperationException();
             }
         }
-        public ICellStyle CellStyle
+        public override ICellStyle CellStyle
         {
             get
             {
@@ -192,7 +192,7 @@ namespace NPOI.XSSF.Streaming
         {
             return _value is FormulaValue;
         }
-        public CellType CellType
+        public override CellType CellType
         {
             get 
             { 
@@ -204,8 +204,8 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        
-        public int ColumnIndex
+
+        public override int ColumnIndex
         {
             get
             {
@@ -215,7 +215,7 @@ namespace NPOI.XSSF.Streaming
         /// <summary>
         /// Get DateTime-type cell value
         /// </summary>
-        public DateTime? DateCellValue
+        public override DateTime? DateCellValue
         {
             get
             {
@@ -232,7 +232,7 @@ namespace NPOI.XSSF.Streaming
         /// <summary>
         /// Get DateOnly-type cell value
         /// </summary>
-        public DateOnly? DateOnlyCellValue 
+        public override DateOnly? DateOnlyCellValue 
         { 
             get{
                 if (CellType != CellType.Numeric && CellType != CellType.Formula)
@@ -244,7 +244,7 @@ namespace NPOI.XSSF.Streaming
                 return DateOnly.FromDateTime(DateUtil.GetJavaDate(value, date1904));
             }
         }
-        public TimeOnly? TimeOnlyCellValue 
+        public override TimeOnly? TimeOnlyCellValue 
         { 
             get{
                 if (CellType != CellType.Numeric && CellType != CellType.Formula)
@@ -257,7 +257,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 #endif
-        public byte ErrorCellValue
+        public override byte ErrorCellValue
         {
             get
             {
@@ -283,7 +283,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public IHyperlink Hyperlink
+        public override IHyperlink Hyperlink
         {
             get
             {
@@ -309,7 +309,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public bool IsMergedCell
+        public override bool IsMergedCell
         {
             get
             {
@@ -317,7 +317,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public bool IsPartOfArrayFormulaGroup
+        public override bool IsPartOfArrayFormulaGroup
         {
             get
             {
@@ -326,7 +326,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public double NumericCellValue
+        public override double NumericCellValue
         {
             get
             {
@@ -350,7 +350,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public IRichTextString RichStringCellValue
+        public override IRichTextString RichStringCellValue
         {
             get
             {
@@ -369,26 +369,26 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public IRow Row
+        public override IRow Row
         {
             get { return _row; }
         }
 
-        public int RowIndex
+        public override int RowIndex
         {
             get
             {
                 return _row.RowNum;
             }
         }
-        public CellAddress Address
+        public override CellAddress Address
         {
             get
             {
                 return new CellAddress(this);
             }
         }
-        public ISheet Sheet
+        public override ISheet Sheet
         {
             get
             {
@@ -396,7 +396,7 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public string StringCellValue
+        public override string StringCellValue
         {
             get
             {
@@ -431,12 +431,12 @@ namespace NPOI.XSSF.Streaming
             }
         }
 
-        public ICell CopyCellTo(int targetIndex)
+        public override ICell CopyCellTo(int targetIndex)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveCellComment()
+        public override void RemoveCellComment()
         {
             IComment comment = this.CellComment;
             if (comment != null)
@@ -451,18 +451,19 @@ namespace NPOI.XSSF.Streaming
         }
 
         //TODO: implement correctly
-        public void RemoveHyperlink()
+        public override void RemoveHyperlink()
         {
             RemoveProperty(Property.HYPERLINK);
             ((SXSSFSheet)Sheet)._sh.RemoveHyperlink(RowIndex, ColumnIndex);
         }
 
-        public void SetAsActiveCell()
+        public override void SetAsActiveCell()
         {
             Sheet.ActiveCell = Address;
         }
 
-        public ICell SetCellErrorValue(byte value)
+        [Obsolete]
+        public override ICell SetCellErrorValue(byte value)
         {
             // for formulas, we want to keep the type and only have an ERROR as formula value
             if(_value.GetType()==CellType.Formula)
@@ -482,7 +483,7 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellFormula(string formula)
+        protected override ICell SetCellFormulaImpl(string formula)
         {
             if (formula == null)
             {
@@ -495,13 +496,13 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellType(CellType cellType)
+        protected override ICell SetCellTypeImpl(CellType cellType)
         {
             EnsureType(cellType);
             return this;
         }
 
-        public ICell SetCellValue(string value)
+        public override ICell SetCellValue(string value)
         {
             if (value != null)
             {
@@ -528,7 +529,7 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellValue(bool value)
+        public override ICell SetCellValue(bool value)
         {
             EnsureTypeOrFormulaType(CellType.Boolean);
             if (_value.GetType() == CellType.Formula)
@@ -538,7 +539,7 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellValue(IRichTextString value)
+        public override ICell SetCellValue(IRichTextString value)
         {         
             if (value != null && value.String != null)
             {
@@ -564,7 +565,7 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellValue(DateTime? value)
+        public override ICell SetCellValue(DateTime? value)
         {
             if (value == null)
             {
@@ -577,7 +578,7 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public ICell SetCellValue(double value)
+        public override ICell SetCellValue(double value)
         {
             if (Double.IsInfinity(value))
             {
@@ -936,13 +937,13 @@ namespace NPOI.XSSF.Streaming
         //END OF COPIED CODE
 
 
-        public ICell SetCellValue(DateTime value)
+        public override ICell SetCellValue(DateTime value)
         {
             return SetCellValue((DateTime?)value);
         }
 
 #if NET6_0_OR_GREATER
-        public ICell SetCellValue(DateOnly value)
+        public override ICell SetCellValue(DateOnly value)
         {
             bool date1904 = ((SXSSFWorkbook)Sheet.Workbook).XssfWorkbook.IsDate1904();
             return SetCellValue(DateUtil.GetExcelDate(value, date1904));
@@ -961,7 +962,7 @@ namespace NPOI.XSSF.Streaming
         }
 #endif
 
-        public ICell SetBlank()
+        public override ICell SetBlank()
         {
             return SetCellType(CellType.Blank);
         }

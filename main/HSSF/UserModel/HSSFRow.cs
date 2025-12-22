@@ -174,7 +174,7 @@ namespace NPOI.HSSF.UserModel
             }
             if (cell.IsPartOfArrayFormulaGroup)
             {
-                ((HSSFCell)cell).NotifyArrayFormulaChanging();
+                ((HSSFCell)cell).TryToDeleteArrayFormula(null);
             }
             cells.Remove(column);
 

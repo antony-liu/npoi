@@ -45,7 +45,7 @@ namespace NPOI.XSSF.UserModel
      * cells that have values should be Added.
      * </p>
      */
-    public class XSSFCell : ICell
+    public class XSSFCell : CellBase
     {
 
         private static readonly String FALSE_AS_STRING = "0";
@@ -226,7 +226,7 @@ namespace NPOI.XSSF.UserModel
          *
          * @return the sheet this cell belongs to
          */
-        public ISheet Sheet
+        public override ISheet Sheet
         {
             get
             {
@@ -239,7 +239,7 @@ namespace NPOI.XSSF.UserModel
          *
          * @return the row this cell belongs to
          */
-        public IRow Row
+        public override IRow Row
         {
             get
             {
@@ -256,7 +256,7 @@ namespace NPOI.XSSF.UserModel
          * @throws InvalidOperationException if the cell type returned by {@link #CellType}
          *   is not CellType.Boolean, CellType.Blank or CellType.Formula
          */
-        public bool BooleanCellValue
+        public override bool BooleanCellValue
         {
             get
             {
@@ -283,7 +283,7 @@ namespace NPOI.XSSF.UserModel
          *        precalculated value, for bools we'll Set its value. For other types we
          *        will change the cell to a bool cell and Set its value.
          */
-        public ICell SetCellValue(bool value)
+        public override ICell SetCellValue(bool value)
         {
             _cell.t = (ST_CellType.b);
             _cell.v = (value ? TRUE_AS_STRING : FALSE_AS_STRING);
@@ -301,7 +301,7 @@ namespace NPOI.XSSF.UserModel
          * @exception NumberFormatException if the cell value isn't a parsable <code>double</code>.
          * @see DataFormatter for turning this number into a string similar to that which Excel would render this number as.
          */
-        public double NumericCellValue
+        public override double NumericCellValue
         {
             get
             {
@@ -344,7 +344,7 @@ namespace NPOI.XSSF.UserModel
          *        precalculated value, for numerics we'll Set its value. For other types we
          *        will change the cell to a numeric cell and Set its value.
          */
-        public ICell SetCellValue(double value)
+        public override ICell SetCellValue(double value)
         {
             if (Double.IsInfinity(value))
             {
@@ -377,7 +377,7 @@ namespace NPOI.XSSF.UserModel
          * </p>
          * @return the value of the cell as a string
          */
-        public String StringCellValue
+        public override String StringCellValue
         {
             get
             {
@@ -393,7 +393,7 @@ namespace NPOI.XSSF.UserModel
          * </p>
          * @return the value of the cell as a XSSFRichTextString
          */
-        public IRichTextString RichStringCellValue
+        public override IRichTextString RichStringCellValue
         {
             get
             {
@@ -468,7 +468,7 @@ namespace NPOI.XSSF.UserModel
          * change the cell to a string cell and Set its value.
          * If value is null then we will change the cell to a Blank cell.
          */
-        public ICell SetCellValue(String str)
+        public override ICell SetCellValue(String str)
         {
             return SetCellValue(str == null ? null : new XSSFRichTextString(str));
         }
@@ -481,7 +481,7 @@ namespace NPOI.XSSF.UserModel
          * change the cell to a string cell and Set its value.
          * If value is null then we will change the cell to a Blank cell.
          */
-        public ICell SetCellValue(IRichTextString str)
+        public override ICell SetCellValue(IRichTextString str)
         {
             if (str == null || str.String == null)
             {
@@ -523,7 +523,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Return a formula for the cell,  for example, <code>SUM(C4:E4)</code>
         /// </summary>
-        public String CellFormula
+        public override String CellFormula
         {
             get
             {
@@ -536,16 +536,8 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        public void RemoveFormula()
+        protected override void RemoveFormulaImpl()
         {
-            if (CellType == CellType.Blank)
-                return;
-
-            if (IsPartOfArrayFormulaGroup)
-            {
-                TryToDeleteArrayFormula(null);
-                return;
-            }
             ((XSSFWorkbook)_row.Sheet.Workbook).OnDeleteFormula(this);
             if (_cell.IsSetF())
             {
@@ -628,12 +620,8 @@ namespace NPOI.XSSF.UserModel
          * @throws InvalidOperationException if the operation is not allowed, for example,
          *  when the cell is a part of a multi-cell array formula
          */
-        public ICell SetCellFormula(String formula)
+        protected override ICell SetCellFormulaImpl(String formula)
         {
-            if (IsPartOfArrayFormulaGroup)
-            {
-                NotifyArrayFormulaChanging();
-            }
             return SetFormula(formula, FormulaType.Cell);
         }
 
@@ -670,9 +658,14 @@ namespace NPOI.XSSF.UserModel
         private XSSFCell SetFormula(String formula, FormulaType formulaType)
         {
             XSSFWorkbook wb = (XSSFWorkbook)_row.Sheet.Workbook;
-            if (formula == null)
+            if (formulaType == FormulaType.Array && formula == null)
             {
-                RemoveFormula();
+                wb.OnDeleteFormula(this);
+                if(_cell.IsSetF())
+                {
+                    (_row.Sheet as XSSFSheet).OnDeleteFormula(this, null);
+                    _cell.unsetF();
+                }
                 return this;
             }
 
@@ -708,23 +701,23 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Returns zero-based column index of this cell
         /// </summary>
-        public int ColumnIndex
+        public override int ColumnIndex
         {
             get
             {
                 return _cellNum;
             }
+        }
 
-            internal set
-            {
-                _cellNum = value;
-            }
+        internal void SetColumnIndex(int columnIndex)
+        {
+            _cellNum = columnIndex;
         }
 
         /// <summary>
         /// Returns zero-based row index of a row in the sheet that contains this cell
         /// </summary>
-        public int RowIndex
+        public override int RowIndex
         {
             get
             {
@@ -744,7 +737,7 @@ namespace NPOI.XSSF.UserModel
             }
             return ref1;
         }
-        public CellAddress Address
+        public override CellAddress Address
         {
             get
             {
@@ -754,7 +747,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Return the cell's style.
         /// </summary>
-        public ICellStyle CellStyle
+        public override ICellStyle CellStyle
         {
             get
             {
@@ -813,7 +806,7 @@ namespace NPOI.XSSF.UserModel
         /// NOTE: POI does not support data table formulas.
         /// Cells in a data table appear to POI as plain cells typed from their cached value.</para>
         /// </summary>
-        public CellType CellType
+        public override CellType CellType
         {
             get
             {
@@ -829,7 +822,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Only valid for formula cells
         /// </summary>
-        public CellType CachedFormulaResultType
+        public override CellType CachedFormulaResultType
         {
             get
             {
@@ -878,7 +871,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Get the value of the cell as a date.
         /// </summary>
-        public DateTime? DateCellValue
+        public override DateTime? DateCellValue
         {
             get
             {
@@ -893,7 +886,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
 #if NET6_0_OR_GREATER
-        public DateOnly? DateOnlyCellValue 
+        public override DateOnly? DateOnlyCellValue 
         { 
             get{
                 if (CellType != CellType.Numeric && CellType != CellType.Formula)
@@ -906,7 +899,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        public TimeOnly? TimeOnlyCellValue 
+        public override TimeOnly? TimeOnlyCellValue 
         { 
             get{
                 if (CellType != CellType.Numeric && CellType != CellType.Formula)
@@ -919,7 +912,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
 #endif
-        public ICell SetCellValue(DateTime? value)
+        public override ICell SetCellValue(DateTime? value)
         {
             if (value == null)
             {
@@ -933,14 +926,14 @@ namespace NPOI.XSSF.UserModel
         /// </summary>
         /// <param name="value">the date value to Set this cell to.  For formulas we'll set the precalculated value, 
         /// for numerics we'll Set its value. For other types we will change the cell to a numeric cell and Set its value. </param>
-        public ICell SetCellValue(DateTime value)
+        public override ICell SetCellValue(DateTime value)
         {
             bool date1904 = Sheet.Workbook.IsDate1904();
             return SetCellValue(DateUtil.GetExcelDate(value, date1904));
         }
 
 #if NET6_0_OR_GREATER
-        public ICell SetCellValue(DateOnly value)
+        public override ICell SetCellValue(DateOnly value)
         {
             bool date1904 = Sheet.Workbook.IsDate1904();
             return SetCellValue(DateUtil.GetExcelDate(value, date1904));
@@ -957,7 +950,7 @@ namespace NPOI.XSSF.UserModel
             return SetCellValue(value.Value);
         }
 #endif
-        
+
         /// <summary>
         /// Returns the error message, such as #VALUE!
         /// </summary>
@@ -977,7 +970,7 @@ namespace NPOI.XSSF.UserModel
         /// For strings, numbers, and bools, we throw an exception.
         /// For blank cells we return a 0.
         /// </summary>
-        public byte ErrorCellValue
+        public override byte ErrorCellValue
         {
             get
             {
@@ -990,7 +983,8 @@ namespace NPOI.XSSF.UserModel
                 return FormulaError.ForString(code).Code;
             }
         }
-        public ICell SetCellErrorValue(byte errorCode)
+        [Obsolete]
+        public override ICell SetCellErrorValue(byte errorCode)
         {
             FormulaError error = FormulaError.ForInt(errorCode);
             return SetCellErrorValue(error);
@@ -1012,7 +1006,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Sets this cell as the active cell for the worksheet.
         /// </summary>
-        public void SetAsActiveCell()
+        public override void SetAsActiveCell()
         {
             Sheet.ActiveCell = Address;
         }
@@ -1028,7 +1022,7 @@ namespace NPOI.XSSF.UserModel
             if (_cell.IsSetS()) blank.s=(_cell.s);
             _cell.Set(blank);
         }
-        public ICell SetBlank()
+        public override ICell SetBlank()
         {
             return SetCellType(CellType.Blank);
         }
@@ -1048,7 +1042,7 @@ namespace NPOI.XSSF.UserModel
         /// Set the cells type (numeric, formula or string)
         /// </summary>
         /// <param name="cellType"></param>
-        public ICell SetCellType(CellType cellType)
+        protected override ICell SetCellTypeImpl(CellType cellType)
         {
             return SetCellType(cellType, null);
         }
@@ -1062,11 +1056,6 @@ namespace NPOI.XSSF.UserModel
         public ICell SetCellType(CellType cellType, BaseXSSFEvaluationWorkbook evalWb)
         {
             CellType prevType = CellType;
-
-            if (IsPartOfArrayFormulaGroup)
-            {
-                NotifyArrayFormulaChanging();
-            }
             if (prevType == CellType.Formula && cellType != CellType.Formula)
             {
                 if(_cell.IsSetF())
@@ -1220,7 +1209,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         ///  Returns cell comment associated with this cell
         /// </summary>
-        public IComment CellComment
+        public override IComment CellComment
         {
             get
             {
@@ -1240,7 +1229,7 @@ namespace NPOI.XSSF.UserModel
         /// <summary>
         /// Removes the comment for this cell, if there is one.
         /// </summary>
-        public void RemoveCellComment() {
+        public override void RemoveCellComment() {
             IComment comment = this.CellComment;
             if (comment != null)
             {
@@ -1255,7 +1244,7 @@ namespace NPOI.XSSF.UserModel
         /// Get or set hyperlink associated with this cell
         /// If the supplied hyperlink is null on setting, the hyperlink for this cell will be removed.
         /// </summary>
-        public IHyperlink Hyperlink
+        public override IHyperlink Hyperlink
         {
             get
             {
@@ -1281,7 +1270,7 @@ namespace NPOI.XSSF.UserModel
         /**
          * Removes the hyperlink for this cell, if there is one.
          */
-        public void RemoveHyperlink()
+        public override void RemoveHyperlink()
         {
             ((XSSFSheet)Sheet).RemoveHyperlink(_row.RowNum, _cellNum);
         }
@@ -1384,7 +1373,7 @@ namespace NPOI.XSSF.UserModel
             throw new InvalidOperationException("Unexpected formula result type (" + cellType + ")");
         }
 
-        public CellRangeAddress ArrayFormulaRange
+        public override CellRangeAddress ArrayFormulaRange
         {
             get
             {
@@ -1399,7 +1388,7 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        public bool IsPartOfArrayFormulaGroup
+        public override bool IsPartOfArrayFormulaGroup
         {
             get
             {
@@ -1407,42 +1396,11 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        /**
-         * The purpose of this method is to validate the cell state prior to modification
-         *
-         * @see #NotifyArrayFormulaChanging()
-         */
-        internal void NotifyArrayFormulaChanging(String msg)
-        {
-            if (IsPartOfArrayFormulaGroup)
-            {
-                CellRangeAddress cra = this.ArrayFormulaRange;
-                if (cra.NumberOfCells > 1)
-                {
-                    throw new InvalidOperationException(msg);
-                }
-                //un-register the Single-cell array formula from the parent XSSFSheet
-                Row.Sheet.RemoveArrayFormula(this);
-            }
-        }
-
-        /// <summary>
-        /// Called when this cell is modified.The purpose of this method is to validate the cell state prior to modification.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">if modification is not allowed</exception>
-        internal void NotifyArrayFormulaChanging()
-        {
-            CellReference ref1 = new CellReference(this);
-            String msg = "Cell " + ref1.FormatAsString() + " is part of a multi-cell array formula. " +
-                    "You cannot change part of an array.";
-            NotifyArrayFormulaChanging(msg);
-        }
-
         //Moved from XSSFRow.shift(). Not sure what is purpose. 
         public void UpdateCellReferencesForShifting(String msg)
         {
             if(IsPartOfArrayFormulaGroup)
-                NotifyArrayFormulaChanging(msg);
+                TryToDeleteArrayFormula(msg);
             XSSFSheet sheet = Sheet as XSSFSheet;
             CalculationChain calcChain = (sheet.Workbook as XSSFWorkbook).GetCalculationChain();
             int sheetId = (int)sheet.sheet.sheetId;
@@ -1459,7 +1417,7 @@ namespace NPOI.XSSF.UserModel
         #region ICell Members
 
 
-        public bool IsMergedCell
+        public override bool IsMergedCell
         {
             get {
                 return this.Sheet.IsMergedRegion(new CellRangeAddress(this.RowIndex, this.RowIndex, this.ColumnIndex, this.ColumnIndex));
@@ -1470,14 +1428,14 @@ namespace NPOI.XSSF.UserModel
         #endregion
 
 
-        public ICell CopyCellTo(int targetIndex)
+        public override ICell CopyCellTo(int targetIndex)
         {
             return CellUtil.CopyCell(this.Row, this.ColumnIndex, targetIndex);
         }
 
         [Obsolete("Will be removed at NPOI 2.8, Use CachedFormulaResultType instead.")]
         [Removal(Version = "4.2")]
-        public CellType GetCachedFormulaResultTypeEnum()
+        public override CellType GetCachedFormulaResultTypeEnum()
         {
             if(!IsFormulaCell)
             {

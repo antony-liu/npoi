@@ -310,7 +310,7 @@ namespace NPOI.HSSF.UserModel
                 if (xcell.IsPartOfArrayFormulaGroup)
                 {
                     String msg = "Row[rownum=" + row.RowNum + "] contains cell(s) included in a multi-cell array formula. You cannot change part of an array.";
-                    xcell.NotifyArrayFormulaChanging(msg);
+                    xcell.TryToDeleteArrayFormula(msg);
                 }
             }
             if (rows.Count > 0)
@@ -1800,7 +1800,7 @@ namespace NPOI.HSSF.UserModel
                 HSSFCell hcell = (HSSFCell)cell;
                 if (hcell.IsPartOfArrayFormulaGroup)
                 {
-                    hcell.NotifyArrayFormulaChanging(msg);
+                    hcell.TryToDeleteArrayFormula(msg);
                 }
             }
         }

@@ -614,7 +614,7 @@ namespace NPOI.XSSF.UserModel
 
                 if (cell.IsPartOfArrayFormulaGroup)
                 {
-                    cell.NotifyArrayFormulaChanging(msg);
+                    cell.TryToDeleteArrayFormula(msg);
                 }
 
                 //remove the reference in the calculation chain
@@ -624,7 +624,7 @@ namespace NPOI.XSSF.UserModel
                 string r = new CellReference(cell.RowIndex, columnNum)
                     .FormatAsString();
                 ctCell.r = r;
-                cell.ColumnIndex = columnNum;
+                cell.SetColumnIndex(columnNum);
             }
 
             ColumnNum = columnNum;
