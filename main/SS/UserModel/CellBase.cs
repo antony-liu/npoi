@@ -134,23 +134,23 @@ namespace NPOI.SS.UserModel
         /// </summary>
         public ICell SetCellFormula(string formula)
         {
+            // todo validate formula here, before changing the cell?
+            TryToDeleteArrayFormulaIfSet();
+
             if(formula == null)
             {
                 RemoveFormula();
                 return this;
             }
 
-            CellType previousValueType = CellType == CellType.Formula ? CachedFormulaResultType : CellType;
-
-            TryToDeleteArrayFormulaIfSet();
-
-            var c = SetCellFormulaImpl(formula);
-
-            if(previousValueType == CellType.Blank)
+            // formula cells always have a value. If the cell is blank (either initially or after removing an
+            // array formula), set value to 0
+            if(GetValueType() == CellType.Blank)
             {
                 SetCellValue(0);
             }
-            return c;
+
+            return SetCellFormulaImpl(formula);
         }
 
         /// <summary>
@@ -160,6 +160,23 @@ namespace NPOI.SS.UserModel
         /// <param name="formula"></param>
         protected abstract ICell SetCellFormulaImpl(string formula);
 
+        /**
+         * Get value type of this cell. Can return BLANK, NUMERIC, STRING, BOOLEAN or ERROR.
+         * For current implementations where type is strongly coupled with formula, is equivalent to
+         * <code>getCellType() == CellType.FORMULA ? getCachedFormulaResultType() : getCellType()</code>
+         *
+         * <p>This is meant as a temporary helper method until the time when value type is decoupled from the formula.</p>
+         * @return value type
+         */
+        protected CellType GetValueType()
+        {
+            CellType type = CellType;
+            if(type != CellType.Formula)
+            {
+                return type;
+            }
+            return CachedFormulaResultType;
+        }
         /// <summary>
         /// {@inheritDoc}
         /// </summary>

@@ -15,13 +15,18 @@
    limitations under the License.
 ==================================================================== */
 using NPOI.SS.UserModel;
+using System;
 
 namespace NPOI.XSSF.Streaming.Values
 {
     public class NumericFormulaValue : FormulaValue
     {
-        public double PreEvaluatedValue;
-
+        public double PreEvaluatedValue { get; set; }
+        public NumericFormulaValue(String formula, double _preEvaluatedValue)
+            :base(formula)
+        {
+            this.PreEvaluatedValue = _preEvaluatedValue;
+        }
         public override CellType GetFormulaType()
         {
             return CellType.Numeric;

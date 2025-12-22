@@ -21,6 +21,15 @@ namespace NPOI.XSSF.Streaming.Values
     public class ErrorValue : Value
     {
         public byte Value;
+        public ErrorValue()
+        {
+            Value = FormulaError._NO_ERROR.Code;
+        }
+
+        public ErrorValue(byte _value)
+        {
+            this.Value = _value;
+        }
         public CellType GetType()
         {
             return CellType.Error;

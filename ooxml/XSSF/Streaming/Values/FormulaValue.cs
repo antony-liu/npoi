@@ -15,17 +15,21 @@
    limitations under the License.
 ==================================================================== */
 using NPOI.SS.UserModel;
+using System;
 
 namespace NPOI.XSSF.Streaming.Values
 {
     public abstract class FormulaValue : Value
     {
-        public string Value;
+        public string Value { get; set; }
         public CellType GetType()
         {
             return CellType.Formula;
         }
-
+        public FormulaValue(String _value)
+        {
+            this.Value = _value;
+        }
         public abstract CellType GetFormulaType();
     }
 }

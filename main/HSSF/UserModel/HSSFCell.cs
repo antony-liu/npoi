@@ -747,6 +747,7 @@ namespace NPOI.HSSF.UserModel
             int col = _record.Column;
             short styleIndex = _record.XFIndex;
 
+            CellValue savedValue = ReadValue();
             int sheetIndex = book.GetSheetIndex(_sheet);
             Ptg[] ptgs = HSSFFormulaParser.Parse(formula, book, FormulaType.Cell, sheetIndex);
 
@@ -762,9 +763,48 @@ namespace NPOI.HSSF.UserModel
                 agg.XFIndex = ((short)0x0f);
             }
             agg.SetParsedExpression(ptgs);
+            RestoreValue(savedValue);
             return this;
         }
 
+        private CellValue ReadValue()
+        {
+            CellType valueType = CellType == CellType.Formula ? CachedFormulaResultType : CellType;
+            switch(valueType)
+            {
+                case CellType.Numeric:
+                    return new CellValue(NumericCellValue);
+                case CellType.String:
+                    return new CellValue(StringCellValue);
+                case CellType.Boolean:
+                    return CellValue.ValueOf(BooleanCellValue);
+                case CellType.Error:
+                    return CellValue.GetError(ErrorCellValue);
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        private void RestoreValue(CellValue value)
+        {
+            switch(value.CellType)
+            {
+                case CellType.Numeric:
+                    SetCellValue(value.NumberValue);
+                    break;
+                case CellType.String:
+                    SetCellValue(value.StringValue);
+                    break;
+                case CellType.Boolean:
+                    SetCellValue(value.BooleanValue);
+                    break;
+                case CellType.Error:
+                    SetCellErrorValue(FormulaError.ForInt(value.ErrorValue));
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
         /// <summary>
         /// Get the value of the cell as a number.  For strings we throw an exception.
         /// For blank cells we return a 0.

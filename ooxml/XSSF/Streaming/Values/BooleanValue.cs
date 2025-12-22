@@ -15,12 +15,22 @@
    limitations under the License.
 ==================================================================== */
 using NPOI.SS.UserModel;
+using System;
 
 namespace NPOI.XSSF.Streaming.Values
 {
     public class BooleanValue : Value
     {
         public bool Value { get; set; }
+        public BooleanValue()
+        {
+            Value = false;
+        }
+
+        public BooleanValue(bool _value)
+        {
+            this.Value = _value;
+        }
         public CellType GetType()
         {
             return CellType.Boolean;

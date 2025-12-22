@@ -20,10 +20,19 @@ namespace NPOI.XSSF.Streaming.Values
 {
     public class NumericValue : Value
     {
-        public double Value;
+        public double Value { get; set; }
         public CellType GetType()
         {
             return CellType.Numeric;
+        }
+        public NumericValue()
+        {
+            Value = 0;
+        }
+
+        public NumericValue(double _value)
+        {
+            this.Value = _value;
         }
     }
 }

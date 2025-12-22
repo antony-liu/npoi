@@ -161,13 +161,13 @@ namespace TestCases.XSSF.Streaming
 
         [Test]
         [Ignore("Stub")]
-        public override void SetCellType_BLANK_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
+        public override void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
         {
 
         }
         [Test]
         [Ignore("Stub")]
-        public override void SetCellType_BLANK_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public override void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
 
         }
@@ -182,6 +182,18 @@ namespace TestCases.XSSF.Streaming
         public override void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
         {
 
+        }
+
+        [Test]
+        [Ignore("Stub")]
+        public override void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
+        {
+        }
+
+        [Test]
+        [Ignore("Stub")]
+        public void SetCellFormula_isExceptionSafe_onBlankCell()
+        {
         }
     }
 }

@@ -15,13 +15,18 @@
    limitations under the License.
 ==================================================================== */
 using NPOI.SS.UserModel;
+using System;
 
 namespace NPOI.XSSF.Streaming.Values
 {
     public class BooleanFormulaValue : FormulaValue
     {
         public bool PreEvaluatedValue { get; set; }
-
+        public BooleanFormulaValue(String formula, bool value)
+            : base(formula)
+        {
+            PreEvaluatedValue = value;
+        }
         public override CellType GetFormulaType()
         {
             return CellType.Boolean;

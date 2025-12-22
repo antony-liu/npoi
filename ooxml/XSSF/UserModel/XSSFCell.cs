@@ -622,6 +622,8 @@ namespace NPOI.XSSF.UserModel
          */
         protected override ICell SetCellFormulaImpl(String formula)
         {
+            if(formula == null)
+                throw new ArgumentNullException("Argument formula can not be null");
             return SetFormula(formula, FormulaType.Cell);
         }
 
@@ -694,7 +696,6 @@ namespace NPOI.XSSF.UserModel
                 _cell.f = f;
             }
 
-            if (_cell.IsSetV()) _cell.unsetV();
             return this;
         }
 

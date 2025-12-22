@@ -39,6 +39,7 @@ namespace NPOI.XSSF.Streaming
         public SXSSFCell(SXSSFRow row, CellType cellType)
         {
             _row = row;
+            _value = new BlankValue();
             SetType(cellType);
         }
 
@@ -126,14 +127,7 @@ namespace NPOI.XSSF.Streaming
 
             set
             {
-                if (value == null)
-                {
-                    SetType(CellType.Blank);
-                    return;
-                }
-
-                EnsureFormulaType(ComputeTypeFromFormula(value));
-                ((FormulaValue)_value).Value = value;
+                SetCellFormula(value);
             }
         }
         protected override void RemoveFormulaImpl()
@@ -468,16 +462,11 @@ namespace NPOI.XSSF.Streaming
             // for formulas, we want to keep the type and only have an ERROR as formula value
             if(_value.GetType()==CellType.Formula)
             {
-                // ensure that the type is "ERROR"
-                SetFormulaType(CellType.Error);
-
-                // populate the value
-                ((ErrorFormulaValue) _value).PreEvaluatedValue = value;
+                _value = new ErrorFormulaValue(CellFormula, value);
             }
             else
             {
-                EnsureTypeOrFormulaType(CellType.Error);
-                ((ErrorValue) _value).Value = value;
+                _value = new ErrorValue(value);
             }
 
             return this;
@@ -485,14 +474,44 @@ namespace NPOI.XSSF.Streaming
 
         protected override ICell SetCellFormulaImpl(string formula)
         {
-            if (formula == null)
-            {
-                SetType(CellType.Blank);
-                return this;
-            }
+            if(formula == null)
+                throw new ArgumentNullException("Argument formula can not be null");
 
-            EnsureFormulaType(ComputeTypeFromFormula(formula));
-            ((FormulaValue)_value).Value = formula;
+            if(CellType == CellType.Formula)
+            {
+                ((FormulaValue) _value).Value = formula;
+            }
+            else
+            {
+                switch(CellType)
+                {
+                    case CellType.Numeric:
+                        _value = new NumericFormulaValue(formula, NumericCellValue);
+                        break;
+                    case CellType.String:
+                        if(_value is PlainStringValue) {
+                            _value = new StringFormulaValue(formula, StringCellValue);
+                        } else
+                        {
+                            if(!(_value is RichTextValue))
+                                throw new AssertFailedException("Must be type RichTextValue");
+                            _value = new RichTextStringFormulaValue(formula, ((RichTextValue) _value).Value);
+                        }
+                        break;
+                    case CellType.Boolean:
+                        _value = new BooleanFormulaValue(formula, BooleanCellValue);
+                        break;
+                    case CellType.Error:
+                        _value = new ErrorFormulaValue(formula, ErrorCellValue);
+                        break;
+                    case CellType._None:
+                    // fall-through
+                    case CellType.Formula:
+                    // fall-through
+                    case CellType.Blank:
+                        throw new AssertFailedException("Not support");
+                }
+            }
             return this;
         }
 
@@ -719,8 +738,7 @@ namespace NPOI.XSSF.Streaming
             if(_value.GetType() == CellType.Formula)
             {
                 String formula = ((FormulaValue)_value).Value;
-                _value = new RichTextStringFormulaValue();
-                ((RichTextStringFormulaValue) _value).Value = formula;
+                _value = new RichTextStringFormulaValue(formula, new XSSFRichTextString(""));
             }
             else if(_value.GetType()!=CellType.String ||
                     !((StringValue) _value).IsRichText())
@@ -735,12 +753,6 @@ namespace NPOI.XSSF.Streaming
                 SetType(type);
         }
 
-        private void EnsureFormulaType(CellType type)
-        {
-            if (_value.GetType() != CellType.Formula
-               || ((FormulaValue)_value).GetFormulaType() != type)
-                SetFormulaType(type);
-        }
         /*
          * Sets the cell type to type if it is different
          */
@@ -757,7 +769,23 @@ namespace NPOI.XSSF.Streaming
             {
                 if (((FormulaValue)_value).GetFormulaType() == type)
                     return;
-                SetFormulaType(type); // once a formula, always a formula
+                switch(type)
+                {
+                    case CellType.Boolean:
+                        _value = new BooleanFormulaValue(CellFormula, false);
+                        break;
+                    case CellType.Numeric:
+                        _value = new NumericFormulaValue(CellFormula, 0);
+                        break;
+                    case CellType.String:
+                        _value = new StringFormulaValue(CellFormula, "");
+                        break;
+                    case CellType.Error:
+                        _value = new ErrorFormulaValue(CellFormula, FormulaError._NO_ERROR.Code);
+                        break;
+                    default:
+                        throw new AssertFailedException("Unknown celltype");
+                }
                 return;
             }
             SetType(type);
@@ -787,7 +815,10 @@ namespace NPOI.XSSF.Streaming
                     }
                 case CellType.Formula:
                     {
-                        _value = new NumericFormulaValue();
+                        if(CellType == CellType.Blank)
+                        {
+                            _value = new NumericFormulaValue("", 0);
+                        }
                         break;
                     }
                 case CellType.Blank:
@@ -816,44 +847,6 @@ namespace NPOI.XSSF.Streaming
                     {
                         throw new ArgumentException("Illegal type " + type);
                     }
-            }
-        }
-
-        private void SetFormulaType(CellType type)
-        {
-            Value prevValue = _value;
-            switch (type)
-            {
-                case CellType.Numeric:
-                    {
-                        _value = new NumericFormulaValue();
-                        break;
-                    }
-                case CellType.String:
-                    {
-                        _value = new StringFormulaValue();
-                        break;
-                    }
-                case CellType.Boolean:
-                    {
-                        _value = new BooleanFormulaValue();
-                        break;
-                    }
-                case CellType.Error:
-                    {
-                        _value = new ErrorFormulaValue();
-                        break;
-                    }
-                default:
-                    {
-                        throw new ArgumentException("Illegal type " + type);
-                    }
-            }
-
-            // if we had a Formula before, we should copy over the _value of the formula
-            if (prevValue is FormulaValue value)
-            {
-                ((FormulaValue)_value).Value = value.Value;
             }
         }
 

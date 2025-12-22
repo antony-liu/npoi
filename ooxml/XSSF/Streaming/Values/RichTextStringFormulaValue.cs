@@ -14,6 +14,13 @@ namespace NPOI.XSSF.Streaming.Values
         {
             return CellType.String;
         }
+
+        public RichTextStringFormulaValue(String formula, IRichTextString value)
+            : base(formula)
+        {
+            _preEvaluatedValue = value;
+        }
+
         public void SetPreEvaluatedValue(IRichTextString value)
         {
             _preEvaluatedValue=value;

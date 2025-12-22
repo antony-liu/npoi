@@ -62,7 +62,7 @@ namespace NPOI.SS.UserModel
         }
         private static readonly FormulaError[] _values;
 
-        internal static readonly FormulaError _NO_ERROR = new FormulaError(-1, "(no error)", "_NO_ERROR");
+        public static readonly FormulaError _NO_ERROR = new FormulaError(-1, "(no error)", "_NO_ERROR");
         /**
          * Intended to indicate when two areas are required to intersect, but do not.
          * <p>Example:
