@@ -681,15 +681,7 @@ namespace NPOI.SS.Formula
                                     // this is an if statement without a false param (as opposed to MissingArgPtg as the false param)
                                     //i++;
                                     stack.Push(arg0);
-                                    if(currPtg is AreaPtg)
-                                    {
-                                        // IF in array mode. See Bug 62904
-                                        ValueEval currEval = GetEvalForPtg(currPtg, ec);
-                                        stack.Push(currEval);
-                                    } else
-                                    {
-                                        stack.Push(BoolEval.FALSE);
-                                    }
+                                    stack.Push(BoolEval.FALSE);
                                 }
                            }
                         }
@@ -1022,7 +1014,7 @@ namespace NPOI.SS.Formula
                 return EvaluateNameFormula(nameRecord.NameDefinition, ec);
             }
 
-            throw new Exception("Don't now how to evaluate name '" + nameRecord.NameText + "'");
+            throw new RuntimeException("Don't know how to evaluate name '" + nameRecord.NameText + "'");
         }
         
         internal ValueEval EvaluateNameFormula(Ptg[] ptgs, OperationEvaluationContext ec)

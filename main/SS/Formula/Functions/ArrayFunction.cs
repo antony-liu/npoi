@@ -53,7 +53,7 @@ namespace NPOI.SS.Formula.Functions
         ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
                                            Func<ValueEval, ValueEval, ValueEval> evalFunc);
 
-        ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+        ValueEval EvaluateOneArrayArg(ValueEval arg0, int srcRowIndex, int srcColumnIndex,
                                           Func<ValueEval, ValueEval> evalFunc);
     }
 

@@ -60,7 +60,11 @@ namespace NPOI.SS.Formula.Eval
 
         public ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
         {
-            return EvaluateOneArrayArg(args, srcRowIndex, srcColumnIndex, (valA)=>
+            if(args.Length != 1)
+            {
+                return ErrorEval.VALUE_INVALID;
+            }
+            return EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, (valA)=>
                     Evaluate(srcRowIndex, srcColumnIndex, valA)
             );
         }
@@ -70,10 +74,10 @@ namespace NPOI.SS.Formula.Eval
         {
             return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
         }
-        public ValueEval EvaluateOneArrayArg(ValueEval[] args, int srcRowIndex, int srcColumnIndex,
+        public ValueEval EvaluateOneArrayArg(ValueEval arg0, int srcRowIndex, int srcColumnIndex,
                                           Func<ValueEval, ValueEval> evalFunc)
         {
-            return new ArrayFunction().EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, evalFunc);
+            return new ArrayFunction().EvaluateOneArrayArg(arg0, srcRowIndex, srcColumnIndex, evalFunc);
         }
     }
 }

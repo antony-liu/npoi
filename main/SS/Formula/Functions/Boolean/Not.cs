@@ -21,6 +21,7 @@
 namespace NPOI.SS.Formula.Functions
 {
     using NPOI.SS.Formula.Eval;
+    using System;
 
 
     /*
@@ -29,7 +30,7 @@ namespace NPOI.SS.Formula.Functions
      * (treated as a bool). If the specified arg Is a number,
      * then it Is true <=> 'number Is non-zero'
      */
-    public class Not : Fixed1ArgFunction
+    public class Not : Boolean1ArgFunction
     {
         public override ValueEval Evaluate(int srcRowIndex, int srcColumnIndex, ValueEval arg0)
         {
@@ -38,14 +39,37 @@ namespace NPOI.SS.Formula.Functions
             {
                 ValueEval ve = OperandResolver.GetSingleValue(arg0, srcRowIndex, srcColumnIndex);
                 bool? b = OperandResolver.CoerceValueToBoolean(ve, false);
-                boolArgVal = b == null ? false : (bool)b;
+                boolArgVal = b??false;
             }
-            catch (EvaluationException e)
+            catch(EvaluationException e)
             {
                 return e.GetErrorEval();
             }
 
             return BoolEval.ValueOf(!boolArgVal);
+        }
+    }
+
+    public abstract class Boolean1ArgFunction : Fixed1ArgFunction, IArrayFunction
+    {
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                       Func<ValueEval, ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateOneArrayArg(ValueEval arg0, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
+        {
+            return new ArrayFunction().EvaluateOneArrayArg(arg0, srcRowIndex, srcColumnIndex, evalFunc);
+        }
+        public ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
+        {
+            if(args.Length != 1)
+            {
+                return ErrorEval.VALUE_INVALID;
+            }
+            return EvaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex,
+                    (vA) => Evaluate(srcRowIndex, srcColumnIndex, vA));
         }
     }
 }

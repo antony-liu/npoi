@@ -33,7 +33,7 @@ namespace NPOI.SS.Formula.Functions
      *
      * @author Amol S. Deshmukh &lt; amolweb at ya hoo dot com &gt;
      */
-    public abstract class BooleanFunction : Function
+    public abstract class BooleanFunction : Function, IArrayFunction
     {
         protected abstract bool InitialResultValue { get; }
         protected abstract bool PartialEvaluate(bool cumulativeResult, bool currentValue);
@@ -129,72 +129,21 @@ namespace NPOI.SS.Formula.Functions
             }
             return BoolEval.ValueOf(boolResult);
         }
-        
-        public static Function FALSE = new FALSEFunction();
 
-        public static Function TRUE = new TRUEFunction();
-
-        public static Function NOT = new NOTFunction();
-
-        public ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex) 
+        public ValueEval EvaluateArray(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
         {
             return Evaluate(args, srcRowIndex, srcColumnIndex);
         }
-        public class FALSEFunction : Function
+
+        public ValueEval EvaluateTwoArrayArgs(ValueEval arg0, ValueEval arg1, int srcRowIndex, int srcColumnIndex,
+                                           Func<ValueEval, ValueEval, ValueEval> evalFunc)
         {
-            public ValueEval Evaluate(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-            {
-                return EvaluateFalse(args, srcRowIndex, srcColumnIndex);
-            }
+            return new ArrayFunction().EvaluateTwoArrayArgs(arg0, arg1, srcRowIndex, srcColumnIndex, evalFunc);
         }
-
-        public class TRUEFunction : Function
+        public ValueEval EvaluateOneArrayArg(ValueEval arg0, int srcRowIndex, int srcColumnIndex,
+                                          Func<ValueEval, ValueEval> evalFunc)
         {
-            public ValueEval Evaluate(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-            {
-                return EvaluateTrue(args, srcRowIndex, srcColumnIndex);
-            }
-        }
-
-        public class NOTFunction : Function
-        {
-            public ValueEval Evaluate(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-            {
-                return EvaluateNot(args, srcRowIndex, srcColumnIndex);
-            }
-        }
-
-
-        private static ValueEval EvaluateFalse(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-        {
-            return args.Length != 0 ? ErrorEval.VALUE_INVALID : BoolEval.FALSE;
-        }
-
-        private static ValueEval EvaluateTrue(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-        {
-            return args.Length != 0 ? ErrorEval.VALUE_INVALID : BoolEval.TRUE;
-        }
-
-        private static ValueEval EvaluateNot(ValueEval[] args, int srcRowIndex, int srcColumnIndex)
-        {
-            if (args.Length != 1)
-            {
-                return ErrorEval.VALUE_INVALID;
-            }
-            
-            Func<ValueEval, ValueEval> notInner = (va) => {
-                try
-                {
-                    ValueEval ve = OperandResolver.GetSingleValue(va, srcRowIndex, srcColumnIndex);
-                    bool? b = OperandResolver.CoerceValueToBoolean(ve, false);
-                    bool boolArgVal = b.HasValue && b.Value;
-                    return BoolEval.ValueOf(!boolArgVal);
-                } catch (EvaluationException e) {
-                    return e.GetErrorEval();
-                }
-            };
-
-            return ArrayFunction._evaluateOneArrayArg(args[0], srcRowIndex, srcColumnIndex, notInner);
+            return new ArrayFunction().EvaluateOneArrayArg(arg0, srcRowIndex, srcColumnIndex, evalFunc);
         }
     }
 }
