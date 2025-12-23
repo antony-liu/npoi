@@ -233,8 +233,8 @@ namespace NPOI.HSSF.UserModel
         {
             foreach (String wbName in InternalWorkbook.WORKBOOK_DIR_ENTRY_NAMES)
             {
-                directory.HasEntry(wbName);
-                return wbName;
+                if(directory.HasEntry(wbName))
+                    return wbName;
             }
             // check for an encrypted .xlsx file - they get OLE2 wrapped
             if(directory.HasEntry(Decryptor.DEFAULT_POIFS_ENTRY))
