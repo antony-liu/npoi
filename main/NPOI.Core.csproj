@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\functionMetadataCetab.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Resources\font_metrics.properties" />
     <EmbeddedResource Include="Resources\functionMetadata.txt" />
+    <EmbeddedResource Include="Resources\functionMetadataCetab.txt" />
   </ItemGroup>
 
   <ItemGroup>

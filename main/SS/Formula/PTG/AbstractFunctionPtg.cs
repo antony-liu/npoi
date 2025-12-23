@@ -151,16 +151,30 @@ namespace NPOI.SS.Formula.PTG
             short ix = FunctionMetadataRegistry.LookupIndexByName(name.ToUpper());
             return ix >= 0;
         }
-        protected String LookupName(short index)
+
+        protected virtual String LookupName(short index)
+        {
+            return LookupName(index, false);
+        }
+
+        protected String LookupName(short index, bool isCetab)
         {
             if (index == FunctionMetadataRegistry.FUNCTION_INDEX_EXTERNAL)
             {
                 return "#external#";
             }
-            FunctionMetadata fm = FunctionMetadataRegistry.GetFunctionByIndex(index);
+            FunctionMetadata fm;
+            if(isCetab)
+            {
+                fm = FunctionMetadataRegistry.GetCetabFunctionByIndex(index);
+            }
+            else
+            {
+                fm = FunctionMetadataRegistry.GetFunctionByIndex(index);
+            }
             if (fm == null)
             {
-                throw new Exception("bad function index (" + index + ")");
+                throw new RuntimeException("bad function index (" + index + ", " + isCetab + ")");
             }
             return fm.Name;
         }

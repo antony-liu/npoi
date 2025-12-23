@@ -25,6 +25,7 @@ namespace NPOI.SS.Formula.Function
     using NPOI.SS.Formula.PTG;
     using System.Globalization;
     using System.Text;
+    using NPOI.Util;
 
     /**
      * Converts the text meta-data file into a <c>FunctionMetadataRegistry</c>
@@ -34,6 +35,7 @@ namespace NPOI.SS.Formula.Function
     class FunctionMetadataReader
     {
         private const String METADATA_FILE_NAME = "NPOI.Resources.functionMetadata.txt";
+        private const String METADATA_FILE_NAME_CETAB = "NPOI.Resources.functionMetadataCetab.txt";
 
         /** plain ASCII text metadata file uses three dots for ellipsis */
         private const string ELLIPSIS = "...";
@@ -43,19 +45,30 @@ namespace NPOI.SS.Formula.Function
         private static readonly byte[] EMPTY_BYTE_ARRAY = [];
 
         private static readonly string[] DIGIT_ENDING_FUNCTION_NAMES = {
-		// Digits at the end of a function might be due to a left-over footnote marker.
-		// except in these cases
-		"LOG10", "ATAN2", "DAYS360", "SUMXMY2", "SUMX2MY2", "SUMX2PY2",
-	};
+		    // Digits at the end of a function might be due to a left-over footnote marker.
+		    // except in these cases
+		    "LOG10", "ATAN2", "DAYS360", "SUMXMY2", "SUMX2MY2", "SUMX2PY2", "A1.R1C1",
+        };
 		private static List<string> DIGIT_ENDING_FUNCTION_NAMES_Set = new List<string> (DIGIT_ENDING_FUNCTION_NAMES);
 
         public static FunctionMetadataRegistry CreateRegistry()
         {
-            using (StreamReader br = new StreamReader (typeof (FunctionMetadataReader).Assembly.GetManifestResourceStream (METADATA_FILE_NAME)))
+            FunctionDataBuilder fdb = new FunctionDataBuilder(800);
+            ReadResourceFile(fdb, METADATA_FILE_NAME);
+            return fdb.Build();
+        }
+
+        public static FunctionMetadataRegistry CreateRegistryCetab()
+        {
+            FunctionDataBuilder fdb = new FunctionDataBuilder(800);
+            ReadResourceFile(fdb, METADATA_FILE_NAME_CETAB);
+            return fdb.Build();
+        }
+
+        public static void ReadResourceFile(FunctionDataBuilder fdb, String resourceFile)
+        {
+            using (StreamReader br = new StreamReader (typeof (FunctionMetadataReader).Assembly.GetManifestResourceStream (resourceFile)))
             {
-
-                FunctionDataBuilder fdb = new FunctionDataBuilder(400);
-
                 while (true)
                 {
                     String line = br.ReadLine();
@@ -74,19 +87,17 @@ namespace NPOI.SS.Formula.Function
                     }
                     ProcessLine(fdb, line);
                 }
-
-                return fdb.Build();
             }
         }
 
         private static void ProcessLine(FunctionDataBuilder fdb, String line)
         {
-
             Regex regex = new Regex(TAB_DELIM_PATTERN);
             String[] parts = regex.Split(line);
             if (parts.Length != 8)
             {
-                throw new Exception("Bad line format '" + line + "' - expected 8 data fields");
+                throw new RuntimeException("Bad line format '" + line + "' - expected 8 data fields delimited by tab, " +
+                    "but had " + parts.Length + ": " + Arrays.ToString(parts));
             }
             int functionIndex = ParseInt(parts[0]);
             String functionName = parts[1];

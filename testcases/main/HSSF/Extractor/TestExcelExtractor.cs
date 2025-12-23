@@ -15,19 +15,19 @@
    limitations under the License.
 ==================================================================== */
 
+using NUnit.Framework;
+
 namespace TestCases.HSSF.Extractor
 {
-    using System;
-    using System.IO;
-
+    using NPOI.HSSF.Extractor;
+using NPOI.HSSF.Record.Crypto;
     using NPOI.HSSF.UserModel;
     using NPOI.POIFS.FileSystem;
-    using NPOI.HSSF.Extractor;
+    using NUnit.Framework;
+using NUnit.Framework.Legacy;
+    using System;
+    using System.IO;
     using TestCases.HSSF;
-
-
-    using NUnit.Framework;using NUnit.Framework.Legacy;
-using NPOI.HSSF.Record.Crypto;
 
     [TestFixture]
     public class TestExcelExtractor
@@ -387,5 +387,28 @@ using NPOI.HSSF.Record.Crypto;
             String txt = extractor.Text;
             POITestCase.AssertContains(txt, "NONBUSINESS");
         }
+
+        [Test]
+        public void Test60405a()
+        {
+            //bug 61045. File is govdocs1 626534
+            ExcelExtractor extractor = CreateExtractor("60405.xls");
+            String txt = extractor.Text;
+            POITestCase.AssertContains(txt, "Macro1");
+            POITestCase.AssertContains(txt, "Macro2");
+        }
+
+
+        [Test]
+        public void Test60405b()
+        {
+            //bug 61045. File is govdocs1 626534
+            ExcelExtractor extractor = CreateExtractor("60405.xls");
+            extractor.FormulasNotResults = true;
+            String txt = extractor.Text;
+            POITestCase.AssertContains(txt, "Macro1");
+            POITestCase.AssertContains(txt, "Macro2");
+        }
+
     }
 }

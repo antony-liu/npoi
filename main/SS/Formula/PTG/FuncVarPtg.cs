@@ -31,23 +31,26 @@ namespace NPOI.SS.Formula.PTG
         public const byte sid = 0x22;
         private const int SIZE = 4;
 
+        // See spec at 2.5.198.63 PtgFuncVar
+        private static BitField ceFunc = BitFieldFactory.GetInstance(0xF000);
         /**
- * Single instance of this token for 'sum() taking a single argument'
- */
+         * Single instance of this token for 'sum() taking a single argument'
+         */
         public static readonly OperationPtg SUM = FuncVarPtg.Create("SUM", 1);
 
-        private FuncVarPtg(int functionIndex, int returnClass, byte[] paramClasses, int numArgs)
+        private bool _isCetab;
+        private FuncVarPtg(int functionIndex, int returnClass, byte[] paramClasses, int numArgs, bool isCetab)
             : base(functionIndex, returnClass, paramClasses, numArgs)
         {
-
+            _isCetab = isCetab;
         }
 
         /**Creates new function pointer from a byte array
- * usually called while reading an excel file.
- */
+         * usually called while reading an excel file.
+         */
         public static FuncVarPtg Create(ILittleEndianInput in1)
         {
-            return Create(in1.ReadByte(), in1.ReadShort());
+            return Create(in1.ReadByte(), in1.ReadUShort());
         }
 
         /**
@@ -60,16 +63,29 @@ namespace NPOI.SS.Formula.PTG
 
         private static FuncVarPtg Create(int numArgs, int functionIndex)
         {
-            FunctionMetadata fm = FunctionMetadataRegistry.GetFunctionByIndex(functionIndex);
+            FunctionMetadata fm;
+            bool isCetab = ceFunc.IsSet(functionIndex);
+            if(isCetab)
+            {
+                functionIndex = ceFunc.Clear(functionIndex);
+                fm = FunctionMetadataRegistry.GetCetabFunctionByIndex(functionIndex);
+            }
+            else
+            {
+                fm = FunctionMetadataRegistry.GetFunctionByIndex(functionIndex);
+            }
             if (fm == null)
             {
                 // Happens only as a result of a call to FormulaParser.parse(), with a non-built-in function name
-                return new FuncVarPtg(functionIndex, Ptg.CLASS_VALUE, new byte[] { Ptg.CLASS_VALUE }, numArgs);
+                return new FuncVarPtg(functionIndex, Ptg.CLASS_VALUE, new byte[] { Ptg.CLASS_VALUE }, numArgs, isCetab);
             }
-            return new FuncVarPtg(functionIndex, fm.ReturnClassCode, fm.ParameterClassCodes, numArgs);
+            return new FuncVarPtg(functionIndex, fm.ReturnClassCode, fm.ParameterClassCodes, numArgs, isCetab);
         }
 
-
+        protected override String LookupName(short index)
+        {
+            return LookupName(index, _isCetab);
+        }
         public override void Write(ILittleEndianOutput out1)
         {
             out1.WriteByte(sid + PtgClass);

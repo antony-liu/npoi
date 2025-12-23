@@ -39,6 +39,7 @@ namespace NPOI.SS.Formula.Function
 	    public const short FUNCTION_INDEX_INDIRECT = 148;
         public const short FUNCTION_INDEX_EXTERNAL = 255;
         private static FunctionMetadataRegistry _instance;
+        private static FunctionMetadataRegistry _instanceCetab;
 
         private readonly FunctionMetadata[] _functionDataByIndex;
         private readonly Dictionary<string, FunctionMetadata> _functionDataByName;
@@ -50,6 +51,15 @@ namespace NPOI.SS.Formula.Function
                 _instance = FunctionMetadataReader.CreateRegistry();
             }
             return _instance;
+        }
+
+        private static FunctionMetadataRegistry GetInstanceCetab()
+        {
+            if(_instanceCetab == null)
+            {
+                _instanceCetab = FunctionMetadataReader.CreateRegistryCetab();
+            }
+            return _instanceCetab;
         }
 
         /* package */
@@ -71,6 +81,11 @@ namespace NPOI.SS.Formula.Function
             return GetInstance().GetFunctionByIndexInternal(index);
         }
 
+        public static FunctionMetadata GetCetabFunctionByIndex(int index)
+        {
+            return GetInstanceCetab().GetFunctionByIndexInternal(index);
+        }
+
         private FunctionMetadata GetFunctionByIndexInternal(int index)
         {
             return _functionDataByIndex[index];
@@ -86,7 +101,12 @@ namespace NPOI.SS.Formula.Function
             FunctionMetadata fd = GetInstance().GetFunctionByNameInternal(name);
             if (fd == null)
             {
-                return -1;
+                // also try the cetab functions
+                fd = GetInstanceCetab().GetFunctionByNameInternal(name);
+                if(fd == null)
+                {
+                    return -1;
+                }
             }
             return (short)fd.Index;
         }
@@ -100,7 +120,13 @@ namespace NPOI.SS.Formula.Function
 
         public static FunctionMetadata GetFunctionByName(String name)
         {
-            return GetInstance().GetFunctionByNameInternal(name);
+            FunctionMetadata fm = GetInstance().GetFunctionByNameInternal(name);
+            if(fm == null)
+            {
+                return GetInstanceCetab().GetFunctionByNameInternal(name);
+            }
+
+            return fm;
         }
     }
 }
