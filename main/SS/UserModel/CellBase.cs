@@ -24,6 +24,7 @@ using System.Text;
 
 namespace NPOI.SS.UserModel
 {
+    using NPOI.HPSF;
     using NPOI.SS.Formula.Functions;
     using NPOI.SS.Util;
     using NPOI.Util;
@@ -278,13 +279,40 @@ namespace NPOI.SS.UserModel
          * getCellType() or getCachedFormulaResultType() would return {@link CellType#NUMERIC}.
          * @param value the new value to set
          */
-        protected abstract void SetCellValueImpl(double value);
+        protected abstract ICell SetCellValueImpl(double value);
 
-        public abstract ICell SetCellValue(DateTime value);
+        public ICell SetCellValue(DateTime value)
+        {
+            return SetCellValueImpl(value);
+        }
 
-        public abstract ICell SetCellValue(DateTime? value);
+        public ICell SetCellValue(DateTime? value)
+        {
+            if(value == null)
+            {
+                SetBlank();
+                return this;
+            }
+            return SetCellValue(value.Value);
+        }
+
+        protected abstract ICell SetCellValueImpl(DateTime value);
 #if NET6_0_OR_GREATER
-        public abstract ICell SetCellValue(DateOnly value);
+        public ICell SetCellValue(DateOnly? value)
+        {
+            if (value == null)
+            {
+                SetBlank();
+                return this;
+            }
+            
+            return SetCellValue(value.Value);
+        }
+        public ICell SetCellValue(DateOnly value)
+        {
+            return SetCellValueImpl(value);
+        }
+        protected abstract ICell SetCellValueImpl(DateOnly value);
 #endif
         public abstract ICell SetCellValue(IRichTextString value);
 

@@ -578,28 +578,29 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public override ICell SetCellValue(DateTime? value)
-        {
-            if (value == null)
-            {
-                SetBlank();
-                return this;
-            }
-
-            bool date1904 = ((SXSSFWorkbook)Sheet.Workbook).XssfWorkbook.IsDate1904();
-            SetCellValue(DateUtil.GetExcelDate(value.Value, date1904));
-            return this;
-        }
-
-        protected override void SetCellValueImpl(double value)
+        protected override ICell SetCellValueImpl(double value)
         {
             EnsureTypeOrFormulaType(CellType.Numeric);
             if(_value.GetType() == CellType.Formula)
                 ((NumericFormulaValue) _value).PreEvaluatedValue = value;
             else
                 ((NumericValue) _value).Value = value;
+            return this;
         }
 
+        protected override ICell SetCellValueImpl(DateTime value)
+        {
+            bool date1904 = ((SXSSFWorkbook)Sheet.Workbook).XssfWorkbook.IsDate1904();
+            return SetCellValue(DateUtil.GetExcelDate(value, date1904));
+        }
+
+#if NET6_0_OR_GREATER
+        protected override ICell SetCellValueImpl(DateOnly value)
+        {
+            bool date1904 = ((SXSSFWorkbook)Sheet.Workbook).XssfWorkbook.IsDate1904();
+            return SetCellValue(DateUtil.GetExcelDate(value, date1904));
+        }
+#endif
         public override string ToString()
         {
             switch (CellType)
@@ -907,31 +908,5 @@ namespace NPOI.XSSF.Streaming
         }
 
         //END OF COPIED CODE
-
-
-        public override ICell SetCellValue(DateTime value)
-        {
-            return SetCellValue((DateTime?)value);
-        }
-
-#if NET6_0_OR_GREATER
-        public override ICell SetCellValue(DateOnly value)
-        {
-            bool date1904 = ((SXSSFWorkbook)Sheet.Workbook).XssfWorkbook.IsDate1904();
-            return SetCellValue(DateUtil.GetExcelDate(value, date1904));
-        }
-
-        public ICell SetCellValue(DateOnly? value)
-        {
-            if (!value.HasValue)
-            {
-                SetBlank();
-                return this;
-            }
-            
-            SetCellValue(value.Value);
-            return this;
-        }
-#endif
     }
 }

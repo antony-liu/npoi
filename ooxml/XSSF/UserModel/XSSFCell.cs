@@ -344,10 +344,11 @@ namespace NPOI.XSSF.UserModel
          *        precalculated value, for numerics we'll Set its value. For other types we
          *        will change the cell to a numeric cell and Set its value.
          */
-        protected override void SetCellValueImpl(double value)
+        protected override ICell SetCellValueImpl(double value)
         {
             _cell.t = ST_CellType.n;
             _cell.v = value.ToString(CultureInfo.InvariantCulture);
+            return this;
         }
 
         /**
@@ -888,42 +889,22 @@ namespace NPOI.XSSF.UserModel
             }
         }
 #endif
-        public override ICell SetCellValue(DateTime? value)
-        {
-            if (value == null)
-            {
-                SetBlank();
-                return this;
-            }
-            return SetCellValue(value.Value);
-        }
         /// <summary>
         ///  Set a date value for the cell. Excel treats dates as numeric so you will need to format the cell as a date.
         /// </summary>
         /// <param name="value">the date value to Set this cell to.  For formulas we'll set the precalculated value, 
         /// for numerics we'll Set its value. For other types we will change the cell to a numeric cell and Set its value. </param>
-        public override ICell SetCellValue(DateTime value)
+        protected override ICell SetCellValueImpl(DateTime value)
         {
             bool date1904 = Sheet.Workbook.IsDate1904();
             return SetCellValue(DateUtil.GetExcelDate(value, date1904));
         }
 
 #if NET6_0_OR_GREATER
-        public override ICell SetCellValue(DateOnly value)
+        protected override ICell SetCellValueImpl(DateOnly value)
         {
             bool date1904 = Sheet.Workbook.IsDate1904();
             return SetCellValue(DateUtil.GetExcelDate(value, date1904));
-        }
-        
-        public ICell SetCellValue(DateOnly? value)
-        {
-            if (value == null)
-            {
-                SetBlank();
-                return this;
-            }
-            
-            return SetCellValue(value.Value);
         }
 #endif
 

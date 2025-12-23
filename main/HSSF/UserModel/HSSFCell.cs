@@ -460,7 +460,7 @@ namespace NPOI.HSSF.UserModel
         /// <param name="value">the numeric value to Set this cell to.  For formulas we'll Set the
         /// precalculated value, for numerics we'll Set its value. For other types we
         /// will Change the cell to a numeric cell and Set its value.</param>
-        protected override void SetCellValueImpl(double value)
+        protected override ICell SetCellValueImpl(double value)
         {
             switch(cellType)
             {
@@ -475,6 +475,7 @@ namespace NPOI.HSSF.UserModel
                     ((NumberRecord) _record).Value = value;
                     break;
             }
+            return this;
         }
 
         /// <summary>
@@ -484,18 +485,9 @@ namespace NPOI.HSSF.UserModel
         /// <param name="value">the date value to Set this cell to.  For formulas we'll Set the
         /// precalculated value, for numerics we'll Set its value. For other types we
         /// will Change the cell to a numeric cell and Set its value.</param>
-        public override ICell SetCellValue(DateTime value)
+        protected override ICell SetCellValueImpl(DateTime value)
         {
             return SetCellValue(DateUtil.GetExcelDate(value, this.book.IsDate1904()));
-        }
-        public override ICell SetCellValue(DateTime? value)
-        {
-            if(value == null)
-            {
-                SetBlank();
-                return this;
-            }
-            return SetCellValue(value.Value);
         }
 
 #if NET6_0_OR_GREATER
@@ -506,7 +498,7 @@ namespace NPOI.HSSF.UserModel
         /// <param name="value">the date value to Set this cell to.  For formulas we'll Set the
         /// precalculated value, for numerics we'll Set its value. For other types we
         /// will Change the cell to a numeric cell and Set its value.</param>
-        public override ICell SetCellValue(DateOnly value)
+        protected override ICell SetCellValueImpl(DateOnly value)
         {
             return SetCellValue(DateUtil.GetExcelDate(value, this.book.IsDate1904()));
         }
