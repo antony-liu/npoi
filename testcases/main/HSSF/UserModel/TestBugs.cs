@@ -3332,7 +3332,7 @@ using NUnit.Framework.Legacy;
         {
             IWorkbook wb = HSSFTestDataSamples.OpenSampleWorkbook("46515.xls");
             // Get structure from webservice
-            String urlString = "http://poi.apache.org/resources/images/project-logo.jpg";
+            String urlString = "http://poi.apache.org/images/project-header.png";
             Uri structURL = new Uri(urlString);
             Image bimage;
             try
