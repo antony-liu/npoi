@@ -1243,7 +1243,7 @@ namespace TestCases.SS.UserModel
             });
         }
         [Test]
-        public void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
+        public virtual void SetBlank_removesArrayFormula_ifCellIsPartOfAnArrayFormulaGroupContainingOnlyThisCell()
         {
             ICell cell = getInstance();
 
@@ -1258,7 +1258,7 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsFalse(cell.IsPartOfArrayFormulaGroup);
         }
         [Test]
-        public void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public virtual void SetBlank_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
@@ -1271,7 +1271,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
+        public virtual void SetCellFormula_throwsISE_ifCellIsPartOfAnArrayFormulaGroupContainingOtherCells()
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
@@ -1317,7 +1317,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
+        public virtual void RemoveFormula_turnsCellToBlank_whenFormulaWasASingleCellArrayFormula()
         {
             ICell cell = getInstance();
 
@@ -1381,7 +1381,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
+        public virtual void SetCellFormula_onASingleCellArrayFormulaCell_preservesTheValue()
         {
             ICell cell = getInstance();
             cell.Sheet.SetArrayFormula("\"foo\"", CellRangeAddress.ValueOf("A1"));
@@ -1424,7 +1424,7 @@ namespace TestCases.SS.UserModel
         }
 
         [Test]
-        public void SetCellType_FORMULA_onAnArrayFormulaCell_doesNothing()
+        public virtual void SetCellType_FORMULA_onAnArrayFormulaCell_doesNothing()
         {
             ICell cell = getInstance();
             cell.Sheet.SetArrayFormula("3", CellRangeAddress.ValueOf("A1:A2"));

@@ -252,7 +252,33 @@ namespace NPOI.SS.UserModel
             return this;
         }
 
-        public abstract ICell SetCellValue(double value);
+        public ICell SetCellValue(double value)
+        {
+            if(Double.IsInfinity(value))
+            {
+                // Excel does not support positive/negative infinities,
+                // rather, it gives a #DIV/0! error in these cases.
+                SetCellErrorValue(FormulaError.DIV0.Code);
+            }
+            else if(Double.IsNaN(value))
+            {
+                SetCellErrorValue(FormulaError.NUM.Code);
+            }
+            else
+            {
+                SetCellValueImpl(value);
+            }
+            return this;
+        }
+
+        /**
+         * Implementation-specific way to set a numeric value.
+         * <code>value</code> is guaranteed to be a valid (non-NaN) double.
+         * The implementation is expected to adjust the cell type accordingly, so that after this call
+         * getCellType() or getCachedFormulaResultType() would return {@link CellType#NUMERIC}.
+         * @param value the new value to set
+         */
+        protected abstract void SetCellValueImpl(double value);
 
         public abstract ICell SetCellValue(DateTime value);
 

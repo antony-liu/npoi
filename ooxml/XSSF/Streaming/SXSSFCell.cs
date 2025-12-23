@@ -591,28 +591,13 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public override ICell SetCellValue(double value)
+        protected override void SetCellValueImpl(double value)
         {
-            if (Double.IsInfinity(value))
-            {
-                // Excel does not support positive/negative infinities,
-                // rather, it gives a #DIV/0! error in these cases.
-                SetCellErrorValue(FormulaError.DIV0.Code);
-            }
-            else if (Double.IsNaN(value))
-            {
-                SetCellErrorValue(FormulaError.NUM.Code);
-            }
+            EnsureTypeOrFormulaType(CellType.Numeric);
+            if(_value.GetType() == CellType.Formula)
+                ((NumericFormulaValue) _value).PreEvaluatedValue = value;
             else
-            {
-                EnsureTypeOrFormulaType(CellType.Numeric);
-                if (_value.GetType() == CellType.Formula)
-                    ((NumericFormulaValue)_value).PreEvaluatedValue = value;
-                else
-                    ((NumericValue)_value).Value = value;
-            }
-
-            return this;
+                ((NumericValue) _value).Value = value;
         }
 
         public override string ToString()

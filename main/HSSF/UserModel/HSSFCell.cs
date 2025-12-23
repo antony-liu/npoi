@@ -460,42 +460,21 @@ namespace NPOI.HSSF.UserModel
         /// <param name="value">the numeric value to Set this cell to.  For formulas we'll Set the
         /// precalculated value, for numerics we'll Set its value. For other types we
         /// will Change the cell to a numeric cell and Set its value.</param>
-        public override ICell SetCellValue(double value)
+        protected override void SetCellValueImpl(double value)
         {
-            if(double.IsInfinity(value))
+            switch(cellType)
             {
-                // Excel does not support positive/negative infinities,
-                // rather, it gives a #DIV/0! error in these cases.
-                SetCellErrorValue(FormulaError.DIV0.Code);
+                case CellType.Numeric:
+                    ((NumberRecord) _record).Value = value;
+                    break;
+                case CellType.Formula:
+                    ((FormulaRecordAggregate) _record).SetCachedDoubleResult(value);
+                    break;
+                default:
+                    SetCellType(CellType.Numeric, false, _record.Row, _record.Column, _record.XFIndex);
+                    ((NumberRecord) _record).Value = value;
+                    break;
             }
-            else if (double.IsNaN(value))
-            {
-                // Excel does not support Not-a-Number (NaN),
-                // instead it immediately generates a #NUM! error.
-                SetCellErrorValue(FormulaError.NUM.Code);
-            }
-            else
-            {
-                int row = _record.Row;
-                int col = _record.Column;
-                short styleIndex = _record.XFIndex;
-
-                switch (cellType)
-                {
-                    case CellType.Numeric:
-                        ((NumberRecord)_record).Value = value;
-                        break;
-                    case CellType.Formula:
-                        ((FormulaRecordAggregate)_record).SetCachedDoubleResult(value);
-                        break;
-                    default:
-                        SetCellType(CellType.Numeric, false, row, col, styleIndex);
-                        ((NumberRecord)_record).Value = value;
-                        break;
-                }
-            }
-
-            return this;
         }
 
         /// <summary>

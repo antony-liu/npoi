@@ -344,29 +344,10 @@ namespace NPOI.XSSF.UserModel
          *        precalculated value, for numerics we'll Set its value. For other types we
          *        will change the cell to a numeric cell and Set its value.
          */
-        public override ICell SetCellValue(double value)
+        protected override void SetCellValueImpl(double value)
         {
-            if (Double.IsInfinity(value))
-            {
-                // Excel does not support positive/negative infInities,
-                // rather, it gives a #DIV/0! error in these cases.
-                _cell.t = (ST_CellType.e);
-                _cell.v = (FormulaError.DIV0.String);
-            }
-            else if (Double.IsNaN(value))
-            {
-                // Excel does not support Not-a-Number (NaN),
-                // instead it immediately generates an #NUM! error.
-                _cell.t = (ST_CellType.e);
-                _cell.v = (FormulaError.NUM.String);
-            }
-            else
-            {
-                _cell.t = (ST_CellType.n);
-                _cell.v = (value.ToString(CultureInfo.InvariantCulture));
-            }
-
-            return this;
+            _cell.t = ST_CellType.n;
+            _cell.v = value.ToString(CultureInfo.InvariantCulture);
         }
 
         /**
