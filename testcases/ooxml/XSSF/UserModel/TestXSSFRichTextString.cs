@@ -43,19 +43,19 @@ namespace TestCases.XSSF.UserModel
 
             XSSFRichTextString rt = new XSSFRichTextString("Apache POI");
             ClassicAssert.AreEqual("Apache POI", rt.String);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
 
             CT_Rst st = rt.GetCTRst();
             ClassicAssert.IsTrue(st.IsSetT());
             ClassicAssert.AreEqual("Apache POI", st.t);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
 
             rt.Append(" is cool stuff");
             ClassicAssert.AreEqual(2, st.sizeOfRArray());
             ClassicAssert.IsFalse(st.IsSetT());
 
             ClassicAssert.AreEqual("Apache POI is cool stuff", rt.String);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
         }
         [Test]
         public void TestEmpty()
@@ -76,13 +76,13 @@ namespace TestCases.XSSF.UserModel
             rt.Append("89");
 
             ClassicAssert.AreEqual("123456789", rt.String);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
 
             XSSFFont font1 = new XSSFFont();
             font1.IsBold = true;
 
             rt.ApplyFont(2, 5, font1);
-            ClassicAssert.AreEqual(true, rt.HasFormatting());
+            ClassicAssert.IsTrue(rt.HasFormatting());
 
             ClassicAssert.AreEqual(4, rt.NumFormattingRuns);
             ClassicAssert.AreEqual(0, rt.GetIndexOfFormattingRun(0));
@@ -183,7 +183,7 @@ namespace TestCases.XSSF.UserModel
 
             XSSFRichTextString rt = new XSSFRichTextString("Apache POI");
             ClassicAssert.AreEqual("Apache POI", rt.String);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
 
             rt.ClearFormatting();
 
@@ -191,20 +191,20 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsTrue(st.IsSetT());
             ClassicAssert.AreEqual("Apache POI", rt.String);
             ClassicAssert.AreEqual(0, rt.NumFormattingRuns);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
 
             XSSFFont font = new XSSFFont();
             font.IsBold = true;
 
             rt.ApplyFont(7, 10, font);
             ClassicAssert.AreEqual(2, rt.NumFormattingRuns);
-            ClassicAssert.AreEqual(true, rt.HasFormatting());
+            ClassicAssert.IsTrue(rt.HasFormatting());
 
             rt.ClearFormatting();
 
             ClassicAssert.AreEqual("Apache POI", rt.String);
             ClassicAssert.AreEqual(0, rt.NumFormattingRuns);
-            ClassicAssert.AreEqual(false, rt.HasFormatting());
+            ClassicAssert.IsFalse(rt.HasFormatting());
         }
         [Test]
         public void TestGetFonts()
@@ -581,7 +581,7 @@ namespace TestCases.XSSF.UserModel
 
             // TODO: normally ToString() should never return null, should we adjust this?
             rt = new XSSFRichTextString();
-            ClassicAssert.IsNull(rt.ToString());
+            ClassicAssert.AreEqual("", rt.ToString());
         }
         [Test]
         public void Test59008Font()

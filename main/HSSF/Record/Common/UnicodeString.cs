@@ -779,7 +779,7 @@ namespace NPOI.HSSF.Record
                 for (int i = 0; i < field_4_format_runs.Count; i++)
                 {
                     FormatRun r = field_4_format_runs[(i)];
-                    buffer.Append("      .format_Run" + i + "          = ").Append(r.ToString()).Append("\n");
+                    buffer.Append("      .format_Run").Append(i).Append("          = ").Append(r.ToString()).Append("\n");
                 }
             }
             if (field_5_ext_rst != null)

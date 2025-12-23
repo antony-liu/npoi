@@ -479,12 +479,19 @@ namespace NPOI.XSSF.UserModel
             }
         }
 
-        /**
-         * Returns the plain string representation.
-         */
+        /// <summary>
+        /// Returns the plain string representation.
+        /// </summary>
+        /// <returns>The string representation of this RichText string, never null</returns>
         public override String ToString()
         {
-            return this.String;
+            String str = this.String;
+            if(str == null)
+            {
+                return "";
+            }
+
+            return str;
         }
 
         /**

@@ -232,12 +232,7 @@ using Cysharp.Text;
          */
         private int ProcessAutoNumGroup(int index, int level, List<int> levelCount, StringBuilder out1)
         {
-            XSSFTextParagraph p = null;
-            XSSFTextParagraph nextp = null;
-            ListAutoNumber scheme, nextScheme;
-            int startAt, nextStartAt;
-
-            p = _paragraphs[(index)];
+            XSSFTextParagraph p = _paragraphs[(index)];
 
             // The rules for generating the auto numbers are as follows. If the following paragraph is also
             // an auto-number, has the same type/scheme (and startAt if defined on this paragraph) then they are
@@ -246,8 +241,8 @@ using Cysharp.Text;
             // not being a bullet resets the count for that level to 1.
 
             // first auto-number paragraph so Initialise to 1 or the bullets startAt if present
-            startAt = p.BulletAutoNumberStart;
-            scheme = p.BulletAutoNumberScheme;
+            int startAt = p.BulletAutoNumberStart;
+            ListAutoNumber scheme = p.BulletAutoNumberScheme;
             if (levelCount[(level)] == 0)
             {
                 levelCount[level] = startAt == 0 ? 1 : startAt;
@@ -264,7 +259,7 @@ using Cysharp.Text;
             }
             while (true)
             {
-                nextp = (index + 1) == _paragraphs.Count ? null : _paragraphs[(index + 1)];
+                XSSFTextParagraph nextp = (index + 1) == _paragraphs.Count ? null : _paragraphs[(index + 1)];
                 if (nextp == null) break; // out of paragraphs
                 if (!(nextp.IsBullet && p.IsBulletAutoNumber)) break; // not an auto-number bullet                      
                 if (nextp.Level > level)
@@ -278,8 +273,8 @@ using Cysharp.Text;
                 {
                     break; // Changed level   
                 }
-                nextScheme = nextp.BulletAutoNumberScheme;
-                nextStartAt = nextp.BulletAutoNumberStart;
+                ListAutoNumber nextScheme = nextp.BulletAutoNumberScheme;
+                int nextStartAt = nextp.BulletAutoNumberStart;
 
                 if (nextScheme == scheme && nextStartAt == startAt)
                 {

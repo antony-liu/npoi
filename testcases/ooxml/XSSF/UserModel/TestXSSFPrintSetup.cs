@@ -208,6 +208,31 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(5.0, pMargins.header, 0.0);
             ClassicAssert.AreEqual(3.5, pMargins.footer, 0.0);
         }
+
+        [Test]
+        public void TestSetGetMargins()
+        {
+            CT_Worksheet worksheet = new CT_Worksheet();
+            CT_PageMargins pMargins = worksheet.AddNewPageMargins();
+            pMargins.top = 5.3;
+            pMargins.bottom = 1.5;
+            pMargins.left = 2;
+            pMargins.right = 3.2;
+            XSSFPrintSetup printSetup = new XSSFPrintSetup(worksheet);
+            ClassicAssert.AreEqual(5.3, printSetup.TopMargin, 0.0);
+            ClassicAssert.AreEqual(1.5, printSetup.BottomMargin, 0.0);
+            ClassicAssert.AreEqual(2, printSetup.LeftMargin, 0.0);
+            ClassicAssert.AreEqual(3.2, printSetup.RightMargin, 0.0);
+
+            printSetup.TopMargin = 9;
+            printSetup.BottomMargin = 6.4;
+            printSetup.LeftMargin = 7.8;
+            printSetup.RightMargin = 8.1;
+            ClassicAssert.AreEqual(9, pMargins.top, 0.0);
+            ClassicAssert.AreEqual(6.4, pMargins.bottom, 0.0);
+            ClassicAssert.AreEqual(7.8, pMargins.left, 0.0);
+            ClassicAssert.AreEqual(8.1, pMargins.right, 0.0);
+        }
         [Test]
         public void TestSetGetCopies()
         {

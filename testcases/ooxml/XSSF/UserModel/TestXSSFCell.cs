@@ -118,13 +118,21 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.IsNull(str.String);
             cell_0.SetCellValue(str);
             ClassicAssert.AreEqual(0, sst.Count);
-            ClassicAssert.AreEqual(CellType.Blank, cell_0.CellType);
+            ClassicAssert.AreEqual(CellType.Blank, cell_0.CellType, "Having: " + cell_0);
 
             //case 2. cell.SetCellValue((String)null);
             ICell cell_1 = row.CreateCell(1);
             cell_1.SetCellValue((String)null);
             ClassicAssert.AreEqual(0, sst.Count);
-            ClassicAssert.AreEqual(CellType.Blank, cell_1.CellType);
+            ClassicAssert.AreEqual(CellType.Blank, cell_1.CellType, "Having: " + cell_1);
+
+            //case 3. cell.setCellValue((RichTextString)null);
+            ICell cell_2 = row.CreateCell(2);
+            cell_2.SetCellValue((IRichTextString) null);
+            ClassicAssert.AreEqual(0, sst.Count);
+            ClassicAssert.AreEqual(CellType.Blank, cell_2.CellType, "Having: " + cell_2);
+
+            wb.Close();
         }
         [Test]
         public void TestFormulaString()

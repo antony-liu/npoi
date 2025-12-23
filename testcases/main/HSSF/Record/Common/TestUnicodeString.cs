@@ -216,14 +216,14 @@ namespace TestCases.HSSF.Record.Common
             ClassicAssert.AreEqual(-1, (sbyte)b[0]);
             ClassicAssert.AreEqual(-1, (sbyte)b[1]);
             ClassicAssert.AreEqual(14, b[2]);
-            ClassicAssert.AreEqual(00, b[3]);
+            ClassicAssert.AreEqual(0, b[3]);
 
             // Reserved
             ClassicAssert.AreEqual(1, b[4]);
             ClassicAssert.AreEqual(0, b[5]);
             // Data size
             ClassicAssert.AreEqual(10, b[6]);
-            ClassicAssert.AreEqual(00, b[7]);
+            ClassicAssert.AreEqual(0, b[7]);
             // Font*2
             ClassicAssert.AreEqual(0, b[8]);
             ClassicAssert.AreEqual(0, b[9]);
@@ -261,11 +261,11 @@ namespace TestCases.HSSF.Record.Common
         public void TestExtRstFromData()
         {
             byte[] data = new byte[] {
-             01, 00, 0x0C, 00, 
-             00, 00, 0x37, 00, 
-             00, 00, 
-             00, 00, 00, 00, 
-             00, 00 // Cruft at the end, as found from real files
+               1, 0, 0x0C, 0,
+               0, 0, 0x37, 0,
+               0, 0,
+               0, 0, 0, 0,
+               0, 0 // Cruft at the end, as found from real files
        };
             ClassicAssert.AreEqual(16, data.Length);
 
