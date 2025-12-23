@@ -32,7 +32,7 @@ namespace NPOI.HSSF.Record
      * REFERENCE:  PG 951 Excel Binary File Format (.xls) Structure Specification v20091214 
      */
     public class UnicodeString : IComparable<UnicodeString>
-    { // TODO - make this when the compatibility version is Removed
+    {
         private static readonly POILogger _logger = POILogFactory.GetLogger(typeof(UnicodeString));
 
         private short field_1_charCount;
@@ -734,11 +734,14 @@ namespace NPOI.HSSF.Record
          */
         public void SwapFontUse(short oldFontIndex, short newFontIndex)
         {
-            foreach (FormatRun run in field_4_format_runs)
+            if(field_4_format_runs != null)
             {
-                if (run._fontIndex == oldFontIndex)
+                foreach(FormatRun run in field_4_format_runs)
                 {
-                    run._fontIndex = newFontIndex;
+                    if(run._fontIndex == oldFontIndex)
+                    {
+                        run._fontIndex = newFontIndex;
+                    }
                 }
             }
         }

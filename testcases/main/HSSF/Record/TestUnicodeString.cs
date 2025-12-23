@@ -26,6 +26,8 @@ namespace TestCases.HSSF.Record
     using System.Text;
     using System.IO;
     using NPOI.Util;
+    using NPOI.HSSF.UserModel;
+    using NPOI.SS.UserModel;
 
     /**
      * Tests that records size calculates correctly.
@@ -319,6 +321,26 @@ namespace TestCases.HSSF.Record
 
             ClassicAssert.AreEqual(extRst1, extRst2);
             ClassicAssert.AreEqual(extRst1.GetHashCode(), extRst2.GetHashCode());
+        }
+
+        [Test]
+        public void UnicodeStringsNullPointer()
+        {
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            ISheet sheet = wb.CreateSheet("styles");
+            IRow row = sheet.CreateRow(0);
+            ICell cell = row.CreateCell(0);
+
+            ICellStyle style = wb.CreateCellStyle();
+            style.SetFont(wb.CreateFont());
+            cell.CellStyle = style;
+
+            cell.SetCellValue("test");
+
+            HSSFOptimiser.OptimiseFonts(wb);
+
+            wb.Close();
         }
 
         private static void ConfirmSize(int expectedSize, UnicodeString s)

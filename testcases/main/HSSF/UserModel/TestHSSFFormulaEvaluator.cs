@@ -106,7 +106,7 @@ namespace TestCases.HSSF.UserModel
             }
             catch (Exception e)
             {
-                if (e.Message.Equals("Don't now how to evalate name 'Is_Multicar_Vehicle'"))
+                if (e.Message.Equals("Don't know how to evalate name 'Is_Multicar_Vehicle'"))
                 {
                     Assert.Fail("Identified bug 47048a");
                 }
