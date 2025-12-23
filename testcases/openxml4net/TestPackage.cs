@@ -26,12 +26,15 @@ using NPOI.Util;
 using NPOI.XWPF.UserModel;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
+using Org.BouncyCastle.Crypto.Digests;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -1299,6 +1302,62 @@ namespace TestCases.OpenXml4Net.OPC
                     ClassicAssert.IsNotNull(pkgTest.ZipArchive);
                     ClassicAssert.IsTrue(pkgTest.ZipArchive.IsClosed);
                 }
+            }
+        }
+
+        [Test]
+        public void TestBug63029()
+        {
+            FileInfo testFile = OpenXml4NetTestDataSamples.GetSampleFile("sample.docx");
+            FileInfo tmpFile = OpenXml4NetTestDataSamples.GetOutputFile("Bug63029.docx");
+            File.Copy(testFile.FullName, tmpFile.FullName, true);
+            int numPartsBefore = 0;
+            MD5 md5 = MD5.Create();
+            String md5Before;
+            using(var stream = tmpFile.Open(FileMode.Open))
+            {
+                byte[] hash = md5.ComputeHash(stream);
+                md5Before = HexDump.ToHex(hash);
+            }
+
+            RuntimeException ex = null;
+            OPCPackage pkg = OPCPackage.Open(tmpFile, PackageAccess.READ_WRITE);
+            try
+            {
+                numPartsBefore = pkg.GetParts().Count;
+                // add a marshaller that will throw an exception on save
+                pkg.AddMarshaller("poi/junit", new PartMarshallerBug63029());
+                pkg.CreatePart(PackagingUriHelper.CreatePartName("/poi/test.xml"), "poi/junit");
+                pkg.Close();
+            }
+            catch(RuntimeException e)
+            {
+                ex = e;
+            }
+            // verify there was an exception while closing the file
+            ClassicAssert.AreEqual("Fail to save: an error occurs while saving the package : Bugzilla 63029", ex.Message);
+
+            // assert that md5 after closing is the same, i.e. the source is left intact
+            String md5After;
+            using(var stream = tmpFile.Open(FileMode.Open))
+            {
+                byte[] hash = md5.ComputeHash(stream);
+                md5After = HexDump.ToHex(hash);
+            }
+            
+            ClassicAssert.AreEqual(md5Before, md5After);
+
+            // try to read the source file once again
+            OPCPackage pkg2 = OPCPackage.Open(tmpFile, PackageAccess.READ_WRITE);
+            // assert that the number of parts remained the same
+            ClassicAssert.AreEqual(pkg2.GetParts().Count, numPartsBefore);
+        }
+
+        private class PartMarshallerBug63029 : PartMarshaller
+        {
+            public bool Marshall(PackagePart part, Stream out1)
+            {
+                throw new RuntimeException("Bugzilla 63029");
             }
         }
     }

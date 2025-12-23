@@ -363,18 +363,20 @@ namespace NPOI.OpenXml4Net.OPC
 
                     FileInfo fi=TempFile.CreateTempFile(tempfilePath, ".tmp");
                     // Save the final package to a temporary file
+                    bool success = false;
                     try
                     {
                         Save(fi.FullName);
+                        success = true;
                     }
                     finally
                     {
+                        // Close the current zip file, so we can overwrite it on all platforms
+                        IOUtils.CloseQuietly(this.zipArchive);
                         try
                         {
-                            if (zipArchive != null)
-                                this.zipArchive.Close(); // Close the zip archive to be
-                                                         // able to delete it
-                            FileHelper.CopyFile(fi.FullName, this.originalPackagePath);
+                            if(success)
+                                FileHelper.CopyFile(fi.FullName, this.originalPackagePath);
                         }
                         finally
                         {

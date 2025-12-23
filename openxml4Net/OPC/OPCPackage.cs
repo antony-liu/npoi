@@ -49,7 +49,7 @@ namespace NPOI.OpenXml4Net.OPC
         /**
          * Part marshallers by content type.
          */
-        protected SortedList<ContentType, PartMarshaller> partMarshallers;
+        protected Dictionary<ContentType, PartMarshaller> partMarshallers;
 
         /**
          * Default part marshaller.
@@ -59,7 +59,7 @@ namespace NPOI.OpenXml4Net.OPC
         /**
          * Part unmarshallers by content type.
          */
-        protected SortedList<ContentType, PartUnmarshaller> partUnmarshallers;
+        protected Dictionary<ContentType, PartUnmarshaller> partUnmarshallers;
 
         /**
          * Core package properties.
@@ -107,8 +107,8 @@ namespace NPOI.OpenXml4Net.OPC
          */
         private void Init()
         {
-            this.partMarshallers = new SortedList<ContentType, PartMarshaller>(5);
-            this.partUnmarshallers = new SortedList<ContentType, PartUnmarshaller>(2);
+            this.partMarshallers = new Dictionary<ContentType, PartMarshaller>(5);
+            this.partUnmarshallers = new Dictionary<ContentType, PartUnmarshaller>(2);
 
             try
             {
