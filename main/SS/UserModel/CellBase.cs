@@ -314,9 +314,72 @@ namespace NPOI.SS.UserModel
         }
         protected abstract ICell SetCellValueImpl(DateOnly value);
 #endif
-        public abstract ICell SetCellValue(IRichTextString value);
+        /// <summary>
+        /// {@inheritDoc}
+        /// </summary>
+        public ICell SetCellValue(string value)
+        {
+            if(value == null)
+            {
+                SetBlank();
+                return this;
+            }
 
-        public abstract ICell SetCellValue(string value);
+            checkLength(value);
+
+            return SetCellValueImpl(value);
+        }
+
+        /// <summary>
+        /// Implementation-specific way to Set a string value.
+        /// The value is guaranteed to be non-null and to satisfy the length limitation imposed by the spreadsheet version.
+        /// The implementation is expected to adjust cell type accordingly, so that After this call
+        /// GetCellType() or GetCachedFormulaResultType() (whichever appropriate) would return <see cref="CellType.STRING" />.
+        /// </summary>
+        /// <param name="value">the new value to Set.</param>
+        protected abstract ICell SetCellValueImpl(string value);
+
+        private void checkLength(string value)
+        {
+            if(value.Length > GetSpreadsheetVersion().MaxTextLength)
+            {
+                string message = String.Format("The maximum length of cell contents (text) is {0} characters",
+                    GetSpreadsheetVersion().MaxTextLength);
+                throw new ArgumentException(message);
+            }
+        }
+
+        /// <summary>
+        /// {@inheritDoc}
+        /// </summary>
+        public ICell SetCellValue(IRichTextString value)
+        {
+            if(value == null || value.String == null)
+            {
+                SetBlank();
+                return this;
+            }
+
+            checkLength(value.String);
+
+            return SetCellValueImpl(value);
+        }
+
+        /// <summary>
+        /// Implementation-specific way to Set a RichTextString value.
+        /// The value is guaranteed to be non-null, having non-null value, and to satisfy the length limitation imposed
+        /// by the spreadsheet version.
+        /// The implementation is expected to adjust cell type accordingly, so that After this call
+        /// GetCellType() or GetCachedFormulaResultType() (whichever appropriate) would return <see cref="CellType.STRING" />.
+        /// </summary>
+        /// <param name="value">the new value to Set.</param>
+        protected abstract ICell SetCellValueImpl(IRichTextString value);
+
+        /// <summary>
+        /// Get the spreadsheet version for the given implementation.
+        /// </summary>
+        /// <returns>the spreadsheet version</returns>
+        protected abstract SpreadsheetVersion GetSpreadsheetVersion();
     }
 }
 

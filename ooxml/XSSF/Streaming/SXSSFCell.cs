@@ -43,6 +43,11 @@ namespace NPOI.XSSF.Streaming
             SetType(cellType);
         }
 
+        protected override SpreadsheetVersion GetSpreadsheetVersion()
+        {
+            return SpreadsheetVersion.EXCEL2007;
+        }
+
         public override CellRangeAddress ArrayFormulaRange
         {
             get
@@ -515,28 +520,17 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public override ICell SetCellValue(string value)
+        protected override ICell SetCellValueImpl(string value)
         {
-            if (value != null)
-            {
-                if (value.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
-                {
-                    throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
-                }
-                EnsureTypeOrFormulaType(CellType.String);
+            EnsureTypeOrFormulaType(CellType.String);
 
-                if(_value.GetType() == CellType.Formula)
-                {
-                    ((StringFormulaValue) _value).PreEvaluatedValue = value;
-                }
-                else
-                {
-                    ((PlainStringValue) _value).Value = value;
-                }
+            if(_value.GetType() == CellType.Formula)
+            {
+                ((StringFormulaValue) _value).PreEvaluatedValue = value;
             }
             else
             {
-                SetBlank();
+                ((PlainStringValue) _value).Value = value;
             }
 
             return this;
@@ -552,27 +546,17 @@ namespace NPOI.XSSF.Streaming
             return this;
         }
 
-        public override ICell SetCellValue(IRichTextString value)
-        {         
-            if (value != null && value.String != null)
-            {
-                if(value.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
-                {
-                    throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
-                }
-                EnsureRichTextStringType();
+        protected override ICell SetCellValueImpl(IRichTextString value)
+        {
+            EnsureRichTextStringType();
 
-                if(_value is RichTextStringFormulaValue)
-                {
-                    ((RichTextStringFormulaValue) _value).SetPreEvaluatedValue(value);
-                } else
-                {
-                    ((RichTextValue) _value).Value = value;
-                }
+            if(_value is RichTextStringFormulaValue)
+            {
+                ((RichTextStringFormulaValue) _value).SetPreEvaluatedValue(value);
             }
             else
             {
-                SetBlank();
+                ((RichTextValue) _value).Value = value;
             }
 
             return this;

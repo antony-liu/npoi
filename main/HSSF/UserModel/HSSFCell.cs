@@ -152,6 +152,11 @@ namespace NPOI.HSSF.UserModel
         {
         }
 
+        protected override SpreadsheetVersion GetSpreadsheetVersion()
+        {
+            return SpreadsheetVersion.EXCEL97;
+        }
+
         /**
          * used internally -- given a cell value record, figure out its type
          */
@@ -513,10 +518,9 @@ namespace NPOI.HSSF.UserModel
         /// string, for String cells we'll Set its value.  For other types we will
         /// Change the cell to a string cell and Set its value.
         /// If value is null then we will Change the cell to a Blank cell.</param>
-        public override ICell SetCellValue(String value)
+        protected override ICell SetCellValueImpl(String value)
         {
-            HSSFRichTextString str = value == null ? null : new HSSFRichTextString(value);
-            return SetCellValue(str);
+            return SetCellValueImpl(new HSSFRichTextString(value));
         }
         /**
          * set a error value for the cell
@@ -570,22 +574,10 @@ namespace NPOI.HSSF.UserModel
         /// string, for String cells we'll Set its value.  For other types we will
         /// Change the cell to a string cell and Set its value.
         /// If value is null then we will Change the cell to a Blank cell.</param>
-        public override ICell SetCellValue(IRichTextString value)
+        protected override ICell SetCellValueImpl(IRichTextString value)
         {
-            int row = _record.Row;
-            int col = _record.Column;
-            short styleIndex = _record.XFIndex;
-            if (value == null)
-            {
-                NotifyFormulaChanging();
-                SetCellType(CellType.Blank, false, row, col, styleIndex);
-                return this;
-            }
+            
 
-            if (value.Length > NPOI.SS.SpreadsheetVersion.EXCEL97.MaxTextLength)
-            {
-                throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
-            }
             if (cellType == CellType.Formula)
             {
                 // Set the 'pre-Evaluated result' for the formula
@@ -599,6 +591,9 @@ namespace NPOI.HSSF.UserModel
 
             if (cellType != CellType.String)
             {
+                int row = _record.Row;
+                int col = _record.Column;
+                short styleIndex = _record.XFIndex;
                 SetCellType(CellType.String, false, row, col, styleIndex);
             }
             int index = 0;

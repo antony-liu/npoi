@@ -104,6 +104,11 @@ namespace NPOI.XSSF.UserModel
             _stylesSource = ((XSSFWorkbook)row.Sheet.Workbook).GetStylesSource();
         }
 
+        protected override SpreadsheetVersion GetSpreadsheetVersion()
+        {
+            return SpreadsheetVersion.EXCEL2007;
+        }
+
         /// <summary>
         /// Copy cell value, formula and style, from srcCell per cell copy policy
         ///  If srcCell is null, clears the cell value and cell style per cell copy policy
@@ -450,9 +455,9 @@ namespace NPOI.XSSF.UserModel
          * change the cell to a string cell and Set its value.
          * If value is null then we will change the cell to a Blank cell.
          */
-        public override ICell SetCellValue(String str)
+        protected override ICell SetCellValueImpl(String value)
         {
-            return SetCellValue(str == null ? null : new XSSFRichTextString(str));
+            return SetCellValueImpl(new XSSFRichTextString(value));
         }
 
         /**
@@ -463,40 +468,29 @@ namespace NPOI.XSSF.UserModel
          * change the cell to a string cell and Set its value.
          * If value is null then we will change the cell to a Blank cell.
          */
-        public override ICell SetCellValue(IRichTextString str)
+        protected override ICell SetCellValueImpl(IRichTextString str)
         {
-            if (str == null || str.String == null)
-            {
-                SetBlank();
-                return this;
-            }
-
-            if (str.Length > SpreadsheetVersion.EXCEL2007.MaxTextLength)
-            {
-                throw new ArgumentException("The maximum length of cell contents (text) is 32,767 characters");
-            }
             CellType cellType = CellType;
-            switch (cellType)
+            if(cellType == CellType.Formula)
             {
-                case CellType.Formula:
-                    _cell.v = (str.String);
-                    _cell.t= (ST_CellType.str);
-                    break;
-                default:
-                    if (_cell.t == ST_CellType.inlineStr)
-                    {
-                        //set the 'pre-Evaluated result
-                        _cell.v = str.String;
-                    }
-                    else
-                    {
-                        _cell.t = ST_CellType.s;
-                        XSSFRichTextString rt = (XSSFRichTextString)str;
-                        rt.SetStylesTableReference(_stylesSource);
-                        int sRef = _sharedStringSource.AddSharedStringItem(rt);
-                        _cell.v=sRef.ToString();
-                    }
-                    break;
+                _cell.v = str.String;
+                _cell.t= ST_CellType.str;
+            }
+            else
+            {
+                if(_cell.t == ST_CellType.inlineStr)
+                {
+                    //set the 'pre-Evaluated result
+                    _cell.v = str.String;
+                }
+                else
+                {
+                    _cell.t = ST_CellType.s;
+                    XSSFRichTextString rt = (XSSFRichTextString)str;
+                    rt.SetStylesTableReference(_stylesSource);
+                    int sRef = _sharedStringSource.AddSharedStringItem(rt);
+                    _cell.v=sRef.ToString();
+                }
             }
 
             return this;

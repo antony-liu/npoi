@@ -954,7 +954,7 @@ namespace TestCases.SS.UserModel
             }
             catch (ArgumentException e)
             {
-                ClassicAssert.AreEqual("The maximum length of cell contents (text) is 32,767 characters", e.Message);
+                ClassicAssert.AreEqual("The maximum length of cell contents (text) is 32767 characters", e.Message);
             }
             wb.Close();
         }
