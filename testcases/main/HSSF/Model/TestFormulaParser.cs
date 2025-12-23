@@ -1457,6 +1457,41 @@ namespace TestCases.HSSF.Model
                 );
         }
 
+        [Test]
+        public void TestIntersectionInFunctionArgs()
+        {
+            ConfirmTokenClasses("SUM(A1:B2 B2:C3)",
+                    typeof(MemAreaPtg),
+                typeof(AreaPtg),
+                typeof(AreaPtg),
+                typeof(IntersectionPtg),
+                typeof(AttrPtg)
+            );
+        }
+
+        [Test]
+        public void TestIntersectionNamesInFunctionArgs()
+        {
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            HSSFName name1 = wb.CreateName() as HSSFName;
+            name1.NameName = "foo1";
+            name1.RefersToFormula = "A1:A3";
+
+            HSSFName name2 = wb.CreateName() as HSSFName;
+            name2.NameName = "foo2";
+            name2.RefersToFormula = "A1:B3";
+
+            Ptg[] ptgs = FormulaParser.Parse("SUM(foo1 foo2)", HSSFEvaluationWorkbook.Create(wb), FormulaType.Cell, -1);
+
+            ConfirmTokenClasses(ptgs,
+                    typeof(MemFuncPtg),
+                typeof(NamePtg),
+                typeof(NamePtg),
+                typeof(IntersectionPtg),
+                typeof(AttrPtg)
+            );
+        }
 
         /** Named ranges with backslashes, e.g. 'POI\\2009' */
         [Test]

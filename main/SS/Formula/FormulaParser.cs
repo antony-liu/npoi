@@ -1815,7 +1815,7 @@ namespace NPOI.SS.Formula
                     missedPrevArg = true;
                     continue;
                 }
-                temp.Add(ComparisonExpression());
+                temp.Add(IntersectionExpression());
                 numArgs++;
                 missedPrevArg = false;
                 SkipWhite();
