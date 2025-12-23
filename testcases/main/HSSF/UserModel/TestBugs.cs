@@ -1145,7 +1145,7 @@ using NUnit.Framework.Legacy;
                 var _ = obj.Directory;
                 Assert.Fail();
             }
-            catch (FileNotFoundException)
+            catch (ArgumentException)
             {
                 // expected during successful Test
             }

@@ -154,6 +154,11 @@ namespace NPOI.HSSF.Extractor
                 // some files have "Workbook" instead
                 book = (DocumentNode)directory.GetEntry(InternalWorkbook.WORKBOOK_DIR_ENTRY_NAMES[0]);
             }
+            catch(ArgumentException)
+            {
+                // some files have "Workbook" instead
+                book = (DocumentNode) directory.GetEntry(InternalWorkbook.WORKBOOK_DIR_ENTRY_NAMES[0]);
+            }
             if (book == null)
             {
                 throw new IOException("No Excel 5/95 Book stream found");

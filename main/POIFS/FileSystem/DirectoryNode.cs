@@ -350,7 +350,19 @@ namespace NPOI.POIFS.FileSystem
                                 
             if (rval == null)
             {
-
+                // throw more useful exceptions for known wrong file-extensions
+                if(_byname.ContainsKey("Workbook"))
+                {
+                    throw new ArgumentException("The document is really a XLS file");
+                }
+                else if(_byname.ContainsKey("PowerPoint Document"))
+                {
+                    throw new ArgumentException("The document is really a PPT file");
+                }
+                else if(_byname.ContainsKey("VisioDocument"))
+                {
+                    throw new ArgumentException("The document is really a VSD file");
+                }
                 // either a null name was given, or there Is no such name
                 throw new FileNotFoundException("no such entry: \"" + name + "\"");
             }
