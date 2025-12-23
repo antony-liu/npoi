@@ -388,22 +388,18 @@ namespace TestCases.SS.UserModel
 
                 // sheet1 A1
                 ICell cell = sheet1.CreateRow(0).CreateCell(0);
-                cell.SetCellType(CellType.Numeric);
                 cell.SetCellValue(1.0);
 
                 // sheet2 A1
                 cell = sheet2.CreateRow(0).CreateCell(0);
-                cell.SetCellType(CellType.Numeric);
                 cell.SetCellValue(1.0);
 
                 // sheet2 B1
                 cell = sheet2.GetRow(0).CreateCell(1);
-                cell.SetCellType(CellType.Numeric);
                 cell.SetCellValue(1.0);
 
                 // sheet3 A1
                 cell = sheet3.CreateRow(0).CreateCell(0);
-                cell.SetCellType(CellType.Numeric);
                 cell.SetCellValue(1.0);
 
                 // sheet1 A2 formulae

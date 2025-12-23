@@ -1231,7 +1231,6 @@ namespace TestCases.SS.UserModel
             ClassicAssert.IsTrue(value == null || value.Length == 0, "HSSF will currently return empty string, XSSF/SXSSF will return null, but had: " + value);
 
             // set some value
-            cell.SetCellType(CellType.String);
             cell.SetCellValue("somevalue");
             value = cell.StringCellValue;
             ClassicAssert.IsTrue(value.Equals("somevalue"), "can set value afterwards: " + value);

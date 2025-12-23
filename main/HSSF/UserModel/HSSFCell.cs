@@ -1015,7 +1015,8 @@ namespace NPOI.HSSF.UserModel
                 case CellType.String:
                     int sstIndex = ((LabelSSTRecord)_record).SSTIndex;
                     String text = book.Workbook.GetSSTString(sstIndex).String;
-                    return Convert.ToBoolean(text, CultureInfo.CurrentCulture);
+                    bool.TryParse(text, out bool boolVal);
+                    return boolVal;
 
                 case CellType.Numeric:
                     return ((NumberRecord)_record).Value != 0;

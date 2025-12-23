@@ -1415,35 +1415,26 @@ namespace TestCases.SS.UserModel
             // row 0
             IRow row = sheet.CreateRow(0);
             ICell cell0 = row.CreateCell(0);
-            cell0.SetCellType(CellType.Numeric);
             cell0.SetCellValue(100);
             ICell cell1 = row.CreateCell(1);
-            cell1.SetCellType(CellType.Numeric);
             cell1.SetCellValue(120);
             ICell cell2 = row.CreateCell(2);
-            cell2.SetCellType(CellType.Numeric);
             cell2.SetCellValue(130);
             // row 1
             row = sheet.CreateRow(1);
             cell0 = row.CreateCell(0);
-            cell0.SetCellType(CellType.Numeric);
             cell0.SetCellValue(200);
             cell1 = row.CreateCell(1);
-            cell1.SetCellType(CellType.Numeric);
             cell1.SetCellValue(220);
             cell2 = row.CreateCell(2);
-            cell2.SetCellType(CellType.Numeric);
             cell2.SetCellValue(230);
             // row 2
             row = sheet.CreateRow(2);
             cell0 = row.CreateCell(0);
-            cell0.SetCellType(CellType.Numeric);
             cell0.SetCellValue(300);
             cell1 = row.CreateCell(1);
-            cell1.SetCellType(CellType.Numeric);
             cell1.SetCellValue(320);
             cell2 = row.CreateCell(2);
-            cell2.SetCellType(CellType.Numeric);
             cell2.SetCellValue(330);
             // Create conditional formatting, CELL1 should be yellow if CELL0 is not blank.
             ISheetConditionalFormatting formatting = sheet.SheetConditionalFormatting;

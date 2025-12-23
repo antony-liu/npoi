@@ -531,21 +531,19 @@ namespace TestCases.XSSF.Extractor
             cBoolean.SetCellValue(true);
 
             ICell cError = row.CreateCell(2);
+            cError.SetCellErrorValue(FormulaError.NUM.Code);
 
             ICell cFormulaString = row.CreateCell(3);
             cFormulaString.CellFormula = (/*setter*/"A1");
 
             ICell cFormulaNumeric = row.CreateCell(4);
             cFormulaNumeric.CellFormula = (/*setter*/"F1");
-            cFormulaNumeric.SetCellType(CellType.Formula);
 
             ICell cNumeric = row.CreateCell(5);
             cNumeric.SetCellValue(1.2);
-            cNumeric.SetCellType(CellType.Numeric);
 
             ICell cDate = row.CreateCell(6);
             cDate.SetCellValue(new DateTime());
-            cDate.SetCellType(CellType.Numeric);
 
             bool found = false;
             foreach(POIXMLDocumentPart p in wb.GetRelations())

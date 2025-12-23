@@ -195,10 +195,7 @@ namespace NPOI.XSSF.UserModel
                 }
                 //General number format
                 cf.numFmtId = (/*setter*/0);
-                ICell cell = row.GetCell(i);
-                cell.SetCellType(CellType.String);
-                String stringCellValue = cell.StringCellValue;
-                cf.name = stringCellValue;
+                cf.name = row.GetCell(i).StringCellValue;
                 cf.AddNewSharedItems();
             }
         }

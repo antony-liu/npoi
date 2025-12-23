@@ -391,8 +391,8 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(CellType.Blank, sheet.GetRow(0).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.Boolean, sheet.GetRow(1).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.Error, sheet.GetRow(2).GetCell(columnIndex).CellType);
-            ClassicAssert.AreEqual(CellType.Formula, sheet.GetRow(3).GetCell(columnIndex).CellType);
-            ClassicAssert.AreEqual(CellType.Blank, sheet.GetRow(4).GetCell(columnIndex).CellType); // Numeric cell with no data will return blank by default
+            ClassicAssert.AreEqual(CellType.Blank, sheet.GetRow(3).GetCell(columnIndex).CellType); // Formula cell with no data will return blank by default
+            ClassicAssert.AreEqual(CellType.Numeric, sheet.GetRow(4).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.String, sheet.GetRow(5).GetCell(columnIndex).CellType);
 
             _ = Assert.Throws<ArgumentException>(() => column.CreateCell(6, CellType._None));
@@ -416,8 +416,8 @@ namespace TestCases.XSSF.UserModel
             ClassicAssert.AreEqual(CellType.Blank, sheetLoaded.GetRow(0).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.Boolean, sheetLoaded.GetRow(1).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.Error, sheetLoaded.GetRow(2).GetCell(columnIndex).CellType);
-            ClassicAssert.AreEqual(CellType.Formula, sheetLoaded.GetRow(3).GetCell(columnIndex).CellType);
-            ClassicAssert.AreEqual(CellType.Blank, sheetLoaded.GetRow(4).GetCell(columnIndex).CellType);
+            ClassicAssert.AreEqual(CellType.Blank, sheetLoaded.GetRow(3).GetCell(columnIndex).CellType);// Formula cell with no data will return blank by default
+            ClassicAssert.AreEqual(CellType.Numeric, sheetLoaded.GetRow(4).GetCell(columnIndex).CellType);
             ClassicAssert.AreEqual(CellType.String, sheetLoaded.GetRow(5).GetCell(columnIndex).CellType);
 
             ClassicAssert.IsNull(sheetLoaded.GetRow(6));
@@ -486,7 +486,7 @@ namespace TestCases.XSSF.UserModel
 
             ClassicAssert.IsNull(column.GetCell(rowIndex, MissingCellPolicy.RETURN_BLANK_AS_NULL));
             ClassicAssert.IsNotNull(column.GetCell(rowIndex + 1, MissingCellPolicy.RETURN_BLANK_AS_NULL));
-            ClassicAssert.IsNull(column.GetCell(rowIndex + 2, MissingCellPolicy.RETURN_BLANK_AS_NULL));
+            ClassicAssert.AreEqual(0, column.GetCell(rowIndex + 2, MissingCellPolicy.RETURN_BLANK_AS_NULL).NumericCellValue);
             ClassicAssert.IsNotNull(column.GetCell(rowIndex + 3, MissingCellPolicy.RETURN_BLANK_AS_NULL));
             ClassicAssert.IsNull(column.GetCell(rowIndex + 4, MissingCellPolicy.RETURN_BLANK_AS_NULL));
 

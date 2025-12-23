@@ -490,28 +490,22 @@ namespace TestCases.HSSF.UserModel
 
             cell.SetCellType(CellType.String);
             ClassicAssert.AreEqual("", cell.ToString());
-            cell.SetCellType(CellType.String);
             cell.SetCellValue(1.2);
-            cell.SetCellType(CellType.Numeric);
             ClassicAssert.AreEqual("1.2", cell.ToString());
             cell.SetCellType(CellType.Boolean);
             ClassicAssert.AreEqual("TRUE", cell.ToString());
             cell.SetCellType(CellType.Boolean);
             cell.SetCellValue("" + FormulaError.VALUE.String);
-            cell.SetCellType(CellType.Error);
-            ClassicAssert.AreEqual("#VALUE!", cell.ToString());
-            cell.SetCellType(CellType.Error);
+            ClassicAssert.AreEqual(CellType.String, cell.CellType);
             cell.SetCellType(CellType.Boolean);
             ClassicAssert.AreEqual("FALSE", cell.ToString());
             cell.SetCellValue(1.2);
-            cell.SetCellType(CellType.Numeric);
             ClassicAssert.AreEqual("1.2", cell.ToString());
             cell.SetCellType(CellType.Boolean);
             cell.SetCellType(CellType.String);
             cell.SetCellType(CellType.Error);
             cell.SetCellType(CellType.String);
             cell.SetCellValue(1.2);
-            cell.SetCellType(CellType.Numeric);
             cell.SetCellType(CellType.String);
             ClassicAssert.AreEqual("1.2", cell.ToString());
 

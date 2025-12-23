@@ -4072,7 +4072,7 @@ namespace NPOI.XSSF.UserModel
                 }
 
                 // Set the cell data type
-                newCell.SetCellType(oldCell.CellType);
+                //newCell.SetCellType(oldCell.CellType);
 
                 // Set the cell data value
                 switch(oldCell.CellType)
@@ -6296,7 +6296,7 @@ namespace NPOI.XSSF.UserModel
                 case CellType.Formula:
                     if(keepFormulas)
                     {
-                        newCell.SetCellType(CellType.Formula);
+                        //newCell.SetCellType(CellType.Formula);
                         newCell.CellFormula = oldCell.CellFormula;
                     }
                     else

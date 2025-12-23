@@ -103,7 +103,7 @@ namespace TestCases.XSSF.Streaming
         {
             _objectToTest = new SXSSFCell(null, CellType.Formula);
             _objectToTest.CellFormula = null;
-            ClassicAssert.AreEqual(CellType.Blank, _objectToTest.CellType);
+            ClassicAssert.AreEqual(CellType.Numeric, _objectToTest.CellType);
         }
 
         [Test]

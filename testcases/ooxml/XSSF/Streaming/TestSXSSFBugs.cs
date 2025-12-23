@@ -118,10 +118,8 @@ namespace TestCases.XSSF.Streaming
             IRow row = sheet.CreateRow(rowIndex++);
 
             ICell cell = row.CreateCell(colIndex++);
-            cell.SetCellType(CellType.String);
             cell.SetCellValue("multiple");
             cell = row.CreateCell(colIndex);
-            cell.SetCellType(CellType.String);
             cell.SetCellValue("unique");
 
             WriteRow(sheet, rowIndex++, 80d, "INDEX(A2:A7, MATCH(FALSE, ISBLANK(A2:A7), 0))");
@@ -149,7 +147,6 @@ namespace TestCases.XSSF.Streaming
 
             // numeric value cell
             ICell cell = row.CreateCell(colIndex++);
-            cell.SetCellType(CellType.Numeric);
             cell.SetCellValue(col0Value);
 
             // formula value cell

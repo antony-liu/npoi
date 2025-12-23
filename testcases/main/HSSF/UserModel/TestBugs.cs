@@ -164,8 +164,6 @@ using NUnit.Framework.Legacy;
             if (cell == null)
                 cell = row.CreateCell(3);
 
-            // Write Test
-            cell.SetCellType(CellType.String);
             setCellText(cell, "a Test");
 
             // change existing numeric cell value
@@ -2921,7 +2919,7 @@ using NUnit.Framework.Legacy;
                 row.CreateCell(2).SetCellValue(DateTime.Now);
                 row.CreateCell(3).SetCellValue(String.Format("row:{0}/col:{1}", r, 3));
                 row.CreateCell(4).SetCellValue(true);
-                row.CreateCell(5).SetCellType(CellType.Error);
+                row.CreateCell(5).SetCellErrorValue(FormulaError.NUM.Code);
                 row.CreateCell(6).SetCellValue("added cells.");
             }
 

@@ -151,7 +151,7 @@ namespace NPOI.HSSF.Util
                 case CellType.Formula:
                     if (keepFormulas)
                     {
-                        newCell.SetCellType(CellType.Formula);
+                        //newCell.SetCellType(CellType.Formula);
                         newCell.CellFormula = oldCell.CellFormula;
                     }
                     else
