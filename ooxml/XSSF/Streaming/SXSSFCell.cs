@@ -375,13 +375,7 @@ namespace NPOI.XSSF.Streaming
                 return _row.RowNum;
             }
         }
-        public override CellAddress Address
-        {
-            get
-            {
-                return new CellAddress(this);
-            }
-        }
+
         public override ISheet Sheet
         {
             get

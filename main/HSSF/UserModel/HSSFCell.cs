@@ -1305,14 +1305,6 @@ namespace NPOI.HSSF.UserModel
             }
         }
 
-        public override CellAddress Address
-        {
-            get
-            {
-                return new CellAddress(this);
-            }
-        }
-
         /**
          * Updates the cell record's idea of what
          *  column it belongs in (0 based)

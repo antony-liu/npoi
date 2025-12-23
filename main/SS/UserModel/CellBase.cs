@@ -63,7 +63,13 @@ namespace NPOI.SS.UserModel
 
         public abstract ICellStyle CellStyle { get; set; }
 
-        public abstract CellAddress Address { get; }
+        public CellAddress Address 
+        {
+            get
+            {
+                return new CellAddress(this);
+            }
+        }
 
         public abstract IComment CellComment { get; set; }
         public abstract IHyperlink Hyperlink { get; set; }

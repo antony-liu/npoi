@@ -738,13 +738,7 @@ namespace NPOI.XSSF.UserModel
             }
             return ref1;
         }
-        public override CellAddress Address
-        {
-            get
-            {
-                return new CellAddress(this);
-            }
-        }
+
         /// <summary>
         /// Return the cell's style.
         /// </summary>
