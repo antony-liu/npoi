@@ -27,6 +27,8 @@ namespace NPOI.XSSF.Model
     using NPOI.OpenXml4Net.OPC;
     using System.Xml;
     using System.Text;
+    using NPOI.SS.UserModel;
+    using NPOI.XSSF.UserModel;
 
     /**
      * Table of strings shared across all sheets in a workbook.
@@ -200,9 +202,9 @@ namespace NPOI.XSSF.Model
         {
             if (_stmapBuilt) return;
             _stmapBuilt = true;
-            for (int i = 0; i < strings.Count; i++)
+            for (int i = 0; i < ctStrings.Count; i++)
             {
-                string key = GetKey(strings[i]);
+                string key = GetKey(ctStrings[i]);
                 if (key != null && !stmap.ContainsKey(key))
                     stmap[key] = i;
             }
@@ -344,7 +346,7 @@ namespace NPOI.XSSF.Model
                                     if (currentSi != null)
                                     {
                                         sst.si.Add(currentSi);
-                                        strings.Add(currentSi);
+                                        ctStrings.Add(currentSi);
                                     }
                                     currentSi = null;
                                     break;
@@ -523,16 +525,22 @@ namespace NPOI.XSSF.Model
             return st.XmlText;
         }
 
-        /**
+        /*
          * Return a string item by index
          *
          * @param idx index of item to return.
          * @return the item at the specified position in this Shared String table.
          */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        /// <remarks>Removal(version = "POI 4.2")</remarks>
         public CT_Rst GetEntryAt(int idx)
         {
             EnsureLoaded();
-            return strings[idx];
+            return ctStrings[idx];
         }
 
         /**
@@ -543,6 +551,7 @@ namespace NPOI.XSSF.Model
          */
         public IRichTextString GetItemAt(int idx)
         {
+            EnsureLoaded();
             return new XSSFRichTextString(ctStrings[idx]);
         }
 
@@ -577,7 +586,7 @@ namespace NPOI.XSSF.Model
             }
         }
 
-        /**
+        /*
          * Add an entry to this Shared String table (a new value is appended to the end).
          *
          * <p>
@@ -588,6 +597,13 @@ namespace NPOI.XSSF.Model
          * @param st the entry to add
          * @return index the index of Added entry
          */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="st"></param>
+        /// <returns></returns>
+        /// <remarks>Removal(version = "POI 4.2")</remarks>
+        [Obsolete("use <code>addSharedStringItem(RichTextString string)</code> instead")]
         public int AddEntry(CT_Rst st)
         {
             EnsureLoaded();
@@ -610,18 +626,36 @@ namespace NPOI.XSSF.Model
             _dirty = true;
             return idx;
         }
-
         /**
-         * Provide low-level access to the underlying array of CT_Rst beans
+         * Add an entry to this Shared String table (a new value is appended to the end).
          *
-         * @return array of CT_Rst beans
+         * <p>
+         * If the Shared String table already contains this string entry, its index is returned.
+         * Otherwise a new entry is added.
+         * </p>
+         *
+         * @param string the entry to add
+         * @since POI 4.0.0
+         * @return index the index of added entry
          */
+        public int AddSharedStringItem(IRichTextString string1)
+        {
+            if(!(string1 is XSSFRichTextString)){
+                throw new ArgumentException("Only XSSFRichTextString argument is supported");
+            }
+            return AddEntry(((XSSFRichTextString) string1).GetCTRst());
+        }
+        /// <summary>
+        /// Provide low-level access to the underlying array of CT_Rst beans
+        /// </summary>
+        /// <remarks>Removal(version = "POI 4.2")</remarks>
+        [Obsolete("use <code>getSharedStringItems</code> instead")]
         public IList<CT_Rst> Items
         {
             get
             {
                 EnsureLoaded();
-                return strings.AsReadOnly();
+                return ctStrings.AsReadOnly();
             }
         }
 
@@ -634,6 +668,7 @@ namespace NPOI.XSSF.Model
         {
             get
             {
+                EnsureLoaded();
                 List<IRichTextString> items = new List<IRichTextString>();
                 foreach(CT_Rst rst in ctStrings)
                 {

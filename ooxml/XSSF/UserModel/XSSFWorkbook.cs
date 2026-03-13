@@ -38,6 +38,7 @@ using NPOI.SS;
 using System.Linq;
 using NPOI.POIFS.FileSystem;
 using NPOI.HPSF;
+using System.Data;
 
 namespace NPOI.XSSF.UserModel
 {
