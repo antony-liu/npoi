@@ -26,9 +26,6 @@ namespace NPOI.XSSF.Model
     using System.IO;
     using NPOI.OpenXml4Net.OPC;
     using System.Xml;
-    using NPOI.Util;
-    using NPOI.XSSF.UserModel;
-    using NPOI.SS.UserModel;
     using System.Text;
     using NPOI.SS.UserModel;
     using NPOI.XSSF.UserModel;
@@ -550,16 +547,6 @@ namespace NPOI.XSSF.Model
         {
             EnsureLoaded();
             return ctStrings[idx];
-        }
-
-        /// <summary>
-        /// Return a string item by index
-        /// </summary>
-        /// <param name="idx">index of item to return.</param>
-        /// <returns>the item at the specified position in this Shared String table.</returns>
-        public IRichTextString GetItemAt(int idx)
-        {
-            return new XSSFRichTextString(strings[idx]);
         }
 
         /**
